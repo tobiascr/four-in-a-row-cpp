@@ -14,7 +14,7 @@ public:
 
     void new_game();
 
-    bool legal_move(int position);
+    bool legal_move(int column);
 
     int engine_move();
     // Return an integer från 0 to 6 that represents a move computed by the engine.
@@ -29,7 +29,8 @@ public:
        second move and '0' that the position is empty.*/
 
     bool four_in_a_row(int column);
-    /* True iff the given position is a part of a four in a row.*/
+    /* True iff there is a four in a row that goes through the position
+       of upmost disk in column.*/
 
 private:
     GameState game_state;

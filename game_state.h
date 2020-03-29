@@ -31,7 +31,9 @@ public:
     void reset();
 
     char get_value(int column, int row) const;
-    // Return '0', '1' or '2'.
+    /* Return '1', '2' or '0' depending on the state of the corresponding position.
+       '1' represents the player making the first move, '2' the player making
+       second move and '0' that the position is empty.*/
 
     bool column_not_full(int column) const;
 
@@ -40,8 +42,8 @@ public:
     void undo_move(int column);
 
     bool four_in_a_row(int column) const;
-    // True iff there is a four in a row that goes through the position
-    // of upmost disk in column.
+    /* True iff there is a four in a row that goes through the position
+       of upmost disk in column.*/
 
     bool board_full() const;
 

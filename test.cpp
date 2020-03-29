@@ -102,8 +102,6 @@ void test_game_state()
     std::cout << game_state.four_in_a_row(4) << std::endl;
     std::cout << game_state.four_in_a_row(5) << std::endl;
     std::cout << game_state.four_in_a_row(6) << std::endl;
-
-
 }
 
 int main()

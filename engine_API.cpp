@@ -18,9 +18,9 @@ void EngineAPI::new_game()
     game_state.reset();
 }
 
-bool EngineAPI::legal_move(int position)
+bool EngineAPI::legal_move(int column)
 {
-    return game_state.position_empty(position);
+    return game_state.column_not_full(column);
 }
 
 int EngineAPI::engine_move()
@@ -51,7 +51,5 @@ char EngineAPI::get_value(int column, int row)
 
 bool EngineAPI::four_in_a_row(int column)
 {
-    if (game_state.get_value(position) == ' ')
-        return false;
-    return game_state.three_in_a_row(position);
+    return game_state.four_in_a_row(column);
 }
