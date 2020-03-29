@@ -23,6 +23,6 @@ int engine_move_easy(GameState& game_state);
 
 int engine_move_medium(GameState& game_state);
 
-int engine_move_perfect(GameState& game_state);
+int engine_move_hard(GameState& game_state);
 
 #endif

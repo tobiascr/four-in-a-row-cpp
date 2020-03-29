@@ -6,7 +6,7 @@ int negamax(GameState& game_state, int last_move, int depth)
     int new_value;
     int best_value;
 
-    if (game_state.three_in_a_row(last_move))
+    if (game_state.four_in_a_row(last_move))
         return -1 - depth;
 
     if (game_state.board_full())
@@ -16,8 +16,8 @@ int negamax(GameState& game_state, int last_move, int depth)
         return 0;
 
     best_value = -1000;
-    for (int move=0; move<=8; move++)
-        if (game_state.position_empty(move))
+    for (int move=0; move<=6; move++)
+        if (game_state.column_not_full(move))
         {
             game_state.make_move(move);
             new_value = -negamax(game_state, move, depth - 1);
@@ -38,10 +38,10 @@ int random_engine_move(GameState& game_state, int depth)
     int test;
 
     best_value = -1000;
-    for (int n=0; n<=8; n++)
+    for (int n=0; n<=6; n++)
     {
-        move = (n + random_number) % 9;
-        if (game_state.position_empty(move))
+        move = (n + random_number) % 7;
+        if (game_state.column_not_full(move))
         {
             game_state.make_move(move);
             new_value = -negamax(game_state, move, depth);
@@ -59,15 +59,15 @@ int random_engine_move(GameState& game_state, int depth)
 
 int engine_move_easy(GameState& game_state)
 {
-    return 0;
+    return random_engine_move(game_state, 1);
 }
 
 int engine_move_medium(GameState& game_state)
 {
-    return 0;
+    return random_engine_move(game_state, 4);
 }
 
-int engine_move_perfect(GameState& game_state)
+int engine_move_hard(GameState& game_state)
 {
-    return 0;
+    return random_engine_move(game_state, 7);
 }

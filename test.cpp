@@ -1,6 +1,9 @@
+#include <stdlib.h>
+#include <time.h>
 #include <iostream>
 #include <string>
 #include "game_state.h"
+#include "engine.h"
 
 void load_position(GameState& game_state, std::string move_string)
 /* Load a position to the given game_state object. A position is described
@@ -105,7 +108,28 @@ void test_game_state()
 
 int main()
 {
-    test_game_state();
+    std::srand(time(NULL)); // Initialize the random number generator.
+
+    //test_game_state();
+
+    int move;
+    int depth;
+    GameState game_state;
+    print_board(game_state);
+    depth = 7;
+    move = random_engine_move(game_state, depth);
+    std::cout << move << std::endl;
+
+    load_position(game_state, "3344");
+    print_board(game_state);
+    move = random_engine_move(game_state, depth);
+    std::cout << move << std::endl;
+    move = engine_move_easy(game_state);
+    std::cout << move << std::endl;
+    move = engine_move_medium(game_state);
+    std::cout << move << std::endl;
+    move = engine_move_hard(game_state);
+    std::cout << move << std::endl;
 
     return 0;
 }
