@@ -1,80 +1,171 @@
+#include "game_state.h"
 
-class GameState:
+GameState::GameState()
+{
+    int n;
+    for (n=0; n<=71; n++)
+        board[n] = '0';
+    for (n=0; n<=6; n++)
+        column_height[n] = 0;
+    number_of_moves = 0;
+}
 
-    def get_value(self, column, row):
-        return self.board[10 + column + row * 9]
+void GameState::reset()
+{
+    int n;
+    for (n=0; n<=71; n++)
+        board[n] = '0';
+    for (n=0; n<=6; n++)
+        column_height[n] = 0;
+    number_of_moves = 0;
+}
 
-    def make_move(self, column):
-        position = 10 + column + self.column_height[column] * 9
-        self.board[position] = ("1", "2")[self.number_of_moves % 2]
-        self.move_history[self.number_of_moves] = position
-        self.column_height[column] += 1
-        self.number_of_moves += 1
+char GameState::get_value(int column, int row) const
+{
+    return board[10 + column + row * 9];
+}
 
-    def undo_last_move(self):
-        self.number_of_moves -= 1
-        position = self.move_history[self.number_of_moves]
-        self.column_height[position % 9 - 1] -= 1
-        self.board[position] = "0"
+bool GameState::column_not_full(int column) const
+{
+    return column_height[column] < 6;
+}
 
-    def four_in_a_row(self):
-        """True iff there is a four in a row that goes through the last made move."""
-        position = self.move_history[self.number_of_moves - 1]
-        player = self.board[position]
+void GameState::make_move(int column)
+{
+    if (number_of_moves % 2 == 0)
+        board[10 + column + column_height[column] * 9] = '1';
+    else
+        board[10 + column + column_height[column] * 9] = '2';
+    column_height[column]++;
+    number_of_moves++;
+}
 
-        # Columns
-        if position // 9 >= 4:
-            if self.board[position - 9] == player:
-                if self.board[position - 18] == player:
-                    if self.board[position - 27] == player:
-                        return True
+void GameState::undo_move(int column)
+{
+    column_height[column]--;
+    board[10 + column + column_height[column] * 9] = '0';
+    number_of_moves--;
+}
 
-        # Rows
-        in_row = 1
-        if self.board[position - 1] == player:
-            in_row += 1
-            if self.board[position - 2] == player:
-                in_row += 1
-                if self.board[position - 3] == player:
-                    in_row += 1
-        if self.board[position + 1] == player:
-            in_row += 1
-            if self.board[position + 2] == player:
-                in_row += 1
-                if self.board[position + 3] == player:
-                    in_row += 1
-        if in_row >= 4:
-            return True
+bool GameState::four_in_a_row(int column) const
+{
+    int position = 1 + column + column_height[column] * 9;
+    char player = board[position];
 
-        # Diagonals
-        in_row = 1
-        if self.board[position - 10] == player:
-            in_row += 1
-            if self.board[position - 20] == player:
-                in_row += 1
-                if self.board[position - 30] == player:
-                    in_row += 1
-        if self.board[position + 10] == player:
-            in_row += 1
-            if self.board[position + 20] == player:
-                in_row += 1
-                if self.board[position + 30] == player:
-                    in_row += 1
-        if in_row >= 4:
-            return True
+    // Columns
+    if (position / 9 >= 4)
+        if (board[position - 9] == player)
+            if (board[position - 18] == player)
+                if (board[position - 27] == player)
+                    return true;
 
-        in_row = 1
-        if self.board[position - 8] == player:
-            in_row += 1
-            if self.board[position - 16] == player:
-                in_row += 1
-                if self.board[position - 24] == player:
-                    in_row += 1
-        if self.board[position + 8] == player:
-            in_row += 1
-            if self.board[position + 16] == player:
-                in_row += 1
-                if self.board[position + 24] == player:
-                    in_row += 1
-        if in_row >= 4:
-            return True
+    // Rows
+    int in_row = 1;
+    if (board[position - 1] == player)
+    {
+        in_row++;
+        if (board[position - 2] == player)
+        {
+            in_row++;
+            if (board[position - 3] == player)
+                in_row++;
+        }
+    }
+    if (board[position + 1] == player)
+    {
+        in_row ++;
+        if (board[position + 2] == player)
+        {
+            in_row++;
+            if (board[position + 3] == player)
+                in_row++;
+        }
+    }
+    if (in_row >= 4)
+        return true;
+
+    // Diagonals
+    in_row = 1;
+    if (board[position - 10] == player)
+    {
+        in_row++;
+        if (board[position - 20] == player)
+        {
+            in_row++;
+            if (board[position - 30] == player)
+                in_row++;
+        }
+    }
+    if (board[position + 1] == player)
+    {
+        in_row ++;
+        if (board[position + 2] == player)
+        {
+            in_row++;
+            if (board[position + 3] == player)
+                in_row++;
+        }
+    }
+    if (in_row >= 4)
+        return true;
+
+    in_row = 1;
+    if (board[position - 10] == player)
+    {
+        in_row++;
+        if (board[position - 20] == player)
+        {
+            in_row++;
+            if (board[position - 30] == player)
+                in_row++;
+        }
+    }
+    if (board[position + 10] == player)
+    {
+        in_row ++;
+        if (board[position + 20] == player)
+        {
+            in_row++;
+            if (board[position + 30] == player)
+                in_row++;
+        }
+    }
+    if (in_row >= 4)
+        return true;
+
+    in_row = 1;
+    if (board[position - 8] == player)
+    {
+        in_row++;
+        if (board[position - 16] == player)
+        {
+            in_row++;
+            if (board[position - 24] == player)
+                in_row++;
+        }
+    }
+    if (board[position + 8] == player)
+    {
+        in_row ++;
+        if (board[position + 16] == player)
+        {
+            in_row++;
+            if (board[position + 24] == player)
+                in_row++;
+        }
+    }
+    if (in_row >= 4)
+        return true;
+
+    return false;
+}
+
+bool GameState::board_full() const
+{
+    return number_of_moves == 42;
+}
+
+int GameState::get_number_of_moves() const
+{
+    return number_of_moves;
+}

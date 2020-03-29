@@ -3,19 +3,7 @@
 
 #include "game_state.h"
 
-/* Positions are represented as lists of length 9 where each entry is " ", "X" or "O"
- (the letter O). The diagram below shows which square corresponds to
- which place in the list.
-
-  --- --- ---
- | 0 | 1 | 2 |
-  --- --- ---
- | 3 | 4 | 5 |
-  --- --- ---
- | 6 | 7 | 8 |
-  --- --- ---
-
-The random number generator is used in this library. It needs to be initialized with srand.
+/* The random number generator is used in this library. It needs to be initialized with srand.
 */
 
 int negamax(GameState& game_state, int last_move, int depth);
@@ -26,13 +14,10 @@ int negamax(GameState& game_state, int last_move, int depth);
 */
 
 int random_engine_move(GameState& game_state, int depth);
-/* Return an integer from 0 to 8 that represents a best move made by the engine
+/* Return an integer from 0 to 6 that represents a best move made by the engine
    at the given depth level. If there are several equally good moves, one of them
    is chosen randomly.
 */
-
-int random_first_move();
-//Return a random move where the central move is made more likely to occur.
 
 int engine_move_easy(GameState& game_state);
 

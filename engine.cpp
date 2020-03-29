@@ -57,30 +57,17 @@ int random_engine_move(GameState& game_state, int depth)
     return best_move;
 }
 
-int random_first_move()
-{
-        if ((std::rand() % 12) < 3)
-            return 4;
-        else
-            return std::rand() % 9;
-}
-
 int engine_move_easy(GameState& game_state)
 {
-    if (game_state.get_number_of_empty_positions() == 9)
-        return random_first_move();
-    return random_engine_move(game_state, 0);
+    return 0;
 }
 
 int engine_move_medium(GameState& game_state)
 {
-    if (game_state.get_number_of_empty_positions() == 9)
-        return random_first_move();
-    return random_engine_move(game_state, 1);}
+    return 0;
+}
 
 int engine_move_perfect(GameState& game_state)
 {
-    if (game_state.get_number_of_empty_positions() == 9)
-        return random_first_move();
-    return random_engine_move(game_state, 10);
+    return 0;
 }
