@@ -4,6 +4,7 @@
 #include <string>
 #include "game_state.h"
 #include "engine.h"
+#include "engine_API.h"
 
 void load_position(GameState& game_state, std::string move_string)
 /* Load a position to the given game_state object. A position is described
@@ -31,6 +32,32 @@ void load_position(GameState& game_state, std::string move_string)
     }
 }
 
+void load_position(EngineAPI& engine, std::string move_string)
+/* Load a position to the given EngineAPI object. A position is described
+   as a string of moves ('0', '1', ..., '6'). For example move_string = "334".
+   It gives the position that arises from first making move 3, then move 3 and then move 4. */
+{
+    engine.new_game();
+    int n;
+    for (n=0; n<move_string.length(); n++)
+    {
+        if (move_string[n] == '0')
+            engine.make_move(0);
+        if (move_string[n] == '1')
+            engine.make_move(1);
+        if (move_string[n] == '2')
+            engine.make_move(2);
+        if (move_string[n] == '3')
+            engine.make_move(3);
+        if (move_string[n] == '4')
+            engine.make_move(4);
+        if (move_string[n] == '5')
+            engine.make_move(5);
+        if (move_string[n] == '6')
+            engine.make_move(6);
+    }
+}
+
 void print_board(GameState& game_state)
 {
     int row;
@@ -40,6 +67,20 @@ void print_board(GameState& game_state)
     {
         for (col=0; col<=6; col++)
             std::cout << game_state.get_value(col, row);
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+void print_board(EngineAPI& engine)
+{
+    int row;
+    int col;
+    std::cout << std::endl;
+    for (row=5; row>=0; row--)
+    {
+        for (col=0; col<=6; col++)
+            std::cout << engine.get_value(col, row);
         std::cout << std::endl;
     }
     std::cout << std::endl;
@@ -104,12 +145,8 @@ void test_game_state()
     std::cout << game_state.four_in_a_row(6) << std::endl;
 }
 
-int main()
+void test_engine()
 {
-    std::srand(time(NULL)); // Initialize the random number generator.
-
-    //test_game_state();
-
     int move;
     int depth;
     GameState game_state;
@@ -128,6 +165,43 @@ int main()
     std::cout << move << std::endl;
     move = engine_move_hard(game_state);
     std::cout << move << std::endl;
+}
+
+void test_engine_API()
+{
+    EngineAPI engine;
+    std::cout << "engine_API test" << std::endl;
+    engine.set_difficulty_level(3);
+    print_board(engine);
+    load_position(engine, "334");
+    print_board(engine);
+    std::cout << "Four in a row: " << engine.four_in_a_row(4) << std::endl;
+    std::cout << "Board full: " << engine.board_full() << std::endl;
+    std::cout << "Legal move 4: " << engine.legal_move(4) << std::endl;
+    load_position(engine, "000111222333444555666000111222333444555666");
+    print_board(engine);
+    std::cout << "Legal move 4: " << engine.legal_move(4) << std::endl;
+    std::cout << "Board full: " << engine.board_full() << std::endl;
+    load_position(engine, "01231234233");
+    print_board(engine);
+    std::cout << "Four in a row: " << engine.four_in_a_row(0) << std::endl;
+    load_position(engine, "3344");
+    print_board(engine);
+    std::cout << "Engine move: " << engine.engine_move() << std::endl;
+    load_position(engine, "334455");
+    print_board(engine);
+    std::cout << "Engine move: " << engine.engine_move() << std::endl;
+}
+
+int main()
+{
+    std::srand(time(NULL)); // Initialize the random number generator.
+
+    //test_game_state();
+    //test_engine();
+    test_engine_API();
+
+
 
     return 0;
 }
