@@ -1,7 +1,7 @@
 #include <iostream>
 #include "engine_API.h"
 
-void print_board(EngineAPI& engine)
+void print_board(EngineAPI& engine, bool o_make_first_move)
 {
     int row;
     int col;
@@ -9,10 +9,28 @@ void print_board(EngineAPI& engine)
     for (row=5; row>=0; row--)
     {
         for (col=0; col<=6; col++)
-            std::cout << engine.get_value(col, row);
-        std::cout << std::endl;
+        {
+            std::cout << "|";
+            if (engine.get_value(col, row) == '0')
+                std::cout << " ";
+            if (engine.get_value(col, row) == '1')
+            {
+                if (o_make_first_move)
+                    std::cout << "o";
+                else
+                    std::cout << "*";
+            }
+            if (engine.get_value(col, row) == '2')
+            {
+                if (o_make_first_move)
+                    std::cout << "*";
+                else
+                    std::cout << "o";
+            }
+        }
+        std::cout << "|" << std::endl;
     }
-    std::cout << std::endl;
+    std::cout << " 0 1 2 3 4 5 6" << std::endl << std::endl;
 }
 
 int main()
@@ -20,14 +38,13 @@ int main()
     EngineAPI engine;
     char answer[20];
     int move;
-    bool player_is_X = true;
+    bool player_make_first_move = true;
     bool player_in_turn = true;
     bool game_over = false;
     int player_wins = 0;
     int computer_wins = 0;
 
-    std::cout << "Four in a row" << std::endl << std::endl;
-    std::cout << "To play the game, enter the number for the column of choice." << std::endl;
+    std::cout << "To play four in a row, enter the number for the column of choice." << std::endl;
     std::cout << std::endl;
     std::cout << "Print q to quit." << std::endl;
     std::cout << std::endl;
@@ -60,14 +77,11 @@ int main()
         if (player_in_turn)
         {
             // Player makes a move.
-            print_board(engine);
+            print_board(engine, player_make_first_move);
             move = -1;
             while (true)
             {
-                if (player_is_X)
-                    std::cout << "X to move: ";
-                else
-                    std::cout << "O to move: ";
+                std::cout << "Input: ";
                 std::cin >> answer;
 
                 if (answer[0] == '0')
@@ -84,14 +98,10 @@ int main()
                     move = 5;
                 if (answer[0] == '6')
                     move = 6;
-                if (answer[0] == '7')
-                    move = 7;
-                if (answer[0] == '8')
-                    move = 8;
                 if (answer[0] == 'q')
                     return 0;
 
-                if (0 <= move and move <= 8)
+                if (0 <= move and move <= 6)
                 {
                     if (engine.legal_move(move))
                         break;
@@ -109,11 +119,11 @@ int main()
             engine.make_move(move);
         }
 
-        // If three in a row.
-        if (engine.three_in_a_row(move))
+        // If four in a row.
+        if (engine.four_in_a_row(move))
         {
             game_over = true;
-            print_board(engine);
+            print_board(engine, player_make_first_move);
             if (player_in_turn)
             {
                 std::cout << "You win!" << std::endl;
@@ -129,7 +139,7 @@ int main()
             if (engine.board_full())
             {
                 game_over = true;
-                print_board(engine);
+                print_board(engine, player_make_first_move);
                 std::cout << "Draw" << std::endl;
             }
 
@@ -148,8 +158,8 @@ int main()
                 {
                     game_over = false;
                     engine.new_game();
-                    player_is_X = not player_is_X;
-                    if (player_is_X)
+                    player_make_first_move = not player_make_first_move;
+                    if (player_make_first_move)
                         player_in_turn = true;
                     else
                         player_in_turn = false;

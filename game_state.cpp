@@ -96,30 +96,6 @@ bool GameState::four_in_a_row(int column) const
                 in_row++;
         }
     }
-    if (board[position + 1] == player)
-    {
-        in_row ++;
-        if (board[position + 2] == player)
-        {
-            in_row++;
-            if (board[position + 3] == player)
-                in_row++;
-        }
-    }
-    if (in_row >= 4)
-        return true;
-
-    in_row = 1;
-    if (board[position - 10] == player)
-    {
-        in_row++;
-        if (board[position - 20] == player)
-        {
-            in_row++;
-            if (board[position - 30] == player)
-                in_row++;
-        }
-    }
     if (board[position + 10] == player)
     {
         in_row ++;
