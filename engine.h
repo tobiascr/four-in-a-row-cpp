@@ -6,7 +6,7 @@
 /* The random number generator is used in this library. It needs to be initialized with srand.
 */
 
-int negamax(GameState& game_state, int last_move, int depth);
+int negamax(GameState& game_state, int last_move, int depth, int alpha, int beta);
 /* Compute a value of game_state. Return a positive integer for a winning game_state for
    the player in turn, 0 for a draw and a negative integer for a loss. A win or loss in_row
    fewer moves gives a higher score in absolute value. last_move is the last position
