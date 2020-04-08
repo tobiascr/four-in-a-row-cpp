@@ -1,6 +1,8 @@
 #ifndef GAMESTATE_H
 #define GAMESTATE_H
 
+#include <string>
+
 /*  A board configuration is stored as a list of lengths 72. Empty positions are stored as '0'.
     The players are called '1' and '2', where '1' always make the first move.
 
@@ -49,8 +51,11 @@ public:
 
     int get_number_of_moves() const;
 
+    std::string get_key() const;
+    // Return a unique key that corresponds to the current game state.
+
 private:
-    char board[72];
+    char board[73];
     int column_height[7];
     int number_of_moves;
 };

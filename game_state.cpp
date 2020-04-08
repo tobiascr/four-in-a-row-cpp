@@ -5,6 +5,7 @@ GameState::GameState()
     int n;
     for (n=0; n<=71; n++)
         board[n] = '0';
+    board[72] = '\0';       // This make it easy to convert the board to a string.
     for (n=0; n<=6; n++)
         column_height[n] = 0;
     number_of_moves = 0;
@@ -144,4 +145,9 @@ bool GameState::board_full() const
 int GameState::get_number_of_moves() const
 {
     return number_of_moves;
+}
+
+std::string GameState::get_key() const
+{
+    return board;
 }

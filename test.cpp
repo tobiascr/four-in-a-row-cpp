@@ -6,6 +6,7 @@
 #include "engine.h"
 #include "engine_API.h"
 #include "test_engine_API.h"
+#include "transposition_table.h"
 
 void load_position(GameState& game_state, std::string move_string)
 /* Load a position to the given game_state object. A position is described
@@ -144,6 +145,10 @@ void test_game_state()
     std::cout << game_state.four_in_a_row(4) << std::endl;
     std::cout << game_state.four_in_a_row(5) << std::endl;
     std::cout << game_state.four_in_a_row(6) << std::endl;
+
+    std::string b;
+    b = game_state.get_key();
+    std::cout << b;
 }
 
 void test_engine()
@@ -192,6 +197,31 @@ void test_engine_API()
     load_position(engine, "334455");
     print_board(engine);
     std::cout << "Engine move: " << engine.engine_move() << std::endl;
+}
+
+void test_transposition_table()
+{
+    TranspositionTable tt;
+    tt.set_best_move("123", 1);
+    std::cout << tt.best_move_available("123") << std::endl;
+    std::cout << tt.best_move_available("1234") << std::endl;
+    std::cout << tt.get_best_move("123") << std::endl;
+    tt.set_move_score("111222", 20);
+    std::cout << tt.move_score_available("111222") << std::endl;
+    std::cout << tt.move_score_available("1234") << std::endl;
+    std::cout << tt.get_move_score("111222") << std::endl;
+
+    GameState game_state;
+    load_position(game_state, "01231234233");
+    std::string key;
+    key = game_state.get_key();
+    tt.set_move_score(key, 1000);
+    std::cout << tt.move_score_available(key) << std::endl;
+    std::cout << tt.get_move_score(key) << std::endl;
+    tt.reset();
+    std::cout << tt.move_score_available("123") << std::endl;
+    std::cout << tt.move_score_available("111222") << std::endl;
+    std::cout << tt.move_score_available(key) << std::endl;
 }
 
 int single_game(EngineAPI& engine1, TestEngineAPI& engine2, bool engine1_begin)
@@ -264,9 +294,10 @@ int main()
     //test_game_state();
     //test_engine();
     //test_engine_API();
+    //test_transposition_table();
 
     EngineAPI engine1;
-    engine1.set_difficulty_level(2);
+    engine1.set_difficulty_level(3);
     TestEngineAPI engine2;
     engine2.set_difficulty_level(3);
 
