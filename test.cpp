@@ -2,8 +2,8 @@
 #include <time.h>
 #include <iostream>
 #include <string>
+#include <chrono>
 #include "game_state.h"
-#include "engine.h"
 #include "engine_API.h"
 #include "test_engine_API.h"
 #include "transposition_table.h"
@@ -151,27 +151,27 @@ void test_game_state()
     std::cout << b;
 }
 
-void test_engine()
-{
-    int move;
-    int depth;
-    GameState game_state;
-    print_board(game_state);
-    depth = 7;
-    move = random_engine_move(game_state, depth);
-    std::cout << move << std::endl;
+//void test_engine()
+//{
+//    int move;
+//    int depth;
+//    GameState game_state;
+//    print_board(game_state);
+//    depth = 7;
+//    move = random_engine_move(game_state, depth);
+//    std::cout << move << std::endl;
 
-    load_position(game_state, "3344");
-    print_board(game_state);
-    move = random_engine_move(game_state, depth);
-    std::cout << move << std::endl;
-    move = engine_move_easy(game_state);
-    std::cout << move << std::endl;
-    move = engine_move_medium(game_state);
-    std::cout << move << std::endl;
-    move = engine_move_hard(game_state);
-    std::cout << move << std::endl;
-}
+//    load_position(game_state, "3344");
+//    print_board(game_state);
+//    move = random_engine_move(game_state, depth);
+//    std::cout << move << std::endl;
+//    move = engine_move_easy(game_state);
+//    std::cout << move << std::endl;
+//    move = engine_move_medium(game_state);
+//    std::cout << move << std::endl;
+//    move = engine_move_hard(game_state);
+//    std::cout << move << std::endl;
+//}
 
 void test_engine_API()
 {
@@ -202,34 +202,43 @@ void test_engine_API()
 void test_transposition_table()
 {
     TranspositionTable tt;
-    tt.set_best_move("123", 1);
-    std::cout << tt.best_move_available("123") << std::endl;
-    std::cout << tt.best_move_available("1234") << std::endl;
-    std::cout << tt.get_best_move("123") << std::endl;
-    tt.set_move_score("111222", 20);
-    std::cout << tt.move_score_available("111222") << std::endl;
-    std::cout << tt.move_score_available("1234") << std::endl;
-    std::cout << tt.get_move_score("111222") << std::endl;
+    tt.set_beta_cutuff_move("123", 1);
+    std::cout << tt.beta_cutoff_move_available("123") << std::endl;
+    std::cout << tt.beta_cutoff_move_available("1234") << std::endl;
+    std::cout << tt.get_beta_cutoff_move("123") << std::endl;
+    tt.set_lower_bound("111222", 20);
+    std::cout << tt.lower_bound_available("111222") << std::endl;
+    std::cout << tt.lower_bound_available("1234") << std::endl;
+    std::cout << tt.get_lower_bound("111222") << std::endl;
 
     GameState game_state;
     load_position(game_state, "01231234233");
     std::string key;
     key = game_state.get_key();
-    tt.set_move_score(key, 1000);
-    std::cout << tt.move_score_available(key) << std::endl;
-    std::cout << tt.get_move_score(key) << std::endl;
+    tt.set_lower_bound(key, 1000);
+    std::cout << tt.lower_bound_available(key) << std::endl;
+    std::cout << tt.get_lower_bound(key) << std::endl;
     tt.reset();
-    std::cout << tt.move_score_available("123") << std::endl;
-    std::cout << tt.move_score_available("111222") << std::endl;
-    std::cout << tt.move_score_available(key) << std::endl;
+    std::cout << tt.lower_bound_available("123") << std::endl;
+    std::cout << tt.lower_bound_available("111222") << std::endl;
+    std::cout << tt.lower_bound_available(key) << std::endl;
 }
 
-int single_game(EngineAPI& engine1, TestEngineAPI& engine2, bool engine1_begin)
+int single_game(EngineAPI& engine1, TestEngineAPI& engine2, bool engine1_begin,
+                bool display_move_times)
 // Let engine1 and engine2 play a game against each other.
 // Return 1 if engine1 wins, 0 if draw and 2 if engine2 wins.
 {
     bool engine1_to_play = engine1_begin;
     int move;
+    std::chrono::steady_clock::time_point t0;
+    std::chrono::steady_clock::time_point t1;
+    std::chrono::steady_clock::duration move_time;
+    std::chrono::steady_clock::duration total_time_engine1 =
+                 std::chrono::steady_clock::duration::zero();
+    std::chrono::steady_clock::duration total_time_engine2 =
+                 std::chrono::steady_clock::duration::zero();
+
 
     engine1.new_game();
     engine2.new_game();
@@ -238,29 +247,78 @@ int single_game(EngineAPI& engine1, TestEngineAPI& engine2, bool engine1_begin)
     {
         if (engine1_to_play)
         {
+            t0 = std::chrono::steady_clock::now();
             move = engine1.engine_move();
+            t1 = std::chrono::steady_clock::now();
+            move_time = t1 - t0;
+            if (display_move_times)
+            {
+                std::cout << "Engine1 made a move. It took "
+                << std::chrono::duration_cast<std::chrono::microseconds>(move_time).count()
+                << " microseconds" << std::endl;
+            }
+            total_time_engine1 += move_time;
             engine1.make_move(move);
             engine2.make_move(move);
             if (engine1.four_in_a_row(move))
+            {
+                std::cout << "Engine1 win. Engine1 time: "
+                << std::chrono::duration_cast<std::chrono::milliseconds>(total_time_engine1).count()
+                << " ms, Engine2 time: "
+                << std::chrono::duration_cast<std::chrono::milliseconds>(total_time_engine2).count()
+                << " ms" << std::endl;
                 return 1;
+            }
             if (engine1.board_full())
+            {
+                std::cout << "Draw. Engine1 time: "
+                << std::chrono::duration_cast<std::chrono::milliseconds>(total_time_engine1).count()
+                << " ms, Engine2 time: "
+                << std::chrono::duration_cast<std::chrono::milliseconds>(total_time_engine2).count()
+                << " ms" << std::endl;
                 return 0;
+            }
         }
         else
         {
+            t0 = std::chrono::steady_clock::now();
             move = engine2.engine_move();
+            t1 = std::chrono::steady_clock::now();
+            move_time = t1 - t0;
+            if (display_move_times)
+            {
+                std::cout << "Engine2 made a move. It took "
+                << std::chrono::duration_cast<std::chrono::microseconds>(move_time).count()
+                << " microseconds" << std::endl;
+            }
+            total_time_engine2 += move_time;
             engine1.make_move(move);
             engine2.make_move(move);
             if (engine1.four_in_a_row(move))
+            {
+                std::cout << "Engine2 win. Engine1 time: "
+                << std::chrono::duration_cast<std::chrono::milliseconds>(total_time_engine1).count()
+                << " ms, Engine2 time: "
+                << std::chrono::duration_cast<std::chrono::milliseconds>(total_time_engine2).count()
+                << " ms" << std::endl;
                 return 2;
+            }
             if (engine1.board_full())
+            {
+                std::cout << "Draw. Engine1 time: "
+                << std::chrono::duration_cast<std::chrono::milliseconds>(total_time_engine1).count()
+                << " ms, Engine2 time: "
+                << std::chrono::duration_cast<std::chrono::milliseconds>(total_time_engine2).count()
+                << " ms" << std::endl;
                 return 0;
+            }
         }
         engine1_to_play = not engine1_to_play;
     }
 }
 
-void many_games(EngineAPI& engine1, TestEngineAPI& engine2, int number_of_games)
+void many_games(EngineAPI& engine1, TestEngineAPI& engine2, int number_of_games,
+                bool display_move_times)
 // Let engine1 and engine2 play a game against each other.
 {
     int engine1_wins = 0;
@@ -271,7 +329,7 @@ void many_games(EngineAPI& engine1, TestEngineAPI& engine2, int number_of_games)
 
     for (int n=1; n<=number_of_games; n++)
     {
-        result = single_game(engine1, engine2, engine1_begin);
+        result = single_game(engine1, engine2, engine1_begin, display_move_times);
         if (result == 1)
             engine1_wins++;
         if (result == 2)
@@ -301,7 +359,7 @@ int main()
     TestEngineAPI engine2;
     engine2.set_difficulty_level(3);
 
-    many_games(engine1, engine2, 10);
+    many_games(engine1, engine2, 10, false);
 
     return 0;
 }

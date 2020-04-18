@@ -2,36 +2,36 @@
 
 void TranspositionTable::reset()
 {
-    tt_move_score.clear();
-    tt_best_move.clear();
+    tt_lower_bound.clear();
+    tt_beta_cutoff_move.clear();
 }
 
-bool TranspositionTable::move_score_available(std::string key)
+bool TranspositionTable::lower_bound_available(std::string key)
 {
-    return tt_move_score.count(key) == 1;
+    return tt_lower_bound.count(key) == 1;
 }
 
-void TranspositionTable::set_move_score(std::string key, int move_score)
+void TranspositionTable::set_lower_bound(std::string key, int lower_bound)
 {
-    tt_move_score[key] = move_score;
+    tt_lower_bound[key] = lower_bound;
 }
 
-int TranspositionTable::get_move_score(std::string key)
+int TranspositionTable::get_lower_bound(std::string key)
 {
-    return tt_move_score[key];
+    return tt_lower_bound[key];
 }
 
-bool TranspositionTable::best_move_available(std::string key)
+bool TranspositionTable::beta_cutoff_move_available(std::string key)
 {
-    return tt_best_move.count(key) == 1;
+    return tt_beta_cutoff_move.count(key) == 1;
 }
 
-void TranspositionTable::set_best_move(std::string key, int best_move)
+void TranspositionTable::set_beta_cutuff_move(std::string key, int beta_cutoff_move)
 {
-    tt_best_move[key] = best_move;
+    tt_beta_cutoff_move[key] = beta_cutoff_move;
 }
 
-int TranspositionTable::get_best_move(std::string key)
+int TranspositionTable::get_beta_cutoff_move(std::string key)
 {
-    return tt_best_move[key];
+    return tt_beta_cutoff_move[key];
 }

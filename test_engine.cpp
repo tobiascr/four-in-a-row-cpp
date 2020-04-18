@@ -90,9 +90,11 @@ int test_engine_move_hard(TestGameState& game_state)
             columns++;
     }
 
-    if (columns < 5)
+    if (columns < 4)
         return test_random_engine_move(game_state, 30);
+    if (columns == 4)
+        return test_random_engine_move(game_state, 16);
     if (columns == 5)
-        return test_random_engine_move(game_state, 18);
-    return test_random_engine_move(game_state, 10);
+        return test_random_engine_move(game_state, 12);
+    return test_random_engine_move(game_state, 8);
 }

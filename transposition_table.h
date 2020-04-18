@@ -9,21 +9,21 @@ class TranspositionTable
 public:
     void reset();
 
-    bool move_score_available(std::string key);
+    bool lower_bound_available(std::string key);
 
-    void set_move_score(std::string key, int move_score);
+    void set_lower_bound(std::string key, int lower_bound);
 
-    int get_move_score(std::string key);
+    int get_lower_bound(std::string key);
 
-    bool best_move_available(std::string key);
+    bool beta_cutoff_move_available(std::string key);
 
-    void set_best_move(std::string key, int best_move);
+    void set_beta_cutuff_move(std::string key, int beta_cutoff_move);
 
-    int get_best_move(std::string key);
+    int get_beta_cutoff_move(std::string key);
 
 private:
-    std::unordered_map<std::string, int> tt_move_score;
-    std::unordered_map<std::string, int> tt_best_move;
+    std::unordered_map<std::string, int> tt_lower_bound;
+    std::unordered_map<std::string, int> tt_beta_cutoff_move;
 };
 
 #endif
