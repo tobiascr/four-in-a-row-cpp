@@ -1,6 +1,11 @@
 #ifndef TEST_GAMESTATE_H
 #define TEST_GAMESTATE_H
 
+#include <string>
+
+namespace TestEngine
+{
+
 /*  A board configuration is stored as a list of lengths 72. Empty positions are stored as '0'.
     The players are called '1' and '2', where '1' always make the first move.
 
@@ -23,10 +28,10 @@
     below and numbered 0, 1, ..., 5. Columns are counted from the left and are numbered
     0, 1, ..., 6. Moves are represented by the corresponding columns the moves are made to.*/
 
-class TestGameState
+class GameState
 {
 public:
-    TestGameState();
+    GameState();
 
     void reset();
 
@@ -49,10 +54,14 @@ public:
 
     int get_number_of_moves() const;
 
+    std::string get_key() const;
+    // Return a unique key that corresponds to the current game state.
+
 private:
-    char board[72];
+    char board[73];
     int column_height[7];
     int number_of_moves;
 };
+}
 
 #endif

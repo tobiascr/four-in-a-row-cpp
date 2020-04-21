@@ -1,13 +1,15 @@
 #ifndef TEST_ENGINE_API_H
 #define TEST_ENGINE_API_H
 
-#include "test_engine.h"
 #include "test_game_state.h"
 
-class TestEngineAPI
+namespace TestEngine
+{
+
+class EngineAPI
 {
 public:
-    TestEngineAPI();
+    EngineAPI();
 
     void set_difficulty_level(int difficulty_level);
     // difficulty_level can be 1, 2 or 3.
@@ -33,8 +35,29 @@ public:
        of upmost disk in column.*/
 
 private:
-    TestGameState game_state;
+    TestEngine::GameState game_state;
     int difficulty_level_;
+
+    int negamax(int last_move, int depth, int alpha, int beta);
+    /* Compute a value of game_state. Return a positive integer for a winning game_state for
+       the player in turn, 0 for a draw and a negative integer for a loss. A win or loss in_row
+       fewer moves gives a higher score in absolute value. last_move is the last position
+       where a move has been made to.
+    */
+
+    int random_engine_move(int depth);
+    /* Return an integer from 0 to 6 that represents a best move made by the engine
+       at the given depth level. If there are several equally good moves, one of them
+       is chosen randomly.
+    */
+
+    int engine_move_easy();
+
+    int engine_move_medium();
+
+    int engine_move_hard();
 };
+}
+
 
 #endif

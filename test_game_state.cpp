@@ -1,6 +1,20 @@
 #include "test_game_state.h"
 
-TestGameState::TestGameState()
+namespace TestEngine
+{
+
+GameState::GameState()
+{
+    int n;
+    for (n=0; n<=71; n++)
+        board[n] = '0';
+    board[72] = '\0';       // This make it easy to convert the board to a string.
+    for (n=0; n<=6; n++)
+        column_height[n] = 0;
+    number_of_moves = 0;
+}
+
+void GameState::reset()
 {
     int n;
     for (n=0; n<=71; n++)
@@ -10,27 +24,17 @@ TestGameState::TestGameState()
     number_of_moves = 0;
 }
 
-void TestGameState::reset()
-{
-    int n;
-    for (n=0; n<=71; n++)
-        board[n] = '0';
-    for (n=0; n<=6; n++)
-        column_height[n] = 0;
-    number_of_moves = 0;
-}
-
-char TestGameState::get_value(int column, int row) const
+char GameState::get_value(int column, int row) const
 {
     return board[10 + column + row * 9];
 }
 
-bool TestGameState::column_not_full(int column) const
+bool GameState::column_not_full(int column) const
 {
     return column_height[column] < 6;
 }
 
-void TestGameState::make_move(int column)
+void GameState::make_move(int column)
 {
     if (number_of_moves % 2 == 0)
         board[10 + column + column_height[column] * 9] = '1';
@@ -40,14 +44,14 @@ void TestGameState::make_move(int column)
     number_of_moves++;
 }
 
-void TestGameState::undo_move(int column)
+void GameState::undo_move(int column)
 {
     column_height[column]--;
     board[10 + column + column_height[column] * 9] = '0';
     number_of_moves--;
 }
 
-bool TestGameState::four_in_a_row(int column) const
+bool GameState::four_in_a_row(int column) const
 {
     int position = 1 + column + column_height[column] * 9;
     char player = board[position];
@@ -136,12 +140,18 @@ bool TestGameState::four_in_a_row(int column) const
     return false;
 }
 
-bool TestGameState::board_full() const
+bool GameState::board_full() const
 {
     return number_of_moves == 42;
 }
 
-int TestGameState::get_number_of_moves() const
+int GameState::get_number_of_moves() const
 {
     return number_of_moves;
+}
+
+std::string GameState::get_key() const
+{
+    return board;
+}
 }

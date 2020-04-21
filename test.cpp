@@ -209,136 +209,136 @@ void test_transposition_table()
     std::cout << tt.lower_bound_available(key) << std::endl;
 }
 
-void engine_vs_engine(Engine::EngineAPI& engine1, TestEngineAPI& engine2, int number_of_games,
+void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_engine, int number_of_games,
                 bool display_move_times)
-// Let engine1 and engine2 play against each other.
+// Let engine and test_engine play against each other.
 {
     using namespace Engine;
-    int engine1_wins = 0;
-    int engine2_wins = 0;
+    int engine_wins = 0;
+    int test_engine_wins = 0;
     int draws = 0;
-    bool engine1_begin = true;
+    bool engine_begin = true;
     int result;
 
-    bool engine1_to_play = engine1_begin;
+    bool engine_to_play = engine_begin;
     int move;
     std::chrono::steady_clock::time_point t0;
     std::chrono::steady_clock::time_point t1;
     std::chrono::steady_clock::duration move_time;
-    std::chrono::steady_clock::duration game_time_engine1 =
+    std::chrono::steady_clock::duration game_time_engine =
                  std::chrono::steady_clock::duration::zero();
-    std::chrono::steady_clock::duration game_time_engine2 =
+    std::chrono::steady_clock::duration game_time_test_engine =
                  std::chrono::steady_clock::duration::zero();
-    std::chrono::steady_clock::duration total_time_engine1 =
+    std::chrono::steady_clock::duration total_time_engine =
                  std::chrono::steady_clock::duration::zero();
-    std::chrono::steady_clock::duration total_time_engine2 =
+    std::chrono::steady_clock::duration total_time_test_engine =
                  std::chrono::steady_clock::duration::zero();
 
     for (int n=1; n<=number_of_games; n++)
     {
-        engine1.new_game();
-        engine2.new_game();
-        engine1_to_play = engine1_begin;
-        game_time_engine1 = std::chrono::steady_clock::duration::zero();
-        game_time_engine2 = std::chrono::steady_clock::duration::zero();
+        engine.new_game();
+        test_engine.new_game();
+        engine_to_play = engine_begin;
+        game_time_engine = std::chrono::steady_clock::duration::zero();
+        game_time_test_engine = std::chrono::steady_clock::duration::zero();
 
         while (true)
         {
-            if (engine1_to_play)
+            if (engine_to_play)
             {
                 t0 = std::chrono::steady_clock::now();
-                move = engine1.engine_move();
+                move = engine.engine_move();
                 t1 = std::chrono::steady_clock::now();
                 move_time = t1 - t0;
                 if (display_move_times)
                 {
-                    std::cout << "Engine1 made a move. It took "
+                    std::cout << "Engine made a move.      It took "
                     << std::chrono::duration_cast<std::chrono::microseconds>(move_time).count()
                     << " microseconds" << std::endl;
                 }
-                game_time_engine1 += move_time;
-                engine1.make_move(move);
-                engine2.make_move(move);
-                if (engine1.four_in_a_row(move))
+                game_time_engine += move_time;
+                engine.make_move(move);
+                test_engine.make_move(move);
+                if (engine.four_in_a_row(move))
                 {
-                    std::cout << "Engine1 win. Engine1 time: "
-                    << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_engine1).count()
-                    << " ms, Engine2 time: "
-                    << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_engine2).count()
+                    std::cout << std::endl << "Engine win. Engine time: "
+                    << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_engine).count()
+                    << " ms. Test engine time: "
+                    << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_test_engine).count()
                     << " ms" << std::endl;
-                    engine1_wins++;
-                    total_time_engine1 += game_time_engine1;
-                    total_time_engine2 += game_time_engine2;
+                    engine_wins++;
+                    total_time_engine += game_time_engine;
+                    total_time_test_engine += game_time_test_engine;
                     break;
                 }
-                if (engine1.board_full())
+                if (engine.board_full())
                 {
-                    std::cout << "Draw. Engine1 time: "
-                    << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_engine1).count()
-                    << " ms, Engine2 time: "
-                    << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_engine2).count()
+                    std::cout << std::endl << "Draw. Engine time: "
+                    << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_engine).count()
+                    << " ms. Test engine time: "
+                    << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_test_engine).count()
                     << " ms" << std::endl;
                     draws++;
-                    total_time_engine1 += game_time_engine1;
-                    total_time_engine2 += game_time_engine2;
+                    total_time_engine += game_time_engine;
+                    total_time_test_engine += game_time_test_engine;
                     break;
                 }
             }
             else
             {
                 t0 = std::chrono::steady_clock::now();
-                move = engine2.engine_move();
+                move = test_engine.engine_move();
                 t1 = std::chrono::steady_clock::now();
                 move_time = t1 - t0;
                 if (display_move_times)
                 {
-                    std::cout << "Engine2 made a move. It took "
+                    std::cout << "Test engine made a move. It took "
                     << std::chrono::duration_cast<std::chrono::microseconds>(move_time).count()
                     << " microseconds" << std::endl;
                 }
-                game_time_engine2 += move_time;
-                engine1.make_move(move);
-                engine2.make_move(move);
-                if (engine1.four_in_a_row(move))
+                game_time_test_engine += move_time;
+                engine.make_move(move);
+                test_engine.make_move(move);
+                if (engine.four_in_a_row(move))
                 {
-                    std::cout << "Engine2 win. Engine1 time: "
-                    << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_engine1).count()
-                    << " ms, Engine2 time: "
-                    << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_engine2).count()
+                    std::cout << std::endl << "Test engine win. Engine time: "
+                    << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_engine).count()
+                    << " ms. Test engine time: "
+                    << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_test_engine).count()
                     << " ms" << std::endl;
-                    engine2_wins++;
-                    total_time_engine1 += game_time_engine1;
-                    total_time_engine2 += game_time_engine2;
+                    test_engine_wins++;
+                    total_time_engine += game_time_engine;
+                    total_time_test_engine += game_time_test_engine;
                     break;
                 }
-                if (engine1.board_full())
+                if (engine.board_full())
                 {
-                    std::cout << "Draw. Engine1 time: "
-                    << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_engine1).count()
-                    << " ms, Engine2 time: "
-                    << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_engine2).count()
+                    std::cout << std::endl << "Draw. Engine time: "
+                    << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_engine).count()
+                    << " ms. Test_engine time: "
+                    << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_test_engine).count()
                     << " ms" << std::endl;
                     draws++;
-                    total_time_engine1 += game_time_engine1;
-                    total_time_engine2 += game_time_engine2;
+                    total_time_engine += game_time_engine;
+                    total_time_test_engine += game_time_test_engine;
                     break;
                 }
             }
-            engine1_to_play = not engine1_to_play;
+            engine_to_play = not engine_to_play;
         }
-
-        engine1_begin = not engine1_begin;
+        if (display_move_times) {std::cout << std::endl;}
+        engine_begin = not engine_begin;
     }
-
+    if (not display_move_times) {std::cout << std::endl;}
     std::cout << "Number of games: " << number_of_games << std::endl;
-    std::cout << "Engine 1 wins: " << engine1_wins << std::endl;
-    std::cout << "Engine 2 wins: " << engine2_wins << std::endl;
+    std::cout << "Engine wins: " << engine_wins << std::endl;
+    std::cout << "Test engine wins: " << test_engine_wins << std::endl;
     std::cout << "Draws: " << draws << std::endl;
-    std::cout << "Total Engine1 time: "
-              << std::chrono::duration_cast<std::chrono::milliseconds>(total_time_engine1).count()
+    std::cout << "Total Engine time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(total_time_engine).count()
               << " ms" << std::endl;
-    std::cout << "Total Engine2 time: "
-              << std::chrono::duration_cast<std::chrono::milliseconds>(total_time_engine2).count()
+    std::cout << "Total Test engine time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(total_time_test_engine).count()
               << " ms" << std::endl;
 }
 
@@ -346,17 +346,16 @@ int main()
 {
     std::srand(time(NULL)); // Initialize the random number generator.
 
-    //test_game_state();
-    //test_engine_API();
-    //test_transposition_table();
+//    test_game_state();
+//    test_engine_API();
+//    test_transposition_table();
 
-    Engine::EngineAPI engine1;
-    engine1.set_difficulty_level(3);
-    TestEngineAPI engine2;
-    engine2.set_difficulty_level(3);
+    Engine::EngineAPI engine;
+    engine.set_difficulty_level(3);
+    TestEngine::EngineAPI test_engine;
+    test_engine.set_difficulty_level(3);
 
-
-    engine_vs_engine(engine1, engine2, 10, false);
+    engine_vs_engine(engine, test_engine, 50, false);
 
     return 0;
 }
