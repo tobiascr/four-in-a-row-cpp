@@ -1,6 +1,8 @@
 #include <iostream>
 #include "engine_API.h"
 
+using namespace Engine;
+
 void print_board(EngineAPI& engine, bool o_make_first_move)
 {
     int row;

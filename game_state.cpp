@@ -1,5 +1,8 @@
 #include "game_state.h"
 
+namespace Engine
+{
+
 GameState::GameState()
 {
     int n;
@@ -150,4 +153,5 @@ int GameState::get_number_of_moves() const
 std::string GameState::get_key() const
 {
     return board;
+}
 }

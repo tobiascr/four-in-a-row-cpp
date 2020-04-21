@@ -3,6 +3,9 @@
 #include "engine_API.h"
 #include "game_state.h"
 
+namespace Engine
+{
+
 EngineAPI::EngineAPI()
 {
     std::srand(time(NULL)); // Initialize the random number generator.
@@ -163,4 +166,5 @@ int EngineAPI::engine_move_hard()
     if (columns == 5)
         return random_engine_move(12);
     return random_engine_move(8);
+}
 }

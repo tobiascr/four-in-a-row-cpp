@@ -8,11 +8,12 @@
 #include "test_engine_API.h"
 #include "transposition_table.h"
 
-void load_position(GameState& game_state, std::string move_string)
+void load_position(Engine::GameState& game_state, std::string move_string)
 /* Load a position to the given game_state object. A position is described
    as a string of moves ('0', '1', ..., '6'). For example move_string = "334".
    It gives the position that arises from first making move 3, then move 3 and then move 4. */
 {
+    using namespace Engine;
     game_state.reset();
     int n;
     for (n=0; n<move_string.length(); n++)
@@ -34,11 +35,12 @@ void load_position(GameState& game_state, std::string move_string)
     }
 }
 
-void load_position(EngineAPI& engine, std::string move_string)
+void load_position(Engine::EngineAPI& engine, std::string move_string)
 /* Load a position to the given EngineAPI object. A position is described
    as a string of moves ('0', '1', ..., '6'). For example move_string = "334".
    It gives the position that arises from first making move 3, then move 3 and then move 4. */
 {
+    using namespace Engine;
     engine.new_game();
     int n;
     for (n=0; n<move_string.length(); n++)
@@ -60,8 +62,9 @@ void load_position(EngineAPI& engine, std::string move_string)
     }
 }
 
-void print_board(GameState& game_state)
+void print_board(Engine::GameState& game_state)
 {
+    using namespace Engine;
     int row;
     int col;
     std::cout << std::endl;
@@ -74,8 +77,9 @@ void print_board(GameState& game_state)
     std::cout << std::endl;
 }
 
-void print_board(EngineAPI& engine)
+void print_board(Engine::EngineAPI& engine)
 {
+    using namespace Engine;
     int row;
     int col;
     std::cout << std::endl;
@@ -90,6 +94,7 @@ void print_board(EngineAPI& engine)
 
 void test_game_state()
 {
+    using namespace Engine;
     GameState game_state;
     print_board(game_state);
     game_state.make_move(0);
@@ -151,30 +156,9 @@ void test_game_state()
     std::cout << b;
 }
 
-//void test_engine()
-//{
-//    int move;
-//    int depth;
-//    GameState game_state;
-//    print_board(game_state);
-//    depth = 7;
-//    move = random_engine_move(game_state, depth);
-//    std::cout << move << std::endl;
-
-//    load_position(game_state, "3344");
-//    print_board(game_state);
-//    move = random_engine_move(game_state, depth);
-//    std::cout << move << std::endl;
-//    move = engine_move_easy(game_state);
-//    std::cout << move << std::endl;
-//    move = engine_move_medium(game_state);
-//    std::cout << move << std::endl;
-//    move = engine_move_hard(game_state);
-//    std::cout << move << std::endl;
-//}
-
 void test_engine_API()
 {
+    using namespace Engine;
     EngineAPI engine;
     std::cout << "engine_API test" << std::endl;
     engine.set_difficulty_level(3);
@@ -201,6 +185,7 @@ void test_engine_API()
 
 void test_transposition_table()
 {
+    using namespace Engine;
     TranspositionTable tt;
     tt.set_beta_cutuff_move("123", 1);
     std::cout << tt.beta_cutoff_move_available("123") << std::endl;
@@ -224,10 +209,11 @@ void test_transposition_table()
     std::cout << tt.lower_bound_available(key) << std::endl;
 }
 
-void engine_vs_engine(EngineAPI& engine1, TestEngineAPI& engine2, int number_of_games,
+void engine_vs_engine(Engine::EngineAPI& engine1, TestEngineAPI& engine2, int number_of_games,
                 bool display_move_times)
 // Let engine1 and engine2 play against each other.
 {
+    using namespace Engine;
     int engine1_wins = 0;
     int engine2_wins = 0;
     int draws = 0;
@@ -361,14 +347,14 @@ int main()
     std::srand(time(NULL)); // Initialize the random number generator.
 
     //test_game_state();
-    //test_engine();
     //test_engine_API();
     //test_transposition_table();
 
-    EngineAPI engine1;
+    Engine::EngineAPI engine1;
     engine1.set_difficulty_level(3);
     TestEngineAPI engine2;
     engine2.set_difficulty_level(3);
+
 
     engine_vs_engine(engine1, engine2, 10, false);
 

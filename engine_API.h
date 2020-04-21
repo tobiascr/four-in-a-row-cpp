@@ -3,6 +3,9 @@
 
 #include "game_state.h"
 
+namespace Engine
+{
+
 class EngineAPI
 {
 public:
@@ -32,7 +35,7 @@ public:
        of upmost disk in column.*/
 
 private:
-    GameState game_state;
+    Engine::GameState game_state;
     int difficulty_level_;
 
     int negamax(int last_move, int depth, int alpha, int beta);
@@ -54,5 +57,6 @@ private:
 
     int engine_move_hard();
 };
+}
 
 #endif

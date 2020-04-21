@@ -3,6 +3,9 @@
 
 #include <string>
 
+namespace Engine
+{
+
 /*  A board configuration is stored as a list of lengths 72. Empty positions are stored as '0'.
     The players are called '1' and '2', where '1' always make the first move.
 
@@ -59,5 +62,6 @@ private:
     int column_height[7];
     int number_of_moves;
 };
+}
 
 #endif
