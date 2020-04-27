@@ -34,6 +34,11 @@ bool GameState::column_not_full(int column) const
     return column_height[column] < 6;
 }
 
+int GameState::get_number_of_disks_in_column(int column) const
+{
+    return column_height[column];
+}
+
 void GameState::make_move(int column)
 {
     if (number_of_moves % 2 == 0)

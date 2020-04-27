@@ -42,6 +42,8 @@ public:
 
     bool column_not_full(int column) const;
 
+    int get_number_of_disks_in_column(int column) const;
+
     void make_move(int column);
 
     void undo_move(int column);

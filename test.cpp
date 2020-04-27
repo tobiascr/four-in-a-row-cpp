@@ -150,6 +150,15 @@ void test_game_state()
     std::cout << game_state.four_in_a_row(4) << std::endl;
     std::cout << game_state.four_in_a_row(5) << std::endl;
     std::cout << game_state.four_in_a_row(6) << std::endl;
+    std::cout << std::endl;
+    std::cout << "Test of get_number_of_disks_in_column:" << std::endl;
+    std::cout << game_state.get_number_of_disks_in_column(0) << std::endl;
+    std::cout << game_state.get_number_of_disks_in_column(1) << std::endl;
+    std::cout << game_state.get_number_of_disks_in_column(2) << std::endl;
+    std::cout << game_state.get_number_of_disks_in_column(3) << std::endl;
+    std::cout << game_state.get_number_of_disks_in_column(4) << std::endl;
+    std::cout << game_state.get_number_of_disks_in_column(5) << std::endl;
+    std::cout << game_state.get_number_of_disks_in_column(6) << std::endl;
 
     std::string b;
     b = game_state.get_key();
@@ -181,6 +190,22 @@ void test_engine_API()
     load_position(engine, "334455");
     print_board(engine);
     std::cout << "Engine move: " << engine.engine_move() << std::endl;
+//    std::cout << engine.heuristic_value(0) << std::endl;
+//    std::cout << engine.heuristic_value(1) << std::endl;
+//    std::cout << engine.heuristic_value(2) << std::endl;
+//    std::cout << engine.heuristic_value(3) << std::endl;
+//    std::cout << engine.heuristic_value(4) << std::endl;
+//    std::cout << engine.heuristic_value(5) << std::endl;
+//    std::cout << engine.heuristic_value(6) << std::endl;
+//    load_position(engine, "000000111113334456666");
+//    print_board(engine);
+//    std::cout << engine.heuristic_value(0) << std::endl;
+//    std::cout << engine.heuristic_value(1) << std::endl;
+//    std::cout << engine.heuristic_value(2) << std::endl;
+//    std::cout << engine.heuristic_value(3) << std::endl;
+//    std::cout << engine.heuristic_value(4) << std::endl;
+//    std::cout << engine.heuristic_value(5) << std::endl;
+//    std::cout << engine.heuristic_value(6) << std::endl;
 }
 
 void test_transposition_table()
@@ -355,7 +380,7 @@ int main()
     TestEngine::EngineAPI test_engine;
     test_engine.set_difficulty_level(3);
 
-    engine_vs_engine(engine, test_engine, 50, false);
+    engine_vs_engine(engine, test_engine, 200, false);
 
     return 0;
 }

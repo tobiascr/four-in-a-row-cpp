@@ -1,6 +1,9 @@
 #ifndef ENGINE_API_H
 #define ENGINE_API_H
 
+#include <array>
+#include <random>
+#include <algorithm>
 #include "game_state.h"
 
 namespace Engine
@@ -37,6 +40,15 @@ public:
 private:
     Engine::GameState game_state;
     int difficulty_level_;
+
+    std::default_random_engine random_generator;
+
+    int heuristic_value(int move);
+
+    std::array<int,7> move_order();
+    /* Return a suggested move order for a root negamax search based on a heuristic evaluation
+       of the current game state. There is some randomness included in the move ordering
+       for moves that are estimated to be equally strong.*/
 
     int negamax(int last_move, int depth, int alpha, int beta);
     /* Compute a value of game_state. Return a positive integer for a winning game_state for

@@ -1,5 +1,6 @@
-#include <stdlib.h>
-#include <time.h>
+#include <array>
+#include <random>
+#include <iostream>
 #include "test_engine_API.h"
 #include "test_game_state.h"
 
@@ -8,7 +9,10 @@ namespace TestEngine
 
 EngineAPI::EngineAPI()
 {
-    std::srand(time(NULL)); // Initialize the random number generator.
+    // Initialize the random number generator.
+    std::random_device rd;
+    random_generator.seed(rd());
+
     difficulty_level_ = 2;
 }
 
@@ -56,6 +60,63 @@ char EngineAPI::get_value(int column, int row)
 bool EngineAPI::four_in_a_row(int column)
 {
     return game_state.four_in_a_row(column);
+}
+
+int EngineAPI::heuristic_value(int move)
+{
+    /*Give a heuristic evaluation in form of a number of how good it would be to make
+    the given move to the current game state. The value is higher the better the move.
+    Central positions are given higher values. If the move is not legal, the value is 0.
+    */
+    if (not game_state.column_not_full(move)) {return 0;}
+    int row = game_state.get_number_of_disks_in_column(move);
+    int values[6][7] =
+        {{0, 0, 0, 0, 0, 0, 0},
+         {0, 0, 1, 1, 1, 0, 0},
+         {0, 1, 1, 1, 1, 1, 0},
+         {0, 1, 1, 1, 1, 1, 0},
+         {0, 0, 1, 1, 1, 0, 0},
+         {0, 0, 0, 0, 0, 0, 0}};
+    return values[row][move];
+}
+
+std::array<int,7> EngineAPI::move_order()
+{
+    std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
+    std::uniform_int_distribution<> uid(1, 2);
+
+    // Adding some randomness to the move order.
+    if (uid(random_generator) == 1)
+    {
+        moves[1] = 4;
+        moves[2] = 2;
+    }
+
+    //shuffle (moves.begin(), moves.end(), random_generator);
+
+    std::array<int,7> sorted_moves;
+
+    int i=0;
+    for (int n=0; n<=6; n++)
+    {
+        if (heuristic_value(moves[n]) == 1)
+        {
+            sorted_moves[i] = moves[n];
+            i++;
+        }
+    }
+    for (int n=0; n<=6; n++)
+    {
+        if (heuristic_value(moves[n]) == 0)
+        {
+            sorted_moves[i] = moves[n];
+            i++;
+        }
+    }
+
+    //for (int n=0; n<=6; n++) {std::cout << sorted_moves[n] << " ";} std::cout << std::endl;
+
+    return sorted_moves;
 }
 
 int EngineAPI::negamax(int last_move, int depth, int alpha, int beta)
@@ -108,17 +169,10 @@ int EngineAPI::random_engine_move(int depth)
     int new_value;
     int best_move;
     int move;
-    int random_number = std::rand();
     int alpha = -10000;
     int beta = 10000;
-    int moves[7] = {3, 2, 4, 1, 5, 0, 6};
 
-    // Adding some randomness to the move order.
-    if (random_number % 2 == 0)
-    {
-        moves[1] = 4;
-        moves[2] = 2;
-    }
+    std::array<int,7> moves = move_order();
 
     for (int n=0; n<=6; n++)
     {
@@ -127,10 +181,12 @@ int EngineAPI::random_engine_move(int depth)
         {
             game_state.make_move(move);
             new_value = -negamax(move, depth, -beta, -alpha);
+            //std::cout << "new_value: " << new_value << std::endl;
             if (new_value > alpha)
             {
                 alpha = new_value;
                 best_move = move;
+                //std::cout << "move: " << move << std::endl;
             }
             game_state.undo_move(move);
         }
