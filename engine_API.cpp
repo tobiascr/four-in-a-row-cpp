@@ -121,7 +121,6 @@ std::array<int,7> EngineAPI::move_order()
 
 int EngineAPI::negamax(int last_move, int depth, int alpha, int beta)
 {
-    int first_move = 3;
     int move;
     int value;
 
