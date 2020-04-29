@@ -1,6 +1,7 @@
 #include <array>
 #include <random>
 #include <iostream>
+#include <algorithm>
 #include "engine_API.h"
 #include "game_state.h"
 
@@ -83,16 +84,9 @@ int EngineAPI::heuristic_value(int move)
 std::array<int,7> EngineAPI::move_order()
 {
     std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
-    std::uniform_int_distribution<> uid(1, 2);
 
-    // Adding some randomness to the move order.
-    if (uid(random_generator) == 1)
-    {
-        moves[1] = 4;
-        moves[2] = 2;
-    }
-
-    //shuffle (moves.begin(), moves.end(), random_generator);
+    // Adding randomness to the move order.
+    shuffle (moves.begin(), moves.end(), random_generator);
 
     std::array<int,7> sorted_moves;
 
@@ -113,8 +107,6 @@ std::array<int,7> EngineAPI::move_order()
             i++;
         }
     }
-
-    //for (int n=0; n<=6; n++) {std::cout << sorted_moves[n] << " ";} std::cout << std::endl;
 
     return sorted_moves;
 }
@@ -206,6 +198,12 @@ int EngineAPI::engine_move_medium()
 
 int EngineAPI::engine_move_hard()
 {
+    // Some opening moves.
+    if (game_state.get_number_of_moves() <= 2)
+    {
+        return 3;
+    }
+
     // Find the number of columns that are not full.
     int columns = 0;
     for (int i=0; i<=6; i++)

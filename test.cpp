@@ -6,7 +6,6 @@
 #include "game_state.h"
 #include "engine_API.h"
 #include "test_engine_API.h"
-#include "transposition_table.h"
 
 void load_position(Engine::GameState& game_state, std::string move_string)
 /* Load a position to the given game_state object. A position is described
@@ -210,28 +209,28 @@ void test_engine_API()
 
 void test_transposition_table()
 {
-    using namespace Engine;
-    TranspositionTable tt;
-    tt.set_beta_cutuff_move("123", 1);
-    std::cout << tt.beta_cutoff_move_available("123") << std::endl;
-    std::cout << tt.beta_cutoff_move_available("1234") << std::endl;
-    std::cout << tt.get_beta_cutoff_move("123") << std::endl;
-    tt.set_lower_bound("111222", 20);
-    std::cout << tt.lower_bound_available("111222") << std::endl;
-    std::cout << tt.lower_bound_available("1234") << std::endl;
-    std::cout << tt.get_lower_bound("111222") << std::endl;
+//    using namespace Engine;
+//    TranspositionTable tt;
+//    tt.set_beta_cutuff_move("123", 1);
+//    std::cout << tt.beta_cutoff_move_available("123") << std::endl;
+//    std::cout << tt.beta_cutoff_move_available("1234") << std::endl;
+//    std::cout << tt.get_beta_cutoff_move("123") << std::endl;
+//    tt.set_lower_bound("111222", 20);
+//    std::cout << tt.lower_bound_available("111222") << std::endl;
+//    std::cout << tt.lower_bound_available("1234") << std::endl;
+//    std::cout << tt.get_lower_bound("111222") << std::endl;
 
-    GameState game_state;
-    load_position(game_state, "01231234233");
-    std::string key;
-    key = game_state.get_key();
-    tt.set_lower_bound(key, 1000);
-    std::cout << tt.lower_bound_available(key) << std::endl;
-    std::cout << tt.get_lower_bound(key) << std::endl;
-    tt.reset();
-    std::cout << tt.lower_bound_available("123") << std::endl;
-    std::cout << tt.lower_bound_available("111222") << std::endl;
-    std::cout << tt.lower_bound_available(key) << std::endl;
+//    GameState game_state;
+//    load_position(game_state, "01231234233");
+//    std::string key;
+//    key = game_state.get_key();
+//    tt.set_lower_bound(key, 1000);
+//    std::cout << tt.lower_bound_available(key) << std::endl;
+//    std::cout << tt.get_lower_bound(key) << std::endl;
+//    tt.reset();
+//    std::cout << tt.lower_bound_available("123") << std::endl;
+//    std::cout << tt.lower_bound_available("111222") << std::endl;
+//    std::cout << tt.lower_bound_available(key) << std::endl;
 }
 
 void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_engine, int number_of_games,
@@ -266,6 +265,7 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
         engine_to_play = engine_begin;
         game_time_engine = std::chrono::steady_clock::duration::zero();
         game_time_test_engine = std::chrono::steady_clock::duration::zero();
+        std::cout << std::endl << "Game " << n << ":" << std::endl;
 
         while (true)
         {
@@ -286,7 +286,7 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                 test_engine.make_move(move);
                 if (engine.four_in_a_row(move))
                 {
-                    std::cout << std::endl << "Engine win. Engine time: "
+                    std::cout << "Engine win. Engine time: "
                     << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_engine).count()
                     << " ms. Test engine time: "
                     << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_test_engine).count()
@@ -298,7 +298,7 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                 }
                 if (engine.board_full())
                 {
-                    std::cout << std::endl << "Draw. Engine time: "
+                    std::cout << "Draw. Engine time: "
                     << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_engine).count()
                     << " ms. Test engine time: "
                     << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_test_engine).count()
@@ -326,7 +326,7 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                 test_engine.make_move(move);
                 if (engine.four_in_a_row(move))
                 {
-                    std::cout << std::endl << "Test engine win. Engine time: "
+                    std::cout << "Test engine win. Engine time: "
                     << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_engine).count()
                     << " ms. Test engine time: "
                     << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_test_engine).count()
@@ -338,7 +338,7 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                 }
                 if (engine.board_full())
                 {
-                    std::cout << std::endl << "Draw. Engine time: "
+                    std::cout << "Draw. Engine time: "
                     << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_engine).count()
                     << " ms. Test_engine time: "
                     << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_test_engine).count()
@@ -373,14 +373,13 @@ int main()
 
 //    test_game_state();
 //    test_engine_API();
-//    test_transposition_table();
 
     Engine::EngineAPI engine;
     engine.set_difficulty_level(3);
     TestEngine::EngineAPI test_engine;
     test_engine.set_difficulty_level(3);
 
-    engine_vs_engine(engine, test_engine, 200, false);
+    engine_vs_engine(engine, test_engine, 1000, false);
 
     return 0;
 }
