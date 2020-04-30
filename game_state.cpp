@@ -9,6 +9,8 @@ GameState::GameState()
     for (n=0; n<=71; n++)
         board[n] = '0';
     board[72] = '\0';       // This make it easy to convert the board to a string.
+    bitboard_1 = 0;
+    bitboard_2 = 0;
     for (n=0; n<=6; n++)
         column_height[n] = 0;
     number_of_moves = 0;
@@ -19,6 +21,8 @@ void GameState::reset()
     int n;
     for (n=0; n<=71; n++)
         board[n] = '0';
+    bitboard_1 = 0;
+    bitboard_2 = 0;
     for (n=0; n<=6; n++)
         column_height[n] = 0;
     number_of_moves = 0;

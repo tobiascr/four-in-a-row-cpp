@@ -172,12 +172,10 @@ int EngineAPI::random_engine_move(int depth)
         {
             game_state.make_move(move);
             new_value = -negamax(move, depth, -beta, -alpha);
-            //std::cout << "new_value: " << new_value << std::endl;
             if (new_value > alpha)
             {
                 alpha = new_value;
                 best_move = move;
-                //std::cout << "move: " << move << std::endl;
             }
             game_state.undo_move(move);
         }
@@ -199,25 +197,27 @@ int EngineAPI::engine_move_medium()
 int EngineAPI::engine_move_hard()
 {
     // Some opening moves.
-    if (game_state.get_number_of_moves() <= 2)
-    {
-        return 3;
-    }
+    if (game_state.get_number_of_moves() <= 2) {return 3;}
 
     // Find the number of columns that are not full.
-    int columns = 0;
+    int columns_not_full = 0;
     for (int i=0; i<=6; i++)
     {
         if (game_state.column_not_full(i))
-            columns++;
+            columns_not_full++;
     }
 
-    if (columns < 4)
-        return random_engine_move(30);
-    if (columns == 4)
-        return random_engine_move(16);
-    if (columns == 5)
-        return random_engine_move(12);
-    return random_engine_move(8);
+    if (columns_not_full < 4) {return random_engine_move(20);}
+    if (columns_not_full == 4) {return random_engine_move(18);}
+    if (columns_not_full == 5) {return random_engine_move(14);}
+    if (columns_not_full == 6) {return random_engine_move(11);}
+    if (game_state.get_number_of_moves() <= 8)
+    {
+        return random_engine_move(7);
+    }
+    else
+    {
+        return random_engine_move(9);
+    }
 }
 }

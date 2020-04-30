@@ -1,4 +1,5 @@
 FLAGS=-O3
+
 game_objects=four_in_a_row_command_line.o game_state.o engine_API.o
 test_objects=test.o game_state.o engine_API.o test_game_state.o \
              test_engine_API.o
