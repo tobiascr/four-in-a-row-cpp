@@ -132,7 +132,7 @@ int EngineAPI::negamax(int last_move, int depth, int alpha, int beta)
     }
 
     // Move order.
-    int moves[7] = {3, 2, 4, 1, 5, 0, 6};
+    const int moves[7] = {3, 2, 4, 1, 5, 0, 6};
 
     for (int i=0; i<=6; i++)
     {

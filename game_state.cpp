@@ -5,32 +5,36 @@ namespace Engine
 
 GameState::GameState()
 {
-    int n;
-    for (n=0; n<=71; n++)
-        board[n] = '0';
-    board[72] = '\0';       // This make it easy to convert the board to a string.
     bitboard_1 = 0;
     bitboard_2 = 0;
-    for (n=0; n<=6; n++)
+    for (int n=0; n<=6; n++)
         column_height[n] = 0;
     number_of_moves = 0;
+    player_1_in_turn = true;
 }
 
 void GameState::reset()
 {
-    int n;
-    for (n=0; n<=71; n++)
-        board[n] = '0';
     bitboard_1 = 0;
     bitboard_2 = 0;
-    for (n=0; n<=6; n++)
+    for (int n=0; n<=6; n++)
         column_height[n] = 0;
     number_of_moves = 0;
+    player_1_in_turn = true;
 }
 
 char GameState::get_value(int column, int row) const
 {
-    return board[10 + column + row * 9];
+    const uint64_t a = 1;
+    if ((bitboard_1 >> (column * 7 + row)) & a == 1)
+    {
+        return '1';
+    }
+    if ((bitboard_2 >> (column * 7 + row)) & a == 1)
+    {
+        return '2';
+    }
+    return '0';
 }
 
 bool GameState::column_not_full(int column) const
@@ -45,106 +49,66 @@ int GameState::get_number_of_disks_in_column(int column) const
 
 void GameState::make_move(int column)
 {
-    if (number_of_moves % 2 == 0)
-        board[10 + column + column_height[column] * 9] = '1';
+    uint64_t a = 1;
+    a <<= column * 7 + column_height[column];
+    if (player_1_in_turn)
+    {
+        bitboard_1 |= a;
+    }
     else
-        board[10 + column + column_height[column] * 9] = '2';
+    {
+        bitboard_2 |= a;
+    }
+
     column_height[column]++;
     number_of_moves++;
+    player_1_in_turn = not player_1_in_turn;
 }
 
 void GameState::undo_move(int column)
 {
     column_height[column]--;
-    board[10 + column + column_height[column] * 9] = '0';
     number_of_moves--;
+    player_1_in_turn = not player_1_in_turn;
+    uint64_t a = 1;
+    a <<= column * 7 + column_height[column];
+    if (player_1_in_turn)
+    {
+        bitboard_1 &= ~a;
+    }
+    else
+    {
+        bitboard_2 &= ~a;
+    }
 }
 
 bool GameState::four_in_a_row(int column) const
 {
-    int position = 1 + column + column_height[column] * 9;
-    char player = board[position];
-
-    // Columns
-    if (position / 9 >= 4)
-        if (board[position - 9] == player)
-            if (board[position - 18] == player)
-                if (board[position - 27] == player)
-                    return true;
-
-    // Rows
-    int in_row = 1;
-    if (board[position - 1] == player)
+    uint64_t a;
+    uint64_t bitboard;
+    if (player_1_in_turn)
     {
-        in_row++;
-        if (board[position - 2] == player)
-        {
-            in_row++;
-            if (board[position - 3] == player)
-                in_row++;
-        }
+        bitboard = bitboard_2;
     }
-    if (board[position + 1] == player)
+    else
     {
-        in_row ++;
-        if (board[position + 2] == player)
-        {
-            in_row++;
-            if (board[position + 3] == player)
-                in_row++;
-        }
+        bitboard = bitboard_1;
     }
-    if (in_row >= 4)
-        return true;
 
     // Diagonals
-    in_row = 1;
-    if (board[position - 10] == player)
-    {
-        in_row++;
-        if (board[position - 20] == player)
-        {
-            in_row++;
-            if (board[position - 30] == player)
-                in_row++;
-        }
-    }
-    if (board[position + 10] == player)
-    {
-        in_row ++;
-        if (board[position + 20] == player)
-        {
-            in_row++;
-            if (board[position + 30] == player)
-                in_row++;
-        }
-    }
-    if (in_row >= 4)
-        return true;
+    a = (bitboard << 6) & bitboard;
+    if (a & (a << 12)) {return true;}
 
-    in_row = 1;
-    if (board[position - 8] == player)
-    {
-        in_row++;
-        if (board[position - 16] == player)
-        {
-            in_row++;
-            if (board[position - 24] == player)
-                in_row++;
-        }
-    }
-    if (board[position + 8] == player)
-    {
-        in_row ++;
-        if (board[position + 16] == player)
-        {
-            in_row++;
-            if (board[position + 24] == player)
-                in_row++;
-        }
-    }
-    if (in_row >= 4)
-        return true;
+    a = (bitboard << 8) & bitboard;
+    if (a & (a << 16)) {return true;}
+
+    // Columns
+    a = (bitboard << 1) & bitboard;
+    if (a & (a << 2)) {return true;}
+
+    // Rows
+    a = (bitboard << 7) & bitboard;
+    if (a & (a << 14)) {return true;}
 
     return false;
 }
@@ -161,6 +125,6 @@ int GameState::get_number_of_moves() const
 
 std::string GameState::get_key() const
 {
-    return board;
+    return "0123";
 }
 }
