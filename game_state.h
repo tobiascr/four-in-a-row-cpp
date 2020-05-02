@@ -41,7 +41,7 @@ public:
     // Return a unique key that corresponds to the current game state.
 
 private:
-    /* The places where disks are positioned on the board is stored in bitboards include
+    /* The places where disks are positioned on the board is stored in bitboards
     in the form of 64 bit integers. Each player have one bitboard.
 
     .  .  .  .  .  .  . . . .
@@ -54,7 +54,8 @@ private:
 
     The diagram shows how the bits on the bitboards that corresponds to positions the board.
     The first bit is the lowest position to the left. The 48:th bit is the highest position
-    to the right.
+    to the right. If there is a disk at a position it's bit is 1. If not it's value is 0.
+    All bits not corresponding to positions are 0.
 
     Using some shifting techniques it's possible to quickly find four in a rows.
     */
