@@ -52,9 +52,11 @@ private:
     1  8 15 22 29 36 43 . . . .
     0  7 14 21 28 35 42 . . . .
 
-    The diagram shows how the bits on the bitboards that corresponds to positions the board.
-    The first bit is the lowest position to the left. The 48:th bit is the highest position
-    to the right. If there is a disk at a position it's bit is 1. If not it's value is 0.
+    The diagram shows how the bits on the bitboards that corresponds to positions
+    on the board. The first bit is the lowest position to the left. The 48:th bit is
+    the highest position to the right.
+
+    If there is a disk at a position it's bit is 1. If not it's value is 0.
     All bits not corresponding to positions are 0.
 
     Using some shifting techniques it's possible to quickly find four in a rows.
