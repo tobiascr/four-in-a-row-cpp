@@ -44,13 +44,13 @@ private:
     /* The places where disks are positioned on the board is stored in bitboards
     in the form of 64 bit integers. Each player have one bitboard.
 
-    .  .  .  .  .  .  . . . .
-    5 12 19 26 33 40 47 . . .
-    4 11 18 25 32 39 46 . . .
-    3 10 17 24 31 38 45 . . .
-    2  9 16 23 30 37 44 . . . .
-    1  8 15 22 29 36 43 . . . .
-    0  7 14 21 28 35 42 . . . .
+    .  .  .  .  .  .  . . .
+    5 12 19 26 33 40 47 . .
+    4 11 18 25 32 39 46 . .
+    3 10 17 24 31 38 45 . .
+    2  9 16 23 30 37 44 . .
+    1  8 15 22 29 36 43 . .
+    0  7 14 21 28 35 42 . . .
 
     The diagram shows how the bits on the bitboards that corresponds to positions
     on the board. The first bit is the lowest position to the left. The 48:th bit is

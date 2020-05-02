@@ -86,6 +86,7 @@ bool GameState::four_in_a_row(int column) const
 {
     uint64_t a;
     uint64_t bitboard;
+
     if (player_1_in_turn)
     {
         bitboard = bitboard_2;
