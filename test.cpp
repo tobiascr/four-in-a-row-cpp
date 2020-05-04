@@ -123,32 +123,32 @@ void test_game_state()
 
     load_position(game_state, "010203");
     print_board(game_state);
-    std::cout << game_state.four_in_a_row(0) << std::endl;
+    std::cout << game_state.four_in_a_row() << std::endl;
     load_position(game_state, "0102030");
     print_board(game_state);
-    std::cout << game_state.four_in_a_row(0) << std::endl;
+    std::cout << game_state.four_in_a_row() << std::endl;
     load_position(game_state, "01020364");
     print_board(game_state);
-    std::cout << game_state.four_in_a_row(2) << std::endl;
-    std::cout << game_state.four_in_a_row(3) << std::endl;
-    std::cout << game_state.four_in_a_row(0) << std::endl;
-    std::cout << game_state.four_in_a_row(6) << std::endl;
+    std::cout << game_state.four_in_a_row() << std::endl;
+    std::cout << game_state.four_in_a_row() << std::endl;
+    std::cout << game_state.four_in_a_row() << std::endl;
+    std::cout << game_state.four_in_a_row() << std::endl;
 
     load_position(game_state, "01231234233");
     print_board(game_state);
-    std::cout << game_state.four_in_a_row(0) << std::endl;
-    std::cout << game_state.four_in_a_row(1) << std::endl;
-    std::cout << game_state.four_in_a_row(2) << std::endl;
-    std::cout << game_state.four_in_a_row(3) << std::endl;
-    std::cout << game_state.four_in_a_row(4) << std::endl;
+    std::cout << game_state.four_in_a_row() << std::endl;
+    std::cout << game_state.four_in_a_row() << std::endl;
+    std::cout << game_state.four_in_a_row() << std::endl;
+    std::cout << game_state.four_in_a_row() << std::endl;
+    std::cout << game_state.four_in_a_row() << std::endl;
 
     load_position(game_state, "65435430433");
     print_board(game_state);
-    std::cout << game_state.four_in_a_row(0) << std::endl;
-    std::cout << game_state.four_in_a_row(3) << std::endl;
-    std::cout << game_state.four_in_a_row(4) << std::endl;
-    std::cout << game_state.four_in_a_row(5) << std::endl;
-    std::cout << game_state.four_in_a_row(6) << std::endl;
+    std::cout << game_state.four_in_a_row() << std::endl;
+    std::cout << game_state.four_in_a_row() << std::endl;
+    std::cout << game_state.four_in_a_row() << std::endl;
+    std::cout << game_state.four_in_a_row() << std::endl;
+    std::cout << game_state.four_in_a_row() << std::endl;
     std::cout << std::endl;
     std::cout << "Test of get_number_of_disks_in_column:" << std::endl;
     std::cout << game_state.get_number_of_disks_in_column(0) << std::endl;
@@ -173,7 +173,7 @@ void test_engine_API()
     print_board(engine);
     load_position(engine, "334");
     print_board(engine);
-    std::cout << "Four in a row: " << engine.four_in_a_row(4) << std::endl;
+    std::cout << "Four in a row: " << engine.four_in_a_row() << std::endl;
     std::cout << "Board full: " << engine.board_full() << std::endl;
     std::cout << "Legal move 4: " << engine.legal_move(4) << std::endl;
     load_position(engine, "000111222333444555666000111222333444555666");
@@ -182,7 +182,7 @@ void test_engine_API()
     std::cout << "Board full: " << engine.board_full() << std::endl;
     load_position(engine, "01231234233");
     print_board(engine);
-    std::cout << "Four in a row: " << engine.four_in_a_row(0) << std::endl;
+    std::cout << "Four in a row: " << engine.four_in_a_row() << std::endl;
     load_position(engine, "3344");
     print_board(engine);
     std::cout << "Engine move: " << engine.engine_move() << std::endl;
@@ -284,7 +284,7 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                 game_time_engine += move_time;
                 engine.make_move(move);
                 test_engine.make_move(move);
-                if (engine.four_in_a_row(move))
+                if (engine.four_in_a_row())
                 {
                     std::cout << "Engine win. Engine time: "
                     << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_engine).count()
@@ -324,7 +324,7 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                 game_time_test_engine += move_time;
                 engine.make_move(move);
                 test_engine.make_move(move);
-                if (engine.four_in_a_row(move))
+                if (engine.four_in_a_row())
                 {
                     std::cout << "Test engine win. Engine time: "
                     << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_engine).count()
@@ -379,7 +379,7 @@ int main()
     TestEngine::EngineAPI test_engine;
     test_engine.set_difficulty_level(3);
 
-    engine_vs_engine(engine, test_engine, 100, false);
+    engine_vs_engine(engine, test_engine, 200, false);
 
     return 0;
 }

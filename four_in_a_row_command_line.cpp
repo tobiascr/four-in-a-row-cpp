@@ -122,7 +122,7 @@ int main()
         }
 
         // If four in a row.
-        if (engine.four_in_a_row(move))
+        if (engine.four_in_a_row())
         {
             game_over = true;
             print_board(engine, player_make_first_move);

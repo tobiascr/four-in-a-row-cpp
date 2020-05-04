@@ -74,11 +74,11 @@ void GameState::undo_move(int column)
     a <<= column * 7 + column_height[column];
     if (player_1_in_turn)
     {
-        bitboard_1 &= ~a;
+        bitboard_1 ^= a;
     }
     else
     {
-        bitboard_2 &= ~a;
+        bitboard_2 ^= a;
     }
 }
 
@@ -95,6 +95,10 @@ bool GameState::four_in_a_row(int column) const
     {
         bitboard = bitboard_1;
     }
+
+    // Looking for four in a rows is done in two steps. The first step produces
+    // a bitboard with a three in a row if there is a four in a row. The second step
+    // checks if there exist points that are two steps distant from each other.
 
     // Diagonals
     a = (bitboard << 6) & bitboard;

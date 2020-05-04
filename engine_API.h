@@ -33,9 +33,7 @@ public:
        '1' represents the player making the first move, '2' the player making
        second move and '0' that the position is empty.*/
 
-    bool four_in_a_row(int column);
-    /* True iff there is a four in a row that goes through the position
-       of upmost disk in column.*/
+    bool four_in_a_row();
 
 private:
     Engine::GameState game_state;
@@ -43,18 +41,19 @@ private:
 
     std::default_random_engine random_generator;
 
-    int heuristic_value(int move);
+    int heuristic_value(int move) const;
 
     std::array<int,7> move_order();
     /* Return a suggested move order for a root negamax search based on a heuristic evaluation
        of the current game state. There is some randomness included in the move ordering
        for moves that are estimated to be equally strong.*/
 
-    int negamax(int last_move, int depth, int alpha, int beta);
+    bool can_win_this_move();
+
+    int negamax(int depth, int alpha, int beta);
     /* Compute a value of game_state. Return a positive integer for a winning game_state for
        the player in turn, 0 for a draw and a negative integer for a loss. A win or loss in_row
-       fewer moves gives a higher score in absolute value. last_move is the last position
-       where a move has been made to.
+       fewer moves gives a higher score in absolute value.
     */
 
     int random_engine_move(int depth);

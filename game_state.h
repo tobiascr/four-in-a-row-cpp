@@ -29,15 +29,13 @@ public:
 
     void undo_move(int column);
 
-    bool four_in_a_row(int column) const;
-    /* True iff there is a four in a row that goes through the position
-       of upmost disk in column.*/
+    bool four_in_a_row() const;
 
     bool board_full() const;
 
     int get_number_of_moves() const;
 
-    std::string get_key() const;
+    uint64_t get_key() const;
     // Return a unique key that corresponds to the current game state.
 
 private:
