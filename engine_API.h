@@ -39,8 +39,8 @@ private:
     Engine::GameState game_state;
     int difficulty_level_;
 
-    std::default_random_engine random_generator;
-
+    std::mt19937 random_generator;
+ 
     int heuristic_value(int move) const;
 
     std::array<int,7> move_order();

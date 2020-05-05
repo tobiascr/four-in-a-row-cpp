@@ -39,7 +39,7 @@ private:
     TestEngine::GameState game_state;
     int difficulty_level_;
 
-    std::default_random_engine random_generator;
+    std::mt19937 random_generator;
 
     int heuristic_value(int move) const;
 
@@ -50,16 +50,21 @@ private:
 
     bool can_win_this_move();
 
-    int negamax(int depth, int alpha, int beta);
+    int negamax(const int depth, int alpha, int beta);
     /* Compute a value of game_state. Return a positive integer for a winning game_state for
-       the player in turn, 0 for a draw and a negative integer for a loss. A win or loss in_row
-       fewer moves gives a higher score in absolute value.
+       the player in turn, 0 for a draw or unknown outcome and a negative integer for a loss.
+       A win at move 42 give the score 1, a win at move 41 give a the score 2 etc,
+       and vice versa for losses.
+       Depth is counted as the move number at which the search is stopped. For example,
+       depth=42 give a maximum depth search. This function can only be used on if the game state
+       have no four in a row.
     */
 
-    int random_engine_move(int depth);
+    int random_engine_move(const int depth);
     /* Return an integer from 0 to 6 that represents a best move made by the engine
        at the given depth level. If there are several equally good moves, one of them
-       is chosen randomly.
+       is chosen randomly. Depth is counted as the move number at which the search is stopped.
+       For example, depth=42 give a maximum depth search.
     */
 
     int engine_move_easy();
@@ -68,7 +73,6 @@ private:
 
     int engine_move_hard();
 };
-
 }
 
 #endif

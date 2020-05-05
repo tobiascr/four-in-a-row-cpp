@@ -13,6 +13,7 @@ EngineAPI::EngineAPI()
     // Initialize the random number generator.
     std::random_device rd;
     random_generator.seed(rd());
+    //random_generator.seed(123451234);
 
     difficulty_level_ = 2;
 }
@@ -127,31 +128,20 @@ bool EngineAPI::can_win_this_move()
     return false;
 }
 
-int EngineAPI::negamax(int depth, int alpha, int beta)
+int EngineAPI::negamax(const int depth, int alpha, int beta)
 {
     int move;
     int value;
-
-    if (game_state.four_in_a_row())
-    {
-        //return -1;
-        return -43 + game_state.get_number_of_moves();
-    }
-
-    if (game_state.board_full())
-    {
-        return 0;
-    }
-
-    if (depth == 0)
-    {
-        return 0;
-    }
 
     if (can_win_this_move())
     {
         //return 1;
         return 42 - game_state.get_number_of_moves();
+    }
+
+    if (game_state.get_number_of_moves() == depth - 1)
+    {
+        return 0;
     }
 
     //uint64_t key = game_state.get_key();
@@ -165,7 +155,7 @@ int EngineAPI::negamax(int depth, int alpha, int beta)
         if (game_state.column_not_full(move))
         {
             game_state.make_move(move);
-            value = -negamax(depth - 1, -beta, -alpha);
+            value = -negamax(depth, -beta, -alpha);
             game_state.undo_move(move);
             if (value >= beta) // Fail hard beta-cutoff.
             {
@@ -180,15 +170,29 @@ int EngineAPI::negamax(int depth, int alpha, int beta)
     return alpha;
 }
 
-int EngineAPI::random_engine_move(int depth)
+int EngineAPI::random_engine_move(const int depth)
 {
     int new_value;
     int best_move;
     int move;
-    int alpha = -10000;
-    int beta = 10000;
+    int alpha = -1000;
+    int beta = 1000;
+    int result;
 
     std::array<int,7> moves = move_order();
+
+    // Look for a move that makes a four in a row.
+    for (int n=0; n<=6; n++)
+    {
+        move = moves[n];
+        if (game_state.column_not_full(move))
+        {
+            game_state.make_move(move);
+            result = game_state.four_in_a_row();
+            game_state.undo_move(move);
+            if (result) {return move;}
+        }
+    }
 
     for (int n=0; n<=6; n++)
     {
@@ -211,16 +215,25 @@ int EngineAPI::random_engine_move(int depth)
 
 int EngineAPI::engine_move_easy()
 {
-    return random_engine_move(1);
+    int moves = game_state.get_number_of_moves();
+    int depth = moves + 2;
+    if (depth > 42) {depth = 42;}
+    return random_engine_move(depth);
 }
 
 int EngineAPI::engine_move_medium()
 {
-    return random_engine_move(4);
+    int moves = game_state.get_number_of_moves();
+    int depth = moves + 4;
+    if (depth > 42) {depth = 42;}
+    return random_engine_move(depth);
 }
 
 int EngineAPI::engine_move_hard()
 {
+    int moves = game_state.get_number_of_moves();
+    int depth;
+
     // Some opening moves.
     if (game_state.get_number_of_moves() <= 2) {return 3;}
 
@@ -232,17 +245,26 @@ int EngineAPI::engine_move_hard()
             columns_not_full++;
     }
 
-    if (columns_not_full < 4) {return random_engine_move(20);}
-    if (columns_not_full == 4) {return random_engine_move(25);} //18
-    if (columns_not_full == 5) {return random_engine_move(16);} //12
-    if (columns_not_full == 6) {return random_engine_move(12);} //11
+    if (columns_not_full < 5) {return random_engine_move(42);}
+    if (columns_not_full == 5)
+    {
+        depth = moves + 17;
+        if (depth > 42) {depth = 42;}
+        return random_engine_move(depth);
+    }
+    if (columns_not_full == 6)
+    {
+        depth = moves + 13;
+        if (depth > 42) {depth = 42;}
+        return random_engine_move(depth);
+    }
     if (game_state.get_number_of_moves() <= 8)
     {
-        return random_engine_move(10); //7
+        return random_engine_move(moves + 11);
     }
     else
     {
-        return random_engine_move(11); //9
+        return random_engine_move(moves + 12);
     }
 }
 }
