@@ -58,12 +58,12 @@ char EngineAPI::get_value(int column, int row)
     return game_state.get_value(column, row);
 }
 
-bool EngineAPI::four_in_a_row(int column)
+bool EngineAPI::four_in_a_row()
 {
-    return game_state.four_in_a_row(column);
+    return game_state.four_in_a_row();
 }
 
-int EngineAPI::heuristic_value(int move)
+int EngineAPI::heuristic_value(int move) const
 {
     /*Give a heuristic evaluation in form of a number of how good it would be to make
     the given move to the current game state. The value is higher the better the move.
@@ -71,7 +71,7 @@ int EngineAPI::heuristic_value(int move)
     */
     if (not game_state.column_not_full(move)) {return 0;}
     int row = game_state.get_number_of_disks_in_column(move);
-    int values[6][7] =
+    const int values[6][7] =
         {{0, 0, 0, 0, 0, 0, 0},
          {0, 0, 1, 1, 1, 0, 0},
          {0, 1, 1, 1, 1, 1, 0},
@@ -111,13 +111,30 @@ std::array<int,7> EngineAPI::move_order()
     return sorted_moves;
 }
 
-int EngineAPI::negamax(int last_move, int depth, int alpha, int beta)
+bool EngineAPI::can_win_this_move()
+{
+    bool result = false;
+    for (int move=0; move<=6; move++)
+    {
+        if (game_state.column_not_full(move))
+        {
+            game_state.make_move(move);
+            result = game_state.four_in_a_row();
+            game_state.undo_move(move);
+            if (result) {return true;}
+        }
+    }
+    return false;
+}
+
+int EngineAPI::negamax(int depth, int alpha, int beta)
 {
     int move;
     int value;
 
-    if (game_state.four_in_a_row(last_move))
+    if (game_state.four_in_a_row())
     {
+        //return -1;
         return -43 + game_state.get_number_of_moves();
     }
 
@@ -131,6 +148,14 @@ int EngineAPI::negamax(int last_move, int depth, int alpha, int beta)
         return 0;
     }
 
+    if (can_win_this_move())
+    {
+        //return 1;
+        return 42 - game_state.get_number_of_moves();
+    }
+
+    //uint64_t key = game_state.get_key();
+
     // Move order.
     const int moves[7] = {3, 2, 4, 1, 5, 0, 6};
 
@@ -140,7 +165,7 @@ int EngineAPI::negamax(int last_move, int depth, int alpha, int beta)
         if (game_state.column_not_full(move))
         {
             game_state.make_move(move);
-            value = -negamax(move, depth - 1, -beta, -alpha);
+            value = -negamax(depth - 1, -beta, -alpha);
             game_state.undo_move(move);
             if (value >= beta) // Fail hard beta-cutoff.
             {
@@ -171,7 +196,7 @@ int EngineAPI::random_engine_move(int depth)
         if (game_state.column_not_full(move))
         {
             game_state.make_move(move);
-            new_value = -negamax(move, depth, -beta, -alpha);
+            new_value = -negamax(depth, -beta, -alpha);
             if (new_value > alpha)
             {
                 alpha = new_value;
@@ -208,16 +233,16 @@ int EngineAPI::engine_move_hard()
     }
 
     if (columns_not_full < 4) {return random_engine_move(20);}
-    if (columns_not_full == 4) {return random_engine_move(18);}
-    if (columns_not_full == 5) {return random_engine_move(14);}
-    if (columns_not_full == 6) {return random_engine_move(11);}
+    if (columns_not_full == 4) {return random_engine_move(25);} //18
+    if (columns_not_full == 5) {return random_engine_move(16);} //12
+    if (columns_not_full == 6) {return random_engine_move(12);} //11
     if (game_state.get_number_of_moves() <= 8)
     {
-        return random_engine_move(7);
+        return random_engine_move(10); //7
     }
     else
     {
-        return random_engine_move(9);
+        return random_engine_move(11); //9
     }
 }
 }

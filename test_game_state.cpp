@@ -82,7 +82,7 @@ void GameState::undo_move(int column)
     }
 }
 
-bool GameState::four_in_a_row(int column) const
+bool GameState::four_in_a_row() const
 {
     uint64_t a;
     uint64_t bitboard;
@@ -100,20 +100,13 @@ bool GameState::four_in_a_row(int column) const
     // a bitboard with a three in a row if there is a four in a row. The second step
     // checks if there exist points that are two steps distant from each other.
 
-    // Diagonals
-    a = (bitboard << 6) & bitboard;
-    if (a & (a << 12)) {return true;}
+    const int shifts[4] = {6, 8, 1, 7};
 
-    a = (bitboard << 8) & bitboard;
-    if (a & (a << 16)) {return true;}
-
-    // Columns
-    a = (bitboard << 1) & bitboard;
-    if (a & (a << 2)) {return true;}
-
-    // Rows
-    a = (bitboard << 7) & bitboard;
-    if (a & (a << 14)) {return true;}
+    for (int n=0; n<=3; n++)
+    {
+        a = (bitboard << shifts[n]) & bitboard;
+        if (a & (a << (shifts[n] * 2))) {return true;}
+    }
 
     return false;
 }
@@ -128,8 +121,8 @@ int GameState::get_number_of_moves() const
     return number_of_moves;
 }
 
-std::string GameState::get_key() const
+uint64_t GameState::get_key() const
 {
-    return "0123";
+    return 0;
 }
 }
