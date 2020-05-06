@@ -14,6 +14,9 @@ class EngineAPI
 public:
     EngineAPI();
 
+    EngineAPI(unsigned int seed);
+    // This constructor take a random number generator seed as an argument.
+
     void set_difficulty_level(int difficulty_level);
     // difficulty_level can be 1, 2 or 3.
 

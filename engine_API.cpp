@@ -13,7 +13,13 @@ EngineAPI::EngineAPI()
     // Initialize the random number generator.
     std::random_device rd;
     random_generator.seed(rd());
-    //random_generator.seed(2345);
+    difficulty_level_ = 2;
+}
+
+EngineAPI::EngineAPI(unsigned int seed)
+{
+    // Initialize the random number generator.
+    random_generator.seed(seed);
     difficulty_level_ = 2;
 }
 

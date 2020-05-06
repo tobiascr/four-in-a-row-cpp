@@ -14,6 +14,9 @@ class EngineAPI
 public:
     EngineAPI();
 
+    EngineAPI(unsigned int seed);
+    // This constructor take a random number generator seed as an argument.
+
     void set_difficulty_level(int difficulty_level);
     // difficulty_level can be 1, 2 or 3.
 
@@ -47,8 +50,6 @@ private:
     /* Return a suggested move order for a root negamax search based on a heuristic evaluation
        of the current game state. There is some randomness included in the move ordering
        for moves that are estimated to be equally strong.*/
-
-    bool can_win_this_move();
 
     int negamax(const int depth, int alpha, int beta);
     /* Compute a value of game_state. Return a positive integer for a winning game_state for
