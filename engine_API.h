@@ -40,15 +40,13 @@ private:
     int difficulty_level_;
 
     std::mt19937 random_generator;
- 
+
     int heuristic_value(int move) const;
 
     std::array<int,7> move_order();
     /* Return a suggested move order for a root negamax search based on a heuristic evaluation
        of the current game state. There is some randomness included in the move ordering
        for moves that are estimated to be equally strong.*/
-
-    bool can_win_this_move();
 
     int negamax(const int depth, int alpha, int beta);
     /* Compute a value of game_state. Return a positive integer for a winning game_state for

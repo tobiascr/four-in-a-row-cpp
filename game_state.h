@@ -30,6 +30,12 @@ public:
     void undo_move(int column);
 
     bool four_in_a_row() const;
+    /* Return true iff a the player that made the last move has
+       a four in a row.*/
+
+    bool can_win_this_move() const;
+    /* Return true iff a the player in turn can make a move a move that gives
+       a four in a row.*/
 
     bool board_full() const;
 
@@ -64,6 +70,9 @@ private:
     int column_height[7];
     int number_of_moves;
     bool player_1_in_turn;
+
+    bool four_in_a_row(uint64_t bitboard) const;
+    /* Return true iff there is a four in a row on the bitboard.*/
 };
 }
 
