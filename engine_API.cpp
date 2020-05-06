@@ -135,6 +135,29 @@ int EngineAPI::negamax(const int depth, int alpha, int beta)
 
     //uint64_t key = game_state.get_key();
 
+//    // If there exist a blocking move, that move must be made.
+//    for (int move=0; move<=6; move++)
+//    {
+//        if (game_state.column_not_full(move))
+//        {
+//            if (game_state.is_blocking_move(move))
+//            {
+//                game_state.make_move(move);
+//                value = -negamax(depth, -beta, -alpha);
+//                game_state.undo_move(move);
+//                return value;
+//                if (value >= beta) // Fail hard beta-cutoff.
+//                {
+//                    return beta;
+//                }
+//                if (value > alpha)
+//                {
+//                    return alpha;
+//                }
+//            }
+//        }
+//    }
+
     // Move order.
     const int moves[7] = {3, 2, 4, 1, 5, 0, 6};
 
@@ -183,6 +206,17 @@ int EngineAPI::random_engine_move(const int depth)
         }
     }
 
+    // Look for blocking moves.
+    for (int n=0; n<=6; n++)
+    {
+        move = moves[n];
+        if (game_state.column_not_full(move))
+        {
+            if (game_state.is_blocking_move(move)) {return move;}
+        }
+    }
+
+    // Make a root negamax search.
     for (int n=0; n<=6; n++)
     {
         move = moves[n];
@@ -237,23 +271,23 @@ int EngineAPI::engine_move_hard()
     if (columns_not_full < 5) {return random_engine_move(42);}
     if (columns_not_full == 5)
     {
-        depth = moves + 20; //17
+        depth = moves + 20;
         if (depth > 42) {depth = 42;}
         return random_engine_move(depth);
     }
     if (columns_not_full == 6)
     {
-        depth = moves + 15; //13
+        depth = moves + 15;
         if (depth > 42) {depth = 42;}
         return random_engine_move(depth);
     }
     if (game_state.get_number_of_moves() <= 8)
     {
-        return random_engine_move(moves + 10); //11
+        return random_engine_move(moves + 10);
     }
     else
     {
-        return random_engine_move(moves + 14); //12
+        return random_engine_move(moves + 14);
     }
 }
 }

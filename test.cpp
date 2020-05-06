@@ -162,6 +162,20 @@ void test_game_state()
     std::string b;
     b = game_state.get_key();
     std::cout << b;
+
+    std::cout << "Test is_blocking_move:" << std::endl;
+    load_position(game_state, "30303");
+    print_board(game_state);
+    for(int i=0; i<=6; i++)
+    {
+        std::cout << game_state.is_blocking_move(i) << std::endl;
+    }
+    load_position(game_state, "030405");
+    print_board(game_state);
+    for(int i=0; i<=6; i++)
+    {
+        std::cout << game_state.is_blocking_move(i) << std::endl;
+    }
 }
 
 void test_engine_API()
@@ -374,12 +388,17 @@ int main()
 //    test_game_state();
 //    test_engine_API();
 
+//    Engine::EngineAPI engine(34345);
+//    engine.set_difficulty_level(3);
+//    TestEngine::EngineAPI test_engine(4556);
+//    test_engine.set_difficulty_level(3);
+
     Engine::EngineAPI engine;
     engine.set_difficulty_level(3);
     TestEngine::EngineAPI test_engine;
     test_engine.set_difficulty_level(3);
 
-    engine_vs_engine(engine, test_engine, 1000, false);
+    engine_vs_engine(engine, test_engine, 500, false);
 
     return 0;
 }
