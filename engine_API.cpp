@@ -113,7 +113,6 @@ std::array<int,7> EngineAPI::move_order()
             i++;
         }
     }
-
     return sorted_moves;
 }
 
@@ -134,29 +133,6 @@ int EngineAPI::negamax(const int depth, int alpha, int beta)
     }
 
     //uint64_t key = game_state.get_key();
-
-//    // If there exist a blocking move, that move must be made.
-//    for (int move=0; move<=6; move++)
-//    {
-//        if (game_state.column_not_full(move))
-//        {
-//            if (game_state.is_blocking_move(move))
-//            {
-//                game_state.make_move(move);
-//                value = -negamax(depth, -beta, -alpha);
-//                game_state.undo_move(move);
-//                return value;
-//                if (value >= beta) // Fail hard beta-cutoff.
-//                {
-//                    return beta;
-//                }
-//                if (value > alpha)
-//                {
-//                    return alpha;
-//                }
-//            }
-//        }
-//    }
 
     // Move order.
     const int moves[7] = {3, 2, 4, 1, 5, 0, 6};
@@ -254,40 +230,31 @@ int EngineAPI::engine_move_medium()
 
 int EngineAPI::engine_move_hard()
 {
-    int moves = game_state.get_number_of_moves();
+    int number_of_moves = game_state.get_number_of_moves();
     int depth;
 
     // Some opening moves.
-    if (game_state.get_number_of_moves() <= 2) {return 3;}
+    if (number_of_moves <= 2) {return 3;}
 
-    // Find the number of columns that are not full.
-    int columns_not_full = 0;
-    for (int i=0; i<=6; i++)
+    if (number_of_moves > 20)
     {
-        if (game_state.column_not_full(i))
-            columns_not_full++;
+        return random_engine_move(42);
     }
-
-    if (columns_not_full < 5) {return random_engine_move(42);}
-    if (columns_not_full == 5)
+    if (number_of_moves > 15)
     {
-        depth = moves + 20;
+        depth = number_of_moves + 15;
         if (depth > 42) {depth = 42;}
         return random_engine_move(depth);
     }
-    if (columns_not_full == 6)
+    if (number_of_moves > 8)
     {
-        depth = moves + 15;
+        depth = number_of_moves + 12;
         if (depth > 42) {depth = 42;}
         return random_engine_move(depth);
     }
-    if (game_state.get_number_of_moves() <= 8)
-    {
-        return random_engine_move(moves + 10);
-    }
-    else
-    {
-        return random_engine_move(moves + 14);
-    }
+
+    depth = number_of_moves + 10;
+    if (depth > 42) {depth = 42;}
+    return random_engine_move(depth);
 }
 }

@@ -388,17 +388,17 @@ int main()
 //    test_game_state();
 //    test_engine_API();
 
-//    Engine::EngineAPI engine(34345);
-//    engine.set_difficulty_level(3);
-//    TestEngine::EngineAPI test_engine(4556);
-//    test_engine.set_difficulty_level(3);
-
-    Engine::EngineAPI engine;
+    Engine::EngineAPI engine(34345);
     engine.set_difficulty_level(3);
-    TestEngine::EngineAPI test_engine;
+    TestEngine::EngineAPI test_engine(4556);
     test_engine.set_difficulty_level(3);
 
-    engine_vs_engine(engine, test_engine, 500, false);
+//    Engine::EngineAPI engine;
+//    engine.set_difficulty_level(3);
+//    TestEngine::EngineAPI test_engine;
+//    test_engine.set_difficulty_level(3);
+
+    engine_vs_engine(engine, test_engine, 50, false);
 
     return 0;
 }
