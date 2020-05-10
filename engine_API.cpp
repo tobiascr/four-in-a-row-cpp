@@ -2,6 +2,8 @@
 #include <random>
 #include <iostream>
 #include <algorithm>
+#include <string>
+#include <unordered_map>
 #include "engine_API.h"
 #include "game_state.h"
 
@@ -31,6 +33,7 @@ void EngineAPI::set_difficulty_level(int difficulty_level)
 void EngineAPI::new_game()
 {
     game_state.reset();
+    transposition_table.clear();
 }
 
 bool EngineAPI::legal_move(int column)
@@ -120,10 +123,10 @@ int EngineAPI::negamax(const int depth, int alpha, int beta)
 {
     int move;
     int value;
+    std::string key;
 
     if (game_state.can_win_this_move())
     {
-        //return 1;
         return 42 - game_state.get_number_of_moves();
     }
 
@@ -132,7 +135,27 @@ int EngineAPI::negamax(const int depth, int alpha, int beta)
         return 0;
     }
 
-    //uint64_t key = game_state.get_key();
+    const bool use_transposition_table = depth - game_state.get_number_of_moves() > 10;
+//    const bool use_transposition_table = false;
+    if (use_transposition_table)
+    {
+        key = game_state.get_key();
+        if (transposition_table.count(key) == 1)
+        {
+            int lower_bound = transposition_table[key];
+            if (lower_bound >= beta)
+            {
+                return beta;
+            }
+            else
+            {
+                if (lower_bound > alpha)
+                {
+                    alpha = lower_bound;
+                }
+            }
+        }
+    }
 
     // Move order.
     const int moves[7] = {3, 2, 4, 1, 5, 0, 6};
@@ -147,14 +170,23 @@ int EngineAPI::negamax(const int depth, int alpha, int beta)
             game_state.undo_move(move);
             if (value >= beta) // Fail hard beta-cutoff.
             {
+                if (use_transposition_table)
+                {
+                    transposition_table[key] = value;
+                }
                 return beta;
             }
             if (value > alpha)
             {
                 alpha = value;
+                if (use_transposition_table)
+                {
+                    transposition_table[key] = value;
+                }
             }
         }
     }
+
     return alpha;
 }
 
@@ -166,6 +198,8 @@ int EngineAPI::random_engine_move(const int depth)
     int alpha = -1000;
     int beta = 1000;
     int result;
+
+    transposition_table.clear();
 
     std::array<int,7> moves = move_order();
 
@@ -236,13 +270,13 @@ int EngineAPI::engine_move_hard()
     // Some opening moves.
     if (number_of_moves <= 2) {return 3;}
 
-    if (number_of_moves > 20)
+    if (number_of_moves > 18)   //20
     {
         return random_engine_move(42);
     }
     if (number_of_moves > 15)
     {
-        depth = number_of_moves + 15;
+        depth = number_of_moves + 15; //15
         if (depth > 42) {depth = 42;}
         return random_engine_move(depth);
     }

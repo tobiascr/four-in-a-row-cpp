@@ -37,6 +37,14 @@ public:
     /* Return true iff a the player in turn can make a move a move that gives
        a four in a row.*/
 
+    bool is_blocking_move(int column) const;
+    /* Return true iff making a move in column blocks the opponent from making a
+       four in a row in the next move. The move must be legal.*/
+
+//    int blocking_move(int column) const;
+    /* Return a blocking move 0, 1, ..., 6 if there is one, -1 if there are no blocking moves and
+       -2 if there are more than 1 blocking moves.*/
+
     bool board_full() const;
 
     int get_number_of_moves() const;
@@ -72,7 +80,7 @@ private:
     bool player_1_in_turn;
 
     bool four_in_a_row(uint64_t bitboard) const;
-    /* Return true iff there is a four in a row on the bitboard.*/
+    /* Return true iff there is a four in a row of 1:s on the bitboard.*/
 };
 }
 

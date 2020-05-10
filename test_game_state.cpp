@@ -121,7 +121,6 @@ bool GameState::four_in_a_row(uint64_t bitboard) const
 bool GameState::can_win_this_move() const
 {
     uint64_t bitboard;
-    uint64_t new_bitboard;
     const uint64_t one = 1;
 
     if (player_1_in_turn)
@@ -141,92 +140,92 @@ bool GameState::can_win_this_move() const
     const int ch5 = column_height[5];
     const int ch6 = column_height[6];
 
-//    // Try making moves in columns 0 and 4.
-//    if (ch0 < 6 or ch4 < 6)
-//    {
-//        new_bitboard = bitboard;
-//        if (ch0 < 6) {new_bitboard |= (one << ch0);}
-//        if (ch4 < 6) {new_bitboard |= (one << 28 + ch4);}
-//        if (four_in_a_row(new_bitboard)) {return true;}
-//    }
+    // This corresponds to the strip on the bitmap above the board. It is used
+    // to remove illegal moves.
+    const uint64_t top_rank_mask = 0b0111111011111101111110111111011111101111110111111;
 
-//    if (ch0 < 6)
-//    {
-//        new_bitboard = bitboard | (one << ch0);
-//        if (ch4 < 6)
-//        {
-//            new_bitboard |= (one << 28 + ch4);
-//            if (four_in_a_row(new_bitboard)) {return true;}
-//        }
-//    }
-//    else if (ch4 < 6)
-//    {
-//        new_bitboard = bitboard | (one << 28 + ch4);
-//        if (four_in_a_row(new_bitboard)) {return true;}
-//    }
+    uint64_t new_bitboard;
 
-//    // Try making moves in columns 1 and 5.
-//    if (ch1 < 6 or ch5 < 6)
-//    {
-//        new_bitboard = bitboard;
-//        if (ch1 < 6) {new_bitboard |= (one << 7 + ch1);}
-//        if (ch5 < 6) {new_bitboard |= (one << 35 + ch5);}
-//        if (four_in_a_row(new_bitboard)) {return true;}
-//    }
+    // If two moves can't constribute to the same four in a row, they can be tested
+    // at the same time.
 
-//    // Try making moves in columns 2 and 6.
-//    if (ch2 < 6 or ch6 < 6)
-//    {
-//        new_bitboard = bitboard;
-//        if (ch2 < 6) {new_bitboard |= (one << 14 + ch2);}
-//        if (ch6 < 6) {new_bitboard |= (one << 42 + ch6);}
-//        if (four_in_a_row(new_bitboard)) {return true;}
-//    }
-
-//    // Try making a move in column 3.
-//    if (ch3 < 6)
-//    {
-//        new_bitboard = bitboard | (one << 21 + ch3);
-//        if (four_in_a_row(new_bitboard)) {return true;}
-//    }
-
-
-    if (ch0 < 6)
-    {
-        if (four_in_a_row(bitboard | (one << ch0))) {return true;}
-    }
-
-    if (ch1 < 6)
-    {
-        if (four_in_a_row(bitboard | (one << (7 + ch1)))) {return true;}
-    }
-
-    if (ch2 < 6)
-    {
-        if (four_in_a_row(bitboard | (one << (14 + ch2)))) {return true;}
-    }
-
+    // Test column 3.
     if (ch3 < 6)
     {
         if (four_in_a_row(bitboard | (one << (21 + ch3)))) {return true;}
     }
 
-    if (ch4 < 6)
+    // Test column 1 and 5.
+    if (four_in_a_row((bitboard | (one << (7 + ch1)) | (one << (35 + ch5))) & top_rank_mask))
     {
-        if (four_in_a_row(bitboard | (one << (28 + ch4)))) {return true;}
+        return true;
     }
 
-    if (ch5 < 6)
+    // Test column 0 and 4.
+    if (four_in_a_row((bitboard | (one << ch0) | (one << (28 + ch4))) & top_rank_mask))
     {
-        if (four_in_a_row(bitboard | (one << (35 + ch5)))) {return true;}
+        return true;
     }
 
-    if (ch6 < 6)
+    // Test column 2 and 6.
+    if (four_in_a_row((bitboard | (one << (14 + ch2)) | (one << (42 + ch6))) & top_rank_mask))
     {
-        if (four_in_a_row(bitboard | (one << (42 + ch6)))) {return true;}
+        return true;
     }
+
+//    if (ch0 < 6)
+//    {
+//        if (four_in_a_row(bitboard | (one << ch0))) {return true;}
+//    }
+
+//    if (ch1 < 6)
+//    {
+//        if (four_in_a_row(bitboard | (one << (7 + ch1)))) {return true;}
+//    }
+
+//    if (ch2 < 6)
+//    {
+//        if (four_in_a_row(bitboard | (one << (14 + ch2)))) {return true;}
+//    }
+
+//    if (ch3 < 6)
+//    {
+//        if (four_in_a_row(bitboard | (one << (21 + ch3)))) {return true;}
+//    }
+
+//    if (ch4 < 6)
+//    {
+//        if (four_in_a_row(bitboard | (one << (28 + ch4)))) {return true;}
+//    }
+
+//    if (ch5 < 6)
+//    {
+//        if (four_in_a_row(bitboard | (one << (35 + ch5)))) {return true;}
+//    }
+
+//    if (ch6 < 6)
+//    {
+//        if (four_in_a_row(bitboard | (one << (42 + ch6)))) {return true;}
+//    }
 
     return false;
+}
+
+bool GameState::is_blocking_move(int column) const
+{
+    uint64_t bitboard;
+    const uint64_t one = 1;
+
+    if (player_1_in_turn)
+    {
+        bitboard = bitboard_2;
+    }
+    else
+    {
+        bitboard = bitboard_1;
+    }
+
+    return four_in_a_row(bitboard | (one << column * 7 + column_height[column]));
 }
 
 bool GameState::board_full() const

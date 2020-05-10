@@ -28,3 +28,6 @@ test_game_state.o: test_game_state.cpp
 test_engine_API.o: test_engine_API.cpp
 	g++ -c $(FLAGS) test_engine_API.cpp
 
+.PHONY: clean
+clean:
+	rm -v *.o
