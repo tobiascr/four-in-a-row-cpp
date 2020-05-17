@@ -41,15 +41,11 @@ public:
     /* Return true iff making a move in column blocks the opponent from making a
        four in a row in the next move. The move must be legal.*/
 
-//    int blocking_move(int column) const;
-    /* Return a blocking move 0, 1, ..., 6 if there is one, -1 if there are no blocking moves and
-       -2 if there are more than 1 blocking moves.*/
-
     bool board_full() const;
 
     int get_number_of_moves() const;
 
-    uint64_t get_key() const;
+    std::string get_key() const;
     // Return a unique key that corresponds to the current game state.
 
 private:
@@ -73,11 +69,13 @@ private:
 
     Using some shifting techniques it's possible to quickly find four in a rows.
     */
-    uint64_t bitboard_1; // Bitboard for the player that make the first move.
-    uint64_t bitboard_2; // Bitboard for the player that make the second move.
+
+    uint64_t bitboard[2]; // bitboard[0] is for the player that makes the first move.
+                          // bitboard[1] is for the player that makes the second move.
+    int player_in_turn;  // 0 if it's the beginner player in turn and else 1.
     int column_height[7];
     int number_of_moves;
-    bool player_1_in_turn;
+    uint64_t history[42]; // Bitboards from earlier moves.
 
     bool four_in_a_row(uint64_t bitboard) const;
     /* Return true iff there is a four in a row of 1:s on the bitboard.*/

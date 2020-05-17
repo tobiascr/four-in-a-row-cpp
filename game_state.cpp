@@ -44,7 +44,6 @@ int GameState::get_number_of_disks_in_column(int column) const
 
 void GameState::make_move(int column)
 {
-    const uint64_t one = 1;
     uint64_t move = one << (column * 7 + column_height[column]);
     history[number_of_moves] = bitboard[player_in_turn];
     bitboard[player_in_turn] |= move;
@@ -84,10 +83,14 @@ bool GameState::four_in_a_row(uint64_t bitboard) const
     return false;
 }
 
+bool GameState::four_in_a_row(int player, int column, int row) const
+{
+    return four_in_a_row(bitboard[player] | (one << (column * 7 + row)));
+}
+
 bool GameState::can_win_this_move() const
 {
     uint64_t b = bitboard[player_in_turn];
-    const uint64_t one = 1;
 
     // This corresponds to the strip on the bitmap above the board. It is used
     // to remove illegal moves.
@@ -129,7 +132,6 @@ bool GameState::can_win_this_move() const
 
 bool GameState::is_blocking_move(int column) const
 {
-    const uint64_t one = 1;
     return four_in_a_row(bitboard[1 - player_in_turn] | (one << column * 7 + column_height[column]));
 }
 

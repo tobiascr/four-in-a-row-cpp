@@ -4,6 +4,7 @@
 #include <array>
 #include <random>
 #include <algorithm>
+#include <string>
 #include <unordered_map>
 #include "game_state.h"
 
@@ -47,7 +48,13 @@ private:
 
     std::unordered_map<std::string, int> transposition_table;
 
-    int heuristic_value(int move) const;
+    int position_heuristic(int move) const;
+
+    int position_heuristic_2(int move) const;
+
+    int open_four_in_a_row_count(int player) const;
+
+    int open_four_in_a_row_heuristic(int move);
 
     std::array<int,7> move_order();
     /* Return a suggested move order for a root negamax search based on a heuristic evaluation

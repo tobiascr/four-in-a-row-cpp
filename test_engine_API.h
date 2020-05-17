@@ -4,6 +4,8 @@
 #include <array>
 #include <random>
 #include <algorithm>
+#include <string>
+#include <unordered_map>
 #include "test_game_state.h"
 
 namespace TestEngine
@@ -43,6 +45,8 @@ private:
     int difficulty_level_;
 
     std::mt19937 random_generator;
+
+    std::unordered_map<std::string, int> transposition_table;
 
     int heuristic_value(int move) const;
 

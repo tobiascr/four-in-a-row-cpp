@@ -72,12 +72,12 @@ bool EngineAPI::four_in_a_row()
     return game_state.four_in_a_row();
 }
 
-int EngineAPI::heuristic_value(int move) const
+int EngineAPI::position_heuristic(int move) const
+/*Give a heuristic evaluation in form of a number of how good it would be to make
+ the given move to the current game state. The value is higher the better the move.
+ Central positions are given higher values. If the move is not legal, the value is 0.
+*/
 {
-    /*Give a heuristic evaluation in form of a number of how good it would be to make
-    the given move to the current game state. The value is higher the better the move.
-    Central positions are given higher values. If the move is not legal, the value is 0.
-    */
     if (not game_state.column_not_full(move)) {return 0;}
     int row = game_state.get_number_of_disks_in_column(move);
     const int values[6][7] =
@@ -90,33 +90,79 @@ int EngineAPI::heuristic_value(int move) const
     return values[row][move];
 }
 
+int EngineAPI::position_heuristic_2(int move) const
+/*Give a heuristic evaluation in form of a number of how good it would be to make
+ the given move to the current game state. The value is higher the better the move.
+ Central positions are given higher values. If the move is not legal, the value is 0.
+*/
+{
+    if (not game_state.column_not_full(move)) {return 0;}
+    int row = game_state.get_number_of_disks_in_column(move);
+    const int values[6][7] =
+        {{0, 0, 1, 2, 1, 0, 0},
+         {0, 1, 2, 3, 2, 1, 0},
+         {1, 2, 3, 4, 3, 2, 1},
+         {1, 2, 3, 4, 3, 2, 1},
+         {0, 1, 2, 3, 2, 1, 0},
+         {0, 0, 1, 2, 1, 0, 0}};
+    return values[row][move];
+}
+
+int EngineAPI::open_four_in_a_row_count(int player) const
+/* Return the number of unoccupied places on the board that are not in the bottom
+   of the columns, that give player a four in a row. player is 0 for the player
+   making the first move and 1 for the other player.*/
+{
+    int count = 0;
+    for (int col=0; col<=6; col++)
+    {
+        for (int row=game_state.get_number_of_disks_in_column(col) + 1; row<=5; row++)
+        {
+            if (game_state.four_in_a_row(player, col, row))
+            {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+int EngineAPI::open_four_in_a_row_heuristic(int move)
+/* Give a heuristic evaluation in form of a number of how good it would be to make
+ the given move to the current game state. The value is higher the better the move.
+ The value is based on the number of open four in a rows.
+*/
+{
+    int value;
+    game_state.make_move(move);
+    value = EngineAPI::open_four_in_a_row_count(0) - EngineAPI::open_four_in_a_row_count(1);
+    game_state.undo_move(move);
+    if (game_state.get_number_of_moves() % 2 == 0)
+    {
+        return value;
+    }
+    else
+    {
+        return -value;
+    }
+}
+
 std::array<int,7> EngineAPI::move_order()
 {
     std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
+    int values[7];
 
     // Adding randomness to the move order.
     shuffle (moves.begin(), moves.end(), random_generator);
 
-    std::array<int,7> sorted_moves;
+    for (int n=0; n<=6; n++)
+    {
+          values[n] = position_heuristic(n);
+    }
 
-    int i=0;
-    for (int n=0; n<=6; n++)
-    {
-        if (heuristic_value(moves[n]) == 1)
-        {
-            sorted_moves[i] = moves[n];
-            i++;
-        }
-    }
-    for (int n=0; n<=6; n++)
-    {
-        if (heuristic_value(moves[n]) == 0)
-        {
-            sorted_moves[i] = moves[n];
-            i++;
-        }
-    }
-    return sorted_moves;
+    std::stable_sort(moves.begin(), moves.end(),
+                     [&values](int i, int j){return values[i] > values[j];});
+    return moves;
 }
 
 int EngineAPI::negamax(const int depth, int alpha, int beta)
@@ -135,7 +181,7 @@ int EngineAPI::negamax(const int depth, int alpha, int beta)
         return 0;
     }
 
-    const bool use_transposition_table = depth - game_state.get_number_of_moves() > 10;
+    const bool use_transposition_table = depth - game_state.get_number_of_moves() > 8;
 //    const bool use_transposition_table = false;
     if (use_transposition_table)
     {
@@ -268,26 +314,20 @@ int EngineAPI::engine_move_hard()
     int depth;
 
     // Some opening moves.
-    if (number_of_moves <= 2) {return 3;}
+    if (number_of_moves < 2) {return 3;}
 
-    if (number_of_moves > 18)   //20
+    if (number_of_moves > 14)   //12
     {
         return random_engine_move(42);
     }
-    if (number_of_moves > 15)
+    if (number_of_moves > 6)
     {
-        depth = number_of_moves + 15; //15
-        if (depth > 42) {depth = 42;}
-        return random_engine_move(depth);
-    }
-    if (number_of_moves > 8)
-    {
-        depth = number_of_moves + 12;
+        depth = number_of_moves + 18; //22
         if (depth > 42) {depth = 42;}
         return random_engine_move(depth);
     }
 
-    depth = number_of_moves + 10;
+    depth = number_of_moves + 12;
     if (depth > 42) {depth = 42;}
     return random_engine_move(depth);
 }

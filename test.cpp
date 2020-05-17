@@ -183,6 +183,12 @@ void test_game_state()
     print_board(game_state);
     std::cout << game_state.can_win_this_move() << std::endl;
     print_board(game_state);
+
+    std::cout << "Test four_in_a_row(int player, int column, int row)" << std::endl;
+    load_position(game_state, "33224331");
+    print_board(game_state);
+    std::cout << game_state.four_in_a_row(0, 5, 0) << std::endl;
+    std::cout << game_state.four_in_a_row(1, 4, 3) << std::endl;
 }
 
 void test_engine_API()
@@ -226,6 +232,15 @@ void test_engine_API()
 //    std::cout << engine.heuristic_value(4) << std::endl;
 //    std::cout << engine.heuristic_value(5) << std::endl;
 //    std::cout << engine.heuristic_value(6) << std::endl;
+
+//    load_position(engine, "33224331");
+//    print_board(engine);
+//    std::cout << engine.open_four_in_a_row_heuristic(0) << std::endl;
+//    std::cout << engine.open_four_in_a_row_heuristic(1) << std::endl;
+//    load_position(engine, "332243310");
+//    print_board(engine);
+//    std::cout << engine.open_four_in_a_row_heuristic(0) << std::endl;
+//    std::cout << engine.open_four_in_a_row_heuristic(4) << std::endl;
 }
 
 void test_transposition_table()
@@ -395,15 +410,15 @@ int main()
 //    test_game_state();
 //    test_engine_API();
 
-    Engine::EngineAPI engine(3425);
-    engine.set_difficulty_level(3);
-    TestEngine::EngineAPI test_engine(19287);
-    test_engine.set_difficulty_level(3);
-
-//    Engine::EngineAPI engine;
+//    Engine::EngineAPI engine(444255);
 //    engine.set_difficulty_level(3);
-//    TestEngine::EngineAPI test_engine;
+//    TestEngine::EngineAPI test_engine(1539128);
 //    test_engine.set_difficulty_level(3);
+
+    Engine::EngineAPI engine;
+    engine.set_difficulty_level(3);
+    TestEngine::EngineAPI test_engine;
+    test_engine.set_difficulty_level(3);
 
     engine_vs_engine(engine, test_engine, 100, false);
 
