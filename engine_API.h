@@ -52,6 +52,8 @@ private:
 
     int position_heuristic_2(int move) const;
 
+    int position_heuristic_3(int move) const;
+
     int open_four_in_a_row_count(int player) const;
 
     int open_four_in_a_row_heuristic(int move);

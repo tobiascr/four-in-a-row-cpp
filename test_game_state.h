@@ -33,6 +33,11 @@ public:
     /* Return true iff a the player that made the last move has
        a four in a row.*/
 
+    bool four_in_a_row(int player, int column, int row) const;
+    /* Return true iff the game state is a four in a row after player has placed a disk at
+    the given position. player is 0 if it's the player that makes the first move
+    and 1 if it's the player that makes the second move.*/
+
     bool can_win_this_move() const;
     /* Return true iff a the player in turn can make a move a move that gives
        a four in a row.*/
@@ -76,6 +81,7 @@ private:
     int column_height[7];
     int number_of_moves;
     uint64_t history[42]; // Bitboards from earlier moves.
+    const uint64_t one = 1;
 
     bool four_in_a_row(uint64_t bitboard) const;
     /* Return true iff there is a four in a row of 1:s on the bitboard.*/

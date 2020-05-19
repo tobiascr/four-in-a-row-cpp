@@ -99,12 +99,30 @@ int EngineAPI::position_heuristic_2(int move) const
     if (not game_state.column_not_full(move)) {return 0;}
     int row = game_state.get_number_of_disks_in_column(move);
     const int values[6][7] =
-        {{0, 0, 1, 2, 1, 0, 0},
-         {0, 1, 2, 3, 2, 1, 0},
-         {1, 2, 3, 4, 3, 2, 1},
-         {1, 2, 3, 4, 3, 2, 1},
-         {0, 1, 2, 3, 2, 1, 0},
-         {0, 0, 1, 2, 1, 0, 0}};
+        {{-1, 0, 0, 1, 0, 0, -1},
+         {0,  1, 2, 3, 2, 1,  0},
+         {0,  2, 3, 3, 3, 2,  0},
+         {0,  2, 3, 3, 3, 2,  0},
+         {0,  1, 2, 3, 2, 1,  0},
+         {-1, 0, 0, 1, 0, 0, -1}};
+    return values[row][move];
+}
+
+int EngineAPI::position_heuristic_3(int move) const
+/*Give a heuristic evaluation in form of a number of how good it would be to make
+ the given move to the current game state. The value is higher the better the move.
+ Central positions are given higher values. If the move is not legal, the value is 0.
+*/
+{
+    if (not game_state.column_not_full(move)) {return 0;}
+    int row = game_state.get_number_of_disks_in_column(move);
+    const int values[6][7] =
+        {{3, 4,  5,  7,  5, 4, 3},
+         {4, 6,  8, 10,  8, 6, 4},
+         {5, 8, 11, 13, 11, 8, 5},
+         {5, 8, 11, 13, 11, 8, 5},
+         {4, 6,  8, 10,  8, 6, 4},
+         {3, 4,  5,  7,  5, 4, 3}};
     return values[row][move];
 }
 
@@ -157,7 +175,7 @@ std::array<int,7> EngineAPI::move_order()
 
     for (int n=0; n<=6; n++)
     {
-          values[n] = position_heuristic(n);
+          values[n] = position_heuristic_2(n);
     }
 
     std::stable_sort(moves.begin(), moves.end(),
@@ -314,20 +332,20 @@ int EngineAPI::engine_move_hard()
     int depth;
 
     // Some opening moves.
-    if (number_of_moves < 2) {return 3;}
+//    if (number_of_moves < 2) {return 3;}
 
-    if (number_of_moves > 14)   //12
+    if (number_of_moves > 14)   //14
     {
         return random_engine_move(42);
     }
     if (number_of_moves > 6)
     {
-        depth = number_of_moves + 18; //22
+        depth = number_of_moves + 18; //18
         if (depth > 42) {depth = 42;}
         return random_engine_move(depth);
     }
 
-    depth = number_of_moves + 12;
+    depth = number_of_moves + 12; //12
     if (depth > 42) {depth = 42;}
     return random_engine_move(depth);
 }
