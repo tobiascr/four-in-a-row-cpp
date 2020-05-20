@@ -149,4 +149,9 @@ std::string GameState::get_key() const
 {
     return std::to_string(bitboard[0]) + std::to_string(bitboard[1]);
 }
+
+std::pair<uint64_t, uint64_t> GameState::get_key_2() const
+{
+    return {bitboard[0], bitboard[1]};
+}
 }

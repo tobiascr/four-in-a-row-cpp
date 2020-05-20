@@ -2,8 +2,7 @@
 #include <random>
 #include <iostream>
 #include <algorithm>
-#include <string>
-#include <unordered_map>
+#include <utility>
 #include "engine_API.h"
 #include "game_state.h"
 
@@ -187,7 +186,7 @@ int EngineAPI::negamax(const int depth, int alpha, int beta)
 {
     int move;
     int value;
-    std::string key;
+    std::pair<uint64_t, uint64_t> key;
 
     if (game_state.can_win_this_move())
     {
@@ -199,11 +198,10 @@ int EngineAPI::negamax(const int depth, int alpha, int beta)
         return 0;
     }
 
-    const bool use_transposition_table = depth - game_state.get_number_of_moves() > 8;
-//    const bool use_transposition_table = false;
+    const bool use_transposition_table = depth - game_state.get_number_of_moves() > 7;
     if (use_transposition_table)
     {
-        key = game_state.get_key();
+        key = game_state.get_key_2();
         if (transposition_table.count(key) == 1)
         {
             int lower_bound = transposition_table[key];
@@ -332,7 +330,7 @@ int EngineAPI::engine_move_hard()
     int depth;
 
     // Some opening moves.
-//    if (number_of_moves < 2) {return 3;}
+    if (number_of_moves < 2) {return 3;}
 
     if (number_of_moves > 14)   //14
     {
@@ -340,12 +338,12 @@ int EngineAPI::engine_move_hard()
     }
     if (number_of_moves > 6)
     {
-        depth = number_of_moves + 18; //18
+        depth = number_of_moves + 20; //18
         if (depth > 42) {depth = 42;}
         return random_engine_move(depth);
     }
 
-    depth = number_of_moves + 12; //12
+    depth = number_of_moves + 14; //12
     if (depth > 42) {depth = 42;}
     return random_engine_move(depth);
 }
