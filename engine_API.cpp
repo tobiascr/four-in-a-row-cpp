@@ -252,14 +252,36 @@ int EngineAPI::negamax(const int depth, int alpha, int beta)
     return alpha;
 }
 
-int EngineAPI::random_engine_move(const int depth)
+int EngineAPI::root_negamax(const int depth, std::array<int,7> move_order, int alpha, int beta)
 {
     int new_value;
-    int best_move;
     int move;
+    int best_move;
+
+    for (int n=0; n<=6; n++)
+    {
+        move = move_order[n];
+        if (game_state.column_not_full(move))
+        {
+            game_state.make_move(move);
+            new_value = -negamax(depth, -beta, -alpha);
+            if (new_value > alpha)
+            {
+                alpha = new_value;
+                best_move = move;
+            }
+            game_state.undo_move(move);
+        }
+    }
+    return best_move;
+}
+
+int EngineAPI::random_engine_move(const int depth)
+{
+    int move;
+    int result;
     int alpha = -1000;
     int beta = 1000;
-    int result;
 
     transposition_table.clear();
 
@@ -288,24 +310,7 @@ int EngineAPI::random_engine_move(const int depth)
         }
     }
 
-    // Make a root negamax search.
-    for (int n=0; n<=6; n++)
-    {
-        move = moves[n];
-        if (game_state.column_not_full(move))
-        {
-            game_state.make_move(move);
-            new_value = -negamax(depth, -beta, -alpha);
-            if (new_value > alpha)
-            {
-                alpha = new_value;
-                best_move = move;
-            }
-            game_state.undo_move(move);
-        }
-    }
-
-    return best_move;
+    return root_negamax(depth, moves, alpha, beta);
 }
 
 int EngineAPI::engine_move_easy()

@@ -73,6 +73,10 @@ private:
        have no four in a row.
     */
 
+    int root_negamax(const int depth, std::array<int,7> move_order, int alpha, int);
+    /* Return a move (0 to 6) computed with the negamax algorithm. Depth is counted as
+    the move number at which the search is stopped.*/
+
     int random_engine_move(const int depth);
     /* Return an integer from 0 to 6 that represents a best move made by the engine
        at the given depth level. If there are several equally good moves, one of them
