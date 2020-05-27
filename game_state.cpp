@@ -72,7 +72,7 @@ bool GameState::four_in_a_row(uint64_t bitboard) const
     // checks if there exist points that are two steps distant from each other.
 
     uint64_t a;
-    const int shifts[4] = {6, 8, 1, 7};
+    const int shifts[4] = {6, 8, 7, 1};
 
     for (int n=0; n<=3; n++)
     {
