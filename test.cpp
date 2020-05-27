@@ -420,7 +420,7 @@ int main()
 //    TestEngine::EngineAPI test_engine;
 //    test_engine.set_difficulty_level(3);
 
-    engine_vs_engine(engine, test_engine, 200, false);
+    engine_vs_engine(engine, test_engine, 20, false);
 
     return 0;
 }

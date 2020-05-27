@@ -265,12 +265,12 @@ int EngineAPI::root_negamax(const int depth, std::array<int,7> move_order, int a
         {
             game_state.make_move(move);
             new_value = -negamax(depth, -beta, -alpha);
+            game_state.undo_move(move);
             if (new_value > alpha)
             {
                 alpha = new_value;
                 best_move = move;
             }
-            game_state.undo_move(move);
         }
     }
     return best_move;
