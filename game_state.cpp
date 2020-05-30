@@ -83,7 +83,7 @@ bool GameState::four_in_a_row(uint64_t bitboard) const
     const int shifts[4] = {6, 8, 7, 1};
 
     for (int n=0; n<=3; n++)
-    {    const uint64_t top_rank_mask = 0b0111111011111101111110111111011111101111110111111;
+    {
         a = (bitboard << shifts[n]) & bitboard;
         if (a & (a << (shifts[n] * 2))) {return true;}
     }
