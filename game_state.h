@@ -86,6 +86,7 @@ private:
     int number_of_moves;
     uint64_t history[42]; // Bitboards from earlier moves.
     const uint64_t one = 1;
+    uint64_t next_move[7];
 
     bool four_in_a_row(uint64_t bitboard) const;
     /* Return true iff there is a four in a row of 1:s on the bitboard.*/

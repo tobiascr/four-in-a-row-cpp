@@ -256,7 +256,31 @@ int EngineAPI::root_negamax(const int depth, std::array<int,7> move_order, int a
 {
     int new_value;
     int move;
+    int result;
     int best_move;
+
+    // Look for a move that makes a four in a row.
+    for (int n=0; n<=6; n++)
+    {
+        move = move_order[n];
+        if (game_state.column_not_full(move))
+        {
+            game_state.make_move(move);
+            result = game_state.four_in_a_row();
+            game_state.undo_move(move);
+            if (result) {return move;}
+        }
+    }
+
+    // Look for blocking moves.
+    for (int n=0; n<=6; n++)
+    {
+        move = move_order[n];
+        if (game_state.column_not_full(move))
+        {
+            if (game_state.is_blocking_move(move)) {return move;}
+        }
+    }
 
     for (int n=0; n<=6; n++)
     {
@@ -276,39 +300,25 @@ int EngineAPI::root_negamax(const int depth, std::array<int,7> move_order, int a
     return best_move;
 }
 
-int EngineAPI::random_engine_move(const int depth)
+int EngineAPI::engine_move(const int depth)
 {
-    int move;
-    int result;
     int alpha = -1000;
     int beta = 1000;
 
-    transposition_table.clear();
-
     std::array<int,7> moves = move_order();
 
-    // Look for a move that makes a four in a row.
-    for (int n=0; n<=6; n++)
-    {
-        move = moves[n];
-        if (game_state.column_not_full(move))
-        {
-            game_state.make_move(move);
-            result = game_state.four_in_a_row();
-            game_state.undo_move(move);
-            if (result) {return move;}
-        }
-    }
+    int d = game_state.get_number_of_moves() + 2;
 
-    // Look for blocking moves.
-    for (int n=0; n<=6; n++)
-    {
-        move = moves[n];
-        if (game_state.column_not_full(move))
-        {
-            if (game_state.is_blocking_move(move)) {return move;}
-        }
-    }
+//    while (d < depth)
+//    {
+//        int move = root_negamax(d, moves, alpha, beta);
+//        d++;
+//        transposition_table.clear();
+//    }
+
+//    transposition_table.clear();
+
+    transposition_table.clear();
 
     return root_negamax(depth, moves, alpha, beta);
 }
@@ -318,7 +328,7 @@ int EngineAPI::engine_move_easy()
     int moves = game_state.get_number_of_moves();
     int depth = moves + 2;
     if (depth > 42) {depth = 42;}
-    return random_engine_move(depth);
+    return engine_move(depth);
 }
 
 int EngineAPI::engine_move_medium()
@@ -326,7 +336,7 @@ int EngineAPI::engine_move_medium()
     int moves = game_state.get_number_of_moves();
     int depth = moves + 4;
     if (depth > 42) {depth = 42;}
-    return random_engine_move(depth);
+    return engine_move(depth);
 }
 
 int EngineAPI::engine_move_hard()
@@ -339,17 +349,17 @@ int EngineAPI::engine_move_hard()
 
     if (number_of_moves > 14)   //14
     {
-        return random_engine_move(42);
+        return engine_move(42);
     }
     if (number_of_moves > 6)
     {
         depth = number_of_moves + 20; //18
         if (depth > 42) {depth = 42;}
-        return random_engine_move(depth);
+        return engine_move(depth);
     }
 
     depth = number_of_moves + 14; //12
     if (depth > 42) {depth = 42;}
-    return random_engine_move(depth);
+    return engine_move(depth);
 }
 }

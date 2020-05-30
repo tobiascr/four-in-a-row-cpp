@@ -77,7 +77,7 @@ private:
     /* Return a move (0 to 6) computed with the negamax algorithm. Depth is counted as
     the move number at which the search is stopped.*/
 
-    int random_engine_move(const int depth);
+    int engine_move(const int depth);
     /* Return an integer from 0 to 6 that represents a best move made by the engine
        at the given depth level. If there are several equally good moves, one of them
        is chosen randomly. Depth is counted as the move number at which the search is stopped.
