@@ -2,6 +2,7 @@
 #define TEST_GAMESTATE_H
 
 #include <string>
+#include <utility>
 
 namespace TestEngine
 {
@@ -53,6 +54,9 @@ public:
     std::string get_key() const;
     // Return a unique key that corresponds to the current game state.
 
+    std::pair<uint64_t, uint64_t> get_key_2() const;
+    // Return a unique key that corresponds to the current game state.
+
 private:
     /* The places where disks are positioned on the board is stored in bitboards
     in the form of 64 bit integers. Each player have one bitboard.
@@ -82,6 +86,7 @@ private:
     int number_of_moves;
     uint64_t history[42]; // Bitboards from earlier moves.
     const uint64_t one = 1;
+    uint64_t next_move[7];
 
     bool four_in_a_row(uint64_t bitboard) const;
     /* Return true iff there is a four in a row of 1:s on the bitboard.*/

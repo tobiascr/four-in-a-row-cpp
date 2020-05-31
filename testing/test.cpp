@@ -3,8 +3,8 @@
 #include <iostream>
 #include <string>
 #include <chrono>
-#include "game_state.h"
-#include "engine_API.h"
+#include "../game_state.h"
+#include "../engine_API.h"
 #include "test_engine_API.h"
 
 void load_position(Engine::GameState& game_state, std::string move_string)

@@ -4,8 +4,8 @@
 #include <array>
 #include <random>
 #include <algorithm>
-#include <string>
-#include <unordered_map>
+#include <map>
+#include <utility>
 #include "test_game_state.h"
 
 namespace TestEngine
@@ -46,11 +46,13 @@ private:
 
     std::mt19937 random_generator;
 
-    std::unordered_map<std::string, int> transposition_table;
+    std::map<std::pair<uint64_t, uint64_t>, int> transposition_table;
 
     int position_heuristic(int move) const;
 
     int position_heuristic_2(int move) const;
+
+    int position_heuristic_3(int move) const;
 
     int open_four_in_a_row_count(int player) const;
 
@@ -71,7 +73,11 @@ private:
        have no four in a row.
     */
 
-    int random_engine_move(const int depth);
+    int root_negamax(const int depth, std::array<int,7> move_order, int alpha, int);
+    /* Return a move (0 to 6) computed with the negamax algorithm. Depth is counted as
+    the move number at which the search is stopped.*/
+
+    int engine_move(const int depth);
     /* Return an integer from 0 to 6 that represents a best move made by the engine
        at the given depth level. If there are several equally good moves, one of them
        is chosen randomly. Depth is counted as the move number at which the search is stopped.

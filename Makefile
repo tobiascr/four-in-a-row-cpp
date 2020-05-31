@@ -22,11 +22,11 @@ engine_API.o: engine_API.cpp
 test.o: ./testing/test.cpp
 	g++ -c $(FLAGS) ./testing/test.cpp
 
-test_game_state.o: test_game_state.cpp
-	g++ -c $(FLAGS) test_game_state.cpp
+test_game_state.o: ./testing/test_game_state.cpp
+	g++ -c $(FLAGS) ./testing/test_game_state.cpp
 
-test_engine_API.o: test_engine_API.cpp
-	g++ -c $(FLAGS) test_engine_API.cpp
+test_engine_API.o: ./testing/test_engine_API.cpp
+	g++ -c $(FLAGS) ./testing/test_engine_API.cpp
 
 .PHONY: clean
 clean:
