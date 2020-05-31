@@ -19,8 +19,8 @@ game_state.o: game_state.cpp
 engine_API.o: engine_API.cpp
 	g++ -c $(FLAGS) engine_API.cpp
 
-test.o: test.cpp
-	g++ -c $(FLAGS) test.cpp
+test.o: ./testing/test.cpp
+	g++ -c $(FLAGS) ./testing/test.cpp
 
 test_game_state.o: test_game_state.cpp
 	g++ -c $(FLAGS) test_game_state.cpp

@@ -316,8 +316,6 @@ int EngineAPI::engine_move(const int depth)
 //        transposition_table.clear();
 //    }
 
-//    transposition_table.clear();
-
     transposition_table.clear();
 
     return root_negamax(depth, moves, alpha, beta);
