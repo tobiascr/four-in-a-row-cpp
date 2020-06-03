@@ -3,9 +3,9 @@
 
 #include <array>
 #include <random>
-#include <algorithm>
 #include <map>
 #include <utility>
+#include <tuple>
 #include "game_state.h"
 
 namespace Engine
@@ -46,7 +46,7 @@ private:
 
     std::mt19937 random_generator;
 
-    std::map<std::pair<uint64_t, uint64_t>, int> transposition_table;
+    std::map<std::pair<uint64_t, uint64_t>, std::tuple<int, int, int>> transposition_table;
 
     int position_heuristic(int move) const;
 

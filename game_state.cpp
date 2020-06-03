@@ -100,40 +100,39 @@ bool GameState::can_win_this_move() const
 {
     uint64_t b = bitboard[player_in_turn];
 
-    // This corresponds to the strip on the bitmap above the board. It is used
-    // to remove illegal moves.
-    const uint64_t top_rank_mask = 0b0111111011111101111110111111011111101111110111111;
+    const uint64_t next_moves = next_move[0] | next_move[1] | next_move[2] | next_move[3] |
+                           next_move[4] | next_move[5] | next_move[6];
 
-    const uint64_t move0 = next_move[0] & top_rank_mask;
-    const uint64_t move1 = next_move[1] & top_rank_mask;
-    const uint64_t move2 = next_move[2] & top_rank_mask;
-    const uint64_t move3 = next_move[3] & top_rank_mask;
-    const uint64_t move4 = next_move[4] & top_rank_mask;
-    const uint64_t move5 = next_move[5] & top_rank_mask;
-    const uint64_t move6 = next_move[6] & top_rank_mask;
+    // Masks for various columns.
+    const uint64_t mask_0246 = 0b0111111000000001111110000000011111100000000111111;
+    const uint64_t mask_04 =   0b0000000000000001111110000000000000000000000111111;
+    const uint64_t mask_26 =   0b0111111000000000000000000000011111100000000000000;
+    const uint64_t mask_135 =  0b0000000011111100000000111111000000001111110000000;
+    const uint64_t mask_15 =   0b0000000011111100000000000000000000001111110000000;
+    const uint64_t mask_3 =    0b0000000000000000000000111111000000000000000000000;
 
     // First a test of 4 moves together that might give a false positive.
-    if (four_in_a_row(b |move0 | move2 | move4 | move6))
+    if (four_in_a_row(b | (mask_0246 & next_moves)))
     {
         // To rule out false positives, more tests are done.
 
         // Test column 0 and 4.
-        if (four_in_a_row(b | move0 | move4)) {return true;}
+        if (four_in_a_row(b | (mask_04 & next_moves))) {return true;}
 
         // Test column 2 and 6.
-        if (four_in_a_row(b | move2 | move6)) {return true;}
+        if (four_in_a_row(b | (mask_26 & next_moves))) {return true;}
     }
 
     // First a test of 3 moves together that might give a false positive.
-    if (four_in_a_row(b |move1 | move3 | move5))
+    if (four_in_a_row(b | (mask_135 & next_moves)))
     {
         // To rule out false positives, more tests are done.
 
         // Test column 1 and 5.
-        if (four_in_a_row(b | move1 | move5)) {return true;}
+        if (four_in_a_row(b | (mask_15 & next_moves))) {return true;}
 
         // Test column 3.
-        if (four_in_a_row(b | move3)) {return true;}
+        if (four_in_a_row(b | (mask_3 & next_moves))) {return true;}
     }
 
     return false;
@@ -154,12 +153,7 @@ int GameState::get_number_of_moves() const
     return number_of_moves;
 }
 
-std::string GameState::get_key() const
-{
-    return std::to_string(bitboard[0]) + std::to_string(bitboard[1]);
-}
-
-std::pair<uint64_t, uint64_t> GameState::get_key_2() const
+std::pair<uint64_t, uint64_t> GameState::get_key() const
 {
     return {bitboard[0], bitboard[1]};
 }

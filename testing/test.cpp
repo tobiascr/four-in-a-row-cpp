@@ -159,11 +159,6 @@ void test_game_state()
     std::cout << game_state.get_number_of_disks_in_column(5) << std::endl;
     std::cout << game_state.get_number_of_disks_in_column(6) << std::endl;
 
-    std::string b;
-    b = game_state.get_key();
-    std::cout << "Key:" << std::endl;
-    std::cout << b << std::endl;;
-
     std::cout << "Test is_blocking_move:" << std::endl;
     load_position(game_state, "30303");
     print_board(game_state);

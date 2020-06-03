@@ -1,8 +1,4 @@
-#include <array>
-#include <random>
-#include <iostream>
 #include <algorithm>
-#include <utility>
 #include "engine_API.h"
 #include "game_state.h"
 
@@ -201,19 +197,28 @@ int EngineAPI::negamax(const int depth, int alpha, int beta)
     const bool use_transposition_table = depth - game_state.get_number_of_moves() > 7;
     if (use_transposition_table)
     {
-        key = game_state.get_key_2();
+        key = game_state.get_key();
         if (transposition_table.count(key) == 1)
         {
-            int lower_bound = transposition_table[key];
-            if (lower_bound >= beta)
+            int tt_depth;
+            int tt_move;
+            int tt_value;
+            std::tie(tt_depth, tt_move, tt_value) = transposition_table[key];
+
+            int lower_bound = tt_value;
+
+            if (tt_value != 0 or tt_depth >= depth)
             {
-                return beta;
-            }
-            else
-            {
-                if (lower_bound > alpha)
+                if (lower_bound >= beta)
                 {
-                    alpha = lower_bound;
+                    return beta;
+                }
+                else
+                {
+                    if (lower_bound > alpha)
+                    {
+                        alpha = lower_bound;
+                    }
                 }
             }
         }
@@ -234,7 +239,7 @@ int EngineAPI::negamax(const int depth, int alpha, int beta)
             {
                 if (use_transposition_table)
                 {
-                    transposition_table[key] = value;
+                    transposition_table[key] = std::tuple<int, int, int>{depth, move, value};
                 }
                 return beta;
             }
@@ -243,7 +248,7 @@ int EngineAPI::negamax(const int depth, int alpha, int beta)
                 alpha = value;
                 if (use_transposition_table)
                 {
-                    transposition_table[key] = value;
+                    transposition_table[key] = std::tuple<int, int, int>{depth, move, value};
                 }
             }
         }
@@ -316,7 +321,7 @@ int EngineAPI::engine_move(const int depth)
 //        transposition_table.clear();
 //    }
 
-    transposition_table.clear();
+//    transposition_table.clear();
 
     return root_negamax(depth, moves, alpha, beta);
 }
@@ -351,12 +356,12 @@ int EngineAPI::engine_move_hard()
     }
     if (number_of_moves > 6)
     {
-        depth = number_of_moves + 20; //18
+        depth = number_of_moves + 20; //20
         if (depth > 42) {depth = 42;}
         return engine_move(depth);
     }
 
-    depth = number_of_moves + 14; //12
+    depth = number_of_moves + 14; //14
     if (depth > 42) {depth = 42;}
     return engine_move(depth);
 }
