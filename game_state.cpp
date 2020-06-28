@@ -1,4 +1,5 @@
 #include "game_state.h"
+#include <iostream>
 
 namespace Engine
 {
@@ -23,6 +24,7 @@ void GameState::reset()
     next_move[4] = 0b10000000000000000000000000000;
     next_move[5] = 0b100000000000000000000000000000000000;
     next_move[6] = 0b1000000000000000000000000000000000000000000;
+    next_moves = 0b0000001000000100000010000001000000100000010000001;
 }
 
 char GameState::get_value(int column, int row) const
@@ -52,11 +54,14 @@ int GameState::get_number_of_disks_in_column(int column) const
 void GameState::make_move(int column)
 {
     history[number_of_moves] = bitboard[player_in_turn];
+    next_moves_history[number_of_moves] = next_moves;
     bitboard[player_in_turn] |= next_move[column];
+    next_moves ^= next_move[column];
     column_height[column]++;
     number_of_moves++;
     player_in_turn = 1 - player_in_turn;
     next_move[column] <<= 1;
+    next_moves |= next_move[column];
 }
 
 void GameState::undo_move(int column)
@@ -65,6 +70,7 @@ void GameState::undo_move(int column)
     number_of_moves--;
     player_in_turn = 1 - player_in_turn;
     bitboard[player_in_turn] = history[number_of_moves];
+    next_moves = next_moves_history[number_of_moves];
     next_move[column] >>= 1;
 }
 
@@ -99,9 +105,6 @@ bool GameState::four_in_a_row(int player, int column, int row) const
 bool GameState::can_win_this_move() const
 {
     uint64_t b = bitboard[player_in_turn];
-
-    const uint64_t next_moves = next_move[0] | next_move[1] | next_move[2] | next_move[3] |
-                           next_move[4] | next_move[5] | next_move[6];
 
     // Masks for various columns.
     const uint64_t mask_0246 = 0b0111111000000001111110000000011111100000000111111;
@@ -140,7 +143,7 @@ bool GameState::can_win_this_move() const
 
 bool GameState::is_blocking_move(int column) const
 {
-    return four_in_a_row(bitboard[1 - player_in_turn] | (one << column * 7 + column_height[column]));
+    return four_in_a_row(bitboard[1 - player_in_turn] | next_move[column]);
 }
 
 bool GameState::board_full() const
@@ -155,8 +158,7 @@ int GameState::get_number_of_moves() const
 
 uint64_t GameState::get_key() const
 {
-    const uint64_t mask = ~(bitboard[0] | bitboard[1]);
-    return bitboard[0] | (mask ^ (mask << 1));
+    return bitboard[0] | next_moves;
 }
 
 }
