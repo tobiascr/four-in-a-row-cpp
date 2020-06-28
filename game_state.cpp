@@ -153,8 +153,10 @@ int GameState::get_number_of_moves() const
     return number_of_moves;
 }
 
-std::pair<uint64_t, uint64_t> GameState::get_key() const
+uint64_t GameState::get_key() const
 {
-    return {bitboard[0], bitboard[1]};
+    const uint64_t mask = ~(bitboard[0] | bitboard[1]);
+    return bitboard[0] | (mask ^ (mask << 1));
 }
+
 }

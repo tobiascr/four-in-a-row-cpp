@@ -1,7 +1,6 @@
 #ifndef GAMESTATE_H
 #define GAMESTATE_H
 
-#include <utility>
 #include <stdint.h>
 
 namespace Engine
@@ -51,7 +50,7 @@ public:
 
     int get_number_of_moves() const;
 
-    std::pair<uint64_t, uint64_t> get_key() const;
+    uint64_t get_key() const;
     // Return a unique key that corresponds to the current game state.
 
 private:
