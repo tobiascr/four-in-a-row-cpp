@@ -3,9 +3,8 @@
 
 #include <array>
 #include <random>
-#include <algorithm>
-#include <map>
-#include <utility>
+#include <tuple>
+#include <unordered_map>
 #include "test_game_state.h"
 
 namespace TestEngine
@@ -46,22 +45,23 @@ private:
 
     std::mt19937 random_generator;
 
-    std::map<std::pair<uint64_t, uint64_t>, int> transposition_table;
+    std::unordered_map<uint64_t, std::tuple<int, int, int>> transposition_table;
 
     int position_heuristic(int move) const;
 
     int position_heuristic_2(int move) const;
-
-    int position_heuristic_3(int move) const;
 
     int open_four_in_a_row_count(int player) const;
 
     int open_four_in_a_row_heuristic(int move);
 
     std::array<int,7> move_order();
-    /* Return a suggested move order for a root negamax search based on a heuristic evaluation
+    /* Return a move order for a root negamax search based on a heuristic evaluation
        of the current game state. There is some randomness included in the move ordering
        for moves that are estimated to be equally strong.*/
+
+    std::array<int,7> move_order(int first_move);
+    /* Return a move order with the given first move.*/
 
     int negamax(const int depth, int alpha, int beta);
     /* Compute a value of game_state. Return a positive integer for a winning game_state for

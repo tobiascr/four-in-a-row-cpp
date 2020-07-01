@@ -1,8 +1,7 @@
 #ifndef TEST_GAMESTATE_H
 #define TEST_GAMESTATE_H
 
-#include <string>
-#include <utility>
+#include <stdint.h>
 
 namespace TestEngine
 {
@@ -51,10 +50,7 @@ public:
 
     int get_number_of_moves() const;
 
-    std::string get_key() const;
-    // Return a unique key that corresponds to the current game state.
-
-    std::pair<uint64_t, uint64_t> get_key_2() const;
+    uint64_t get_key() const;
     // Return a unique key that corresponds to the current game state.
 
 private:
@@ -87,6 +83,8 @@ private:
     uint64_t history[42]; // Bitboards from earlier moves.
     const uint64_t one = 1;
     uint64_t next_move[7];
+    uint64_t next_moves;
+    uint64_t next_moves_history[42];
 
     bool four_in_a_row(uint64_t bitboard) const;
     /* Return true iff there is a four in a row of 1:s on the bitboard.*/

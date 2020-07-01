@@ -159,5 +159,4 @@ uint64_t GameState::get_key() const
 {
     return bitboard[0] | next_moves;
 }
-
 }
