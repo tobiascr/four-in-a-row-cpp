@@ -160,7 +160,7 @@ std::array<int,7> EngineAPI::move_order()
     return moves;
 }
 
-std::array<int,7> move_order(int first_move)
+std::array<int,7> EngineAPI::move_order(int first_move)
 {
     switch (first_move)
     {
@@ -194,7 +194,7 @@ int EngineAPI::negamax(const int depth, int alpha, int beta)
     // Move order.
     int moves[7] = {3, 2, 4, 1, 5, 0, 6};
 
-    const bool use_transposition_table = depth - game_state.get_number_of_moves() > 4;
+    const bool use_transposition_table = depth - game_state.get_number_of_moves() > 5;
     if (use_transposition_table)
     {
         key = game_state.get_key();
@@ -243,10 +243,10 @@ int EngineAPI::negamax(const int depth, int alpha, int beta)
             if (value > alpha)
             {
                 alpha = value;
-//                if (use_transposition_table)
-//                {
-//                    transposition_table[key] = std::tuple<int, int, int>{depth, move, value};
-//                }
+                if (use_transposition_table)
+                {
+                    transposition_table[key] = std::tuple<int, int, int>{depth, move, value};
+                }
             }
         }
     }
@@ -307,17 +307,39 @@ int EngineAPI::engine_move(const int depth)
     int alpha = -1000;
     int beta = 1000;
 
+//    alpha = -1;
+//    beta = 1;
+
     std::array<int,7> moves = move_order();
 
-    int d = game_state.get_number_of_moves() + 2;
+    if (depth == 42)
+    {
+        moves = move_order(3);
 
-//    while (d < depth)
-//    {
-//        int move = root_negamax(d, moves, alpha, beta);
-//        d++;
-//    }
+        uint64_t key = game_state.get_key();
+        if (transposition_table.count(key) == 1)
+        {
+            int tt_depth;
+            int tt_move;
+            int tt_value;
+            std::tie(tt_depth, tt_move, tt_value) = transposition_table[key];
+            moves = move_order(tt_move);
+        }
+    }
 
 //    transposition_table.clear();
+
+    // Iterative deepening.
+    if (depth == 42)
+    {
+        int d = game_state.get_number_of_moves() + 2;
+        while (d < depth)
+        {
+            int move = root_negamax(d, moves, alpha, beta);
+            moves = move_order(move);
+            d += 2;
+        }
+    }
 
     return root_negamax(depth, moves, alpha, beta);
 }
@@ -346,15 +368,9 @@ int EngineAPI::engine_move_hard()
     // Some opening moves.
     if (number_of_moves < 2) {return 3;}
 
-    if (number_of_moves > 14)   //14
+    if (number_of_moves > 12) //12
     {
         return engine_move(42);
-    }
-    if (number_of_moves > 6)
-    {
-        depth = number_of_moves + 20; //20
-        if (depth > 42) {depth = 42;}
-        return engine_move(depth);
     }
 
     depth = number_of_moves + 14; //14

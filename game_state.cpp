@@ -1,5 +1,4 @@
 #include "game_state.h"
-#include <iostream>
 
 namespace Engine
 {
