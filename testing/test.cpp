@@ -264,6 +264,55 @@ void test_transposition_table()
 //    std::cout << tt.lower_bound_available(key) << std::endl;
 }
 
+void test_position(Engine::EngineAPI& engine, std::string move_string, int expected_move)
+{
+    std::chrono::steady_clock::time_point t0;
+    std::chrono::steady_clock::time_point t1;
+    std::chrono::steady_clock::duration move_time;
+    load_position(engine, move_string);
+//    print_board(engine);
+    t0 = std::chrono::steady_clock::now();
+    int move = engine.engine_move();
+    t1 = std::chrono::steady_clock::now();
+    move_time = t1 - t0;
+    std::cout << "Position: " <<  move_string << std::endl;
+    std::cout << "Engine move: " <<  move;
+    std::cout << ", Expected move: " <<  expected_move;
+    std::cout << ", Time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(move_time).count()
+              << " ms" << std::endl;
+    if (move == expected_move)
+    {
+        std::cout << "Test successful!" << std::endl;
+    }
+    else
+    {
+        std::cout << "Test failed!" << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+void benchmark(Engine::EngineAPI& engine)
+{
+//    test_position(engine, "333335", 5); // Could not solve it.
+//    test_position(engine, "33333530", 5);
+//    test_position(engine, "333304", 1);
+//    test_position(engine, "33344334", 4);
+//    test_position(engine, "3333335", 4);
+//    test_position(engine, "3332224", 3);
+    test_position(engine, "444320", 2);
+    test_position(engine, "333333561", 0);
+    test_position(engine, "33630445", 3);
+    test_position(engine, "334233650026", 5);
+    test_position(engine, "33423365002630", 1);
+    test_position(engine, "3000011243563", 3);
+    test_position(engine, "333335302255", 5);
+    test_position(engine, "01234560000", 2);
+    test_position(engine, "333222323314", 4);
+
+
+}
+
 void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_engine, int number_of_games,
                 bool display_move_times)
 // Let engine and test_engine play against each other.
@@ -274,6 +323,7 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
     int draws = 0;
     bool engine_begin = true;
     int result;
+    int number_of_moves;
 
     bool engine_to_play = engine_begin;
     int move;
@@ -288,18 +338,24 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                  std::chrono::steady_clock::duration::zero();
     std::chrono::steady_clock::duration total_time_test_engine =
                  std::chrono::steady_clock::duration::zero();
+    std::chrono::steady_clock::duration max_move_time_engine =
+                 std::chrono::steady_clock::duration::zero();
+    std::chrono::steady_clock::duration max_move_time_test_engine =
+                 std::chrono::steady_clock::duration::zero();
 
     for (int n=1; n<=number_of_games; n++)
     {
         engine.new_game();
         test_engine.new_game();
         engine_to_play = engine_begin;
+        number_of_moves = 0;
         game_time_engine = std::chrono::steady_clock::duration::zero();
         game_time_test_engine = std::chrono::steady_clock::duration::zero();
         std::cout << std::endl << "Game " << n << ":" << std::endl;
 
         while (true)
         {
+            number_of_moves ++;
             if (engine_to_play)
             {
                 t0 = std::chrono::steady_clock::now();
@@ -312,6 +368,10 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                     << std::chrono::duration_cast<std::chrono::microseconds>(move_time).count()
                     << " microseconds" << std::endl;
                 }
+                if (move_time > max_move_time_engine)
+                {
+                    max_move_time_engine = move_time;
+                }
                 game_time_engine += move_time;
                 engine.make_move(move);
                 test_engine.make_move(move);
@@ -322,6 +382,7 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                     << " ms. Test engine time: "
                     << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_test_engine).count()
                     << " ms" << std::endl;
+                    std::cout << "Number or moves: " << number_of_moves << std::endl;
                     engine_wins++;
                     total_time_engine += game_time_engine;
                     total_time_test_engine += game_time_test_engine;
@@ -334,6 +395,7 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                     << " ms. Test engine time: "
                     << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_test_engine).count()
                     << " ms" << std::endl;
+                    std::cout << "Number or moves: " << number_of_moves << std::endl;
                     draws++;
                     total_time_engine += game_time_engine;
                     total_time_test_engine += game_time_test_engine;
@@ -352,6 +414,10 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                     << std::chrono::duration_cast<std::chrono::microseconds>(move_time).count()
                     << " microseconds" << std::endl;
                 }
+                if (move_time > max_move_time_test_engine)
+                {
+                    max_move_time_test_engine = move_time;
+                }
                 game_time_test_engine += move_time;
                 engine.make_move(move);
                 test_engine.make_move(move);
@@ -362,6 +428,7 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                     << " ms. Test engine time: "
                     << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_test_engine).count()
                     << " ms" << std::endl;
+                    std::cout << "Number or moves: " << number_of_moves << std::endl;
                     test_engine_wins++;
                     total_time_engine += game_time_engine;
                     total_time_test_engine += game_time_test_engine;
@@ -374,6 +441,7 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                     << " ms. Test_engine time: "
                     << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_test_engine).count()
                     << " ms" << std::endl;
+                    std::cout << "Number or moves: " << number_of_moves << std::endl;
                     draws++;
                     total_time_engine += game_time_engine;
                     total_time_test_engine += game_time_test_engine;
@@ -390,6 +458,12 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
     std::cout << "Engine wins: " << engine_wins << std::endl;
     std::cout << "Test engine wins: " << test_engine_wins << std::endl;
     std::cout << "Draws: " << draws << std::endl;
+    std::cout << "Max Engine move time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(max_move_time_engine).count()
+              << " ms" << std::endl;
+    std::cout << "Max Test engine move time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(max_move_time_test_engine).count()
+              << " ms" << std::endl;
     std::cout << "Total Engine time: "
               << std::chrono::duration_cast<std::chrono::milliseconds>(total_time_engine).count()
               << " ms" << std::endl;
@@ -415,7 +489,8 @@ int main()
 //    TestEngine::EngineAPI test_engine;
 //    test_engine.set_difficulty_level(3);
 
-    engine_vs_engine(engine, test_engine, 20, false);
+    benchmark(engine);
+//    engine_vs_engine(engine, test_engine, 20, false);
 
     return 0;
 }

@@ -160,6 +160,24 @@ std::array<int,7> EngineAPI::move_order()
     return moves;
 }
 
+std::array<int,7> EngineAPI::move_order2()
+{
+    std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
+    int values[7];
+
+    // Adding randomness to the move order.
+    shuffle (moves.begin(), moves.end(), random_generator);
+
+    for (int n=0; n<=6; n++)
+    {
+          values[n] = open_four_in_a_row_heuristic(n);
+    }
+
+    std::stable_sort(moves.begin(), moves.end(),
+                     [&values](int i, int j){return values[i] > values[j];});
+    return moves;
+}
+
 std::array<int,7> EngineAPI::move_order(int first_move)
 {
     switch (first_move)
@@ -175,11 +193,12 @@ std::array<int,7> EngineAPI::move_order(int first_move)
     return {3, 2, 4, 1, 5, 0, 6};
 }
 
-int EngineAPI::negamax(const int depth, int alpha, int beta)
+int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
 {
-    int move;
-    int value;
+    short int move;
+    short int value;
     uint64_t key;
+    short int original_alpha = alpha;
 
     if (game_state.can_win_this_move())
     {
@@ -192,7 +211,7 @@ int EngineAPI::negamax(const int depth, int alpha, int beta)
     }
 
     // Move order.
-    int moves[7] = {3, 2, 4, 1, 5, 0, 6};
+    short int moves[7] = {3, 2, 4, 1, 5, 0, 6};
 
     const bool use_transposition_table = depth - game_state.get_number_of_moves() > 5;
     if (use_transposition_table)
@@ -200,25 +219,30 @@ int EngineAPI::negamax(const int depth, int alpha, int beta)
         key = game_state.get_key();
         if (transposition_table.count(key) == 1)
         {
-            int tt_depth;
-            int tt_move;
-            int tt_value;
-            std::tie(tt_depth, tt_move, tt_value) = transposition_table[key];
+            short int tt_depth;
+            short int tt_type;
+            short int tt_value;
 
-            int lower_bound = tt_value;
+            std::array<short int, 3> tt_array = transposition_table[key];
+
+            tt_depth = tt_array[0];
+            tt_type = tt_array[1];
+            tt_value = tt_array[2];
+
+            if (tt_type == 2)
+            {
+                return tt_value;
+            }
 
             if (tt_value != 0 or tt_depth >= depth)
             {
-                if (lower_bound >= beta)
+                if (tt_value >= beta)
                 {
                     return beta;
                 }
-                else
+                else if (tt_value > alpha)
                 {
-                    if (lower_bound > alpha)
-                    {
-                        alpha = lower_bound;
-                    }
+                    alpha = tt_value;
                 }
             }
         }
@@ -236,17 +260,24 @@ int EngineAPI::negamax(const int depth, int alpha, int beta)
             {
                 if (use_transposition_table)
                 {
-                    transposition_table[key] = std::tuple<int, int, int>{depth, move, value};
+                    transposition_table[key] = std::array<short int, 3>{depth, 1, value};
                 }
                 return beta;
             }
             if (value > alpha)
             {
                 alpha = value;
-                if (use_transposition_table)
-                {
-                    transposition_table[key] = std::tuple<int, int, int>{depth, move, value};
-                }
+            }
+        }
+    }
+
+    if (use_transposition_table)
+    {
+        if (alpha > original_alpha) // Exact values.
+        {
+            if (alpha != 0 or depth == 42)
+            {
+                transposition_table[key] = std::array<short int, 3>{depth, 2, alpha};
             }
         }
     }
@@ -254,7 +285,8 @@ int EngineAPI::negamax(const int depth, int alpha, int beta)
     return alpha;
 }
 
-int EngineAPI::root_negamax(const int depth, std::array<int,7> move_order, int alpha, int beta)
+int EngineAPI::root_negamax(const short int depth, std::array<int,7> move_order,
+                            short int alpha, short int beta)
 {
     int new_value;
     int move;
@@ -302,10 +334,10 @@ int EngineAPI::root_negamax(const int depth, std::array<int,7> move_order, int a
     return best_move;
 }
 
-int EngineAPI::engine_move(const int depth)
+int EngineAPI::engine_move(const short int depth)
 {
-    int alpha = -1000;
-    int beta = 1000;
+    short int alpha = -1000;
+    short int beta = 1000;
 
 //    alpha = -1;
 //    beta = 1;
@@ -315,17 +347,12 @@ int EngineAPI::engine_move(const int depth)
     if (depth == 42)
     {
         moves = move_order(3);
-
-        uint64_t key = game_state.get_key();
-        if (transposition_table.count(key) == 1)
-        {
-            int tt_depth;
-            int tt_move;
-            int tt_value;
-            std::tie(tt_depth, tt_move, tt_value) = transposition_table[key];
-            moves = move_order(tt_move);
-        }
+//        moves = move_order2();
     }
+//    else
+//    {
+//        moves = move_order();
+//    }
 
 //    transposition_table.clear();
 
@@ -347,7 +374,7 @@ int EngineAPI::engine_move(const int depth)
 int EngineAPI::engine_move_easy()
 {
     int moves = game_state.get_number_of_moves();
-    int depth = moves + 2;
+    short int depth = moves + 2;
     if (depth > 42) {depth = 42;}
     return engine_move(depth);
 }
@@ -355,7 +382,7 @@ int EngineAPI::engine_move_easy()
 int EngineAPI::engine_move_medium()
 {
     int moves = game_state.get_number_of_moves();
-    int depth = moves + 4;
+    short int depth = moves + 4;
     if (depth > 42) {depth = 42;}
     return engine_move(depth);
 }
@@ -363,7 +390,7 @@ int EngineAPI::engine_move_medium()
 int EngineAPI::engine_move_hard()
 {
     int number_of_moves = game_state.get_number_of_moves();
-    int depth;
+    short int depth;
 
     // Some opening moves.
     if (number_of_moves < 2) {return 3;}

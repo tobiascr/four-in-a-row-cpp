@@ -3,7 +3,6 @@
 
 #include <array>
 #include <random>
-#include <tuple>
 #include <unordered_map>
 #include "game_state.h"
 
@@ -45,7 +44,7 @@ private:
 
     std::mt19937 random_generator;
 
-    std::unordered_map<uint64_t, std::tuple<int, int, int>> transposition_table;
+    std::unordered_map<uint64_t, std::array<short int, 3>> transposition_table;
 
     int position_heuristic(int move) const;
 
@@ -60,10 +59,12 @@ private:
        of the current game state. There is some randomness included in the move ordering
        for moves that are estimated to be equally strong.*/
 
+    std::array<int,7> move_order2();
+
     std::array<int,7> move_order(int first_move);
     /* Return a move order with the given first move.*/
 
-    int negamax(const int depth, int alpha, int beta);
+    int negamax(const short int depth, short int alpha, short int beta);
     /* Compute a value of game_state. Return a positive integer for a winning game_state for
        the player in turn, 0 for a draw or unknown outcome and a negative integer for a loss.
        A win at move 42 give the score 1, a win at move 41 give a the score 2 etc,
@@ -73,11 +74,11 @@ private:
        have no four in a row.
     */
 
-    int root_negamax(const int depth, std::array<int,7> move_order, int alpha, int);
+    int root_negamax(const short int depth, std::array<int,7> move_order, short int alpha, short int beta);
     /* Return a move (0 to 6) computed with the negamax algorithm. Depth is counted as
     the move number at which the search is stopped.*/
 
-    int engine_move(const int depth);
+    int engine_move(const short int depth);
     /* Return an integer from 0 to 6 that represents a best move made by the engine
        at the given depth level. If there are several equally good moves, one of them
        is chosen randomly. Depth is counted as the move number at which the search is stopped.
