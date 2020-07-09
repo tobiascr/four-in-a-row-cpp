@@ -410,7 +410,7 @@ int EngineAPI::engine_move_hard()
     // Some opening moves.
     if (number_of_moves < 2) {return 3;}
 
-    if (number_of_moves > 5) //12
+    if (number_of_moves > 12) //12
     {
         return engine_move(42);
     }
