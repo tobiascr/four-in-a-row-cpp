@@ -489,8 +489,8 @@ int main()
 //    TestEngine::EngineAPI test_engine;
 //    test_engine.set_difficulty_level(3);
 
-    benchmark(engine);
-//    engine_vs_engine(engine, test_engine, 20, false);
+//    benchmark(engine);
+    engine_vs_engine(engine, test_engine, 20, false);
 
     return 0;
 }

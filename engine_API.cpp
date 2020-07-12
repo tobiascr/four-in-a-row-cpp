@@ -213,16 +213,8 @@ int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
 
     // Move order.
     short int moves[7] = {3, 2, 4, 1, 5, 0, 6};
-//    std::array<int,7> moves = move_order(3);
-////    if ((depth - game_state.get_number_of_moves()) > 20)
-//    if (game_state.get_number_of_moves() < 12)
-//    {
-//        moves = move_order2();
-//    }
-
 
     const bool use_transposition_table = depth - game_state.get_number_of_moves() > 5; //5
-//    bool use_transposition_table = false;
     if (use_transposition_table)
     {
         key = game_state.get_key();
@@ -249,12 +241,6 @@ int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
                 {
                     return beta;
                 }
-//                else if (tt_value > alpha) // Trouble occurs here is tt is not cleared
-//                // between moves. tt entry type is 1. This code does not seem to make the
-//                // program faster anyway.
-//                {
-//                    alpha = tt_value;
-//                }
             }
         }
     }
@@ -286,7 +272,7 @@ int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
     {
         if (alpha > original_alpha) // Exact values.
         {
-            if (alpha != 0) // or depth == 42)
+            if (alpha != 0)
             {
                 transposition_table[key] = std::array<short int, 3>{depth, 2, alpha};
             }
@@ -359,12 +345,7 @@ int EngineAPI::engine_move(const short int depth)
     if (depth == 42)
     {
         moves = move_order(3);
-//        moves = move_order2();
     }
-//    else
-//    {
-//        moves = move_order();
-//    }
 
     // Clearing the transposition table between moves makes the total move time a little
     // slower. But the maximum move time is not affected, since it's typically the first move.
