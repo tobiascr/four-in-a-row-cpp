@@ -235,13 +235,11 @@ int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
                 return tt_value;
             }
 
-            if (tt_value != 0 or tt_depth >= depth)
+            if (tt_value >= beta and (tt_value != 0 or tt_depth >= depth))
             {
-                if (tt_value >= beta)
-                {
-                    return beta;
-                }
+                return beta;
             }
+
         }
     }
 
