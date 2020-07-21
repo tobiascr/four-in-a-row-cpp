@@ -80,8 +80,7 @@ private:
 
     int engine_move(const short int depth);
     /* Return an integer from 0 to 6 that represents a best move made by the engine
-       at the given depth level. If there are several equally good moves, one of them
-       is chosen randomly. Depth is counted as the move number at which the search is stopped.
+       at the given depth level. Depth is counted as the move number at which the search is stopped.
        For example, depth=42 give a maximum depth search.
     */
 

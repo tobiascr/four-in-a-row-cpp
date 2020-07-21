@@ -196,8 +196,6 @@ std::array<int,7> EngineAPI::move_order(int first_move)
 
 int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
 {
-    short int move;
-    short int value;
     uint64_t key;
     short int original_alpha = alpha;
 
@@ -211,24 +209,14 @@ int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
         return 0;
     }
 
-    // Move order.
-    short int moves[7] = {3, 2, 4, 1, 5, 0, 6};
-
-    const bool use_transposition_table = depth - game_state.get_number_of_moves() > 5; //5
+    const bool use_transposition_table = depth - game_state.get_number_of_moves() > 5;
     if (use_transposition_table)
     {
         key = game_state.get_key();
         if (transposition_table.count(key) == 1)
         {
-            short int tt_depth;
-            short int tt_type;
-            short int tt_value;
-
             std::array<short int, 3> tt_array = transposition_table[key];
-
-            tt_depth = tt_array[0];
-            tt_type = tt_array[1];
-            tt_value = tt_array[2];
+            short int tt_depth = tt_array[0], tt_type = tt_array[1], tt_value = tt_array[2];
 
             if (tt_type == 2)
             {
@@ -239,17 +227,23 @@ int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
             {
                 return beta;
             }
-
         }
+    }
+
+    // Move order.
+    std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
+    if (depth - game_state.get_number_of_moves() > 20)
+    {
+        moves = move_order2();
     }
 
     for (int i=0; i<=6; i++)
     {
-        move = moves[i];
+        short int move = moves[i];
         if (game_state.column_not_full(move))
         {
             game_state.make_move(move);
-            value = -negamax(depth, -beta, -alpha);
+            short int value = -negamax(depth, -beta, -alpha);
             game_state.undo_move(move);
             if (value >= beta) // Fail hard beta-cutoff.
             {
@@ -283,10 +277,7 @@ int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
 int EngineAPI::root_negamax(const short int depth, std::array<int,7> move_order,
                             short int alpha, short int beta)
 {
-    int new_value;
-    int move;
-    int result;
-    int best_move;
+    int new_value, move, result, best_move;
 
     // Look for a move that makes a four in a row.
     for (int n=0; n<=6; n++)
@@ -334,11 +325,7 @@ int EngineAPI::engine_move(const short int depth)
     short int alpha = -1000;
     short int beta = 1000;
 
-//    alpha = -1;
-//    beta = 1;
-
     std::array<int,7> moves = move_order();
-
 
     if (depth == 42)
     {
@@ -346,8 +333,8 @@ int EngineAPI::engine_move(const short int depth)
     }
 
     // Clearing the transposition table between moves makes the total move time a little
-    // slower. But the maximum move time is not affected, since it's typically the first move.
-    // A cleared table make it easier to use.
+    // slower. But the maximum move is not likely to be affected, since it's typically
+    // the first move. Clearing table makes it easier to use.
     transposition_table.clear();
 
     // Iterative deepening.

@@ -461,11 +461,11 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
     std::cout << "Max Engine move time: "
               << std::chrono::duration_cast<std::chrono::milliseconds>(max_move_time_engine).count()
               << " ms" << std::endl;
-    std::cout << "Max Test engine move time: "
-              << std::chrono::duration_cast<std::chrono::milliseconds>(max_move_time_test_engine).count()
-              << " ms" << std::endl;
     std::cout << "Total Engine time: "
               << std::chrono::duration_cast<std::chrono::milliseconds>(total_time_engine).count()
+              << " ms" << std::endl;
+    std::cout << "Max Test engine move time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(max_move_time_test_engine).count()
               << " ms" << std::endl;
     std::cout << "Total Test engine time: "
               << std::chrono::duration_cast<std::chrono::milliseconds>(total_time_test_engine).count()
