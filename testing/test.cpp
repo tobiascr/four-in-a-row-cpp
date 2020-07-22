@@ -294,7 +294,7 @@ void test_position(Engine::EngineAPI& engine, std::string move_string, int expec
 
 void benchmark(Engine::EngineAPI& engine)
 {
-//    test_position(engine, "333335", 5); // Could not solve it.
+//    test_position(engine, "333335", 5); // Very slow
 //    test_position(engine, "33333530", 5);
 //    test_position(engine, "333304", 1);
 //    test_position(engine, "33344334", 4);

@@ -129,18 +129,11 @@ int EngineAPI::open_four_in_a_row_heuristic(int move)
  The value is based on the number of open four in a rows.
 */
 {
-    int value;
+    int player = game_state.get_number_of_moves() % 2;
     game_state.make_move(move);
-    value = EngineAPI::open_four_in_a_row_count(0) - EngineAPI::open_four_in_a_row_count(1);
+    int value = EngineAPI::open_four_in_a_row_count(player);
     game_state.undo_move(move);
-    if (game_state.get_number_of_moves() % 2 == 0)
-    {
-        return value;
-    }
-    else
-    {
-        return -value;
-    }
+    return value;
 }
 
 std::array<int,7> EngineAPI::move_order()
@@ -161,13 +154,10 @@ std::array<int,7> EngineAPI::move_order()
     return moves;
 }
 
-std::array<int,7> EngineAPI::move_order2()
+std::array<int,7> EngineAPI::move_order_2()
 {
     std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
     int values[7];
-
-    // Adding randomness to the move order.
-    //shuffle (moves.begin(), moves.end(), random_generator);
 
     for (int n=0; n<=6; n++)
     {
@@ -232,9 +222,9 @@ int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
 
     // Move order.
     std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
-    if (depth - game_state.get_number_of_moves() > 20)
+    if (depth - game_state.get_number_of_moves() > 15)
     {
-        moves = move_order2();
+        moves = move_order_2();
     }
 
     for (int i=0; i<=6; i++)

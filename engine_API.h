@@ -59,7 +59,7 @@ private:
        of the current game state. There is some randomness included in the move ordering
        for moves that are estimated to be equally strong.*/
 
-    std::array<int,7> move_order2();
+    std::array<int,7> move_order_2();
 
     std::array<int,7> move_order(int first_move);
     /* Return a move order with the given first move.*/
