@@ -59,10 +59,10 @@ private:
        of the current game state. There is some randomness included in the move ordering
        for moves that are estimated to be equally strong.*/
 
-    std::array<int,7> move_order_2();
-
     std::array<int,7> move_order(int first_move);
     /* Return a move order with the given first move.*/
+
+    std::array<int,7> move_order_open_four_in_a_row();
 
     int negamax(const short int depth, short int alpha, short int beta);
     /* Compute a value of game_state. Return a positive integer for a winning game_state for

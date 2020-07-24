@@ -154,21 +154,6 @@ std::array<int,7> EngineAPI::move_order()
     return moves;
 }
 
-std::array<int,7> EngineAPI::move_order_2()
-{
-    std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
-    int values[7];
-
-    for (int n=0; n<=6; n++)
-    {
-          values[n] = open_four_in_a_row_heuristic(n);
-    }
-
-    std::stable_sort(moves.begin(), moves.end(),
-                     [&values](int i, int j){return values[i] > values[j];});
-    return moves;
-}
-
 std::array<int,7> EngineAPI::move_order(int first_move)
 {
     switch (first_move)
@@ -182,6 +167,21 @@ std::array<int,7> EngineAPI::move_order(int first_move)
         case 6: return {6, 3, 2, 4, 1, 5, 0};
     }
     return {3, 2, 4, 1, 5, 0, 6};
+}
+
+std::array<int,7> EngineAPI::move_order_open_four_in_a_row()
+{
+    std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
+    int values[7];
+
+    for (int n=0; n<=6; n++)
+    {
+          values[n] = open_four_in_a_row_heuristic(n);
+    }
+
+    std::stable_sort(moves.begin(), moves.end(),
+                     [&values](int i, int j){return values[i] > values[j];});
+    return moves;
 }
 
 int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
@@ -224,7 +224,7 @@ int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
     std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
     if (depth - game_state.get_number_of_moves() > 15)
     {
-        moves = move_order_2();
+        moves = move_order_open_four_in_a_row();
     }
 
     for (int i=0; i<=6; i++)
@@ -366,7 +366,7 @@ int EngineAPI::engine_move_hard()
     // Some opening moves.
     if (number_of_moves < 2) {return 3;}
 
-    if (number_of_moves > 12) //12
+    if (number_of_moves > 10) //10
     {
         return engine_move(42);
     }
