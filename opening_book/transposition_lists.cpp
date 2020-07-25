@@ -5,8 +5,8 @@
 #include "../game_state.h"
 
 // This program produces lists of transpositions. All transpositions with a certain amount of
-// moves made that can occur in a game, including positions with a four in a row, except
-// for mirrored versions of transpositions are included. For example if the transposition where
+// moves made that can occur in a game, except positions with a four in a row and
+// for mirrored versions of transpositions, are included. For example if the transposition where
 // one move is made to the first column is included, the transposition where a move is made
 // to the last column is not included. Lists with the same amount of moves are written to
 // separate text files. Each line has one position. A position is expressed as a string
@@ -80,11 +80,15 @@ std::unordered_map<uint64_t, std::string> transposition_map(
         auto element = *i;
         std::string start_transposition = element.second;
         load_position(game_state, start_transposition);
-        if(game_state.four_in_a_row()) {continue;};
         for (int n=0; n<=6; n++)
         {
-            if (not game_state.column_not_full(n)) {continue;};
+            if (not game_state.column_not_full(n)) {continue;}
             game_state.make_move(n);
+            if(game_state.four_in_a_row())
+            {
+                game_state.undo_move(n);
+                continue;
+            }
             uint64_t key = game_state.get_key();
             game_state.undo_move(n);
             std::string new_transposition = start_transposition + move[n];
