@@ -200,6 +200,7 @@ int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
     }
 
     const bool use_transposition_table = depth - game_state.get_number_of_moves() > 5;
+//    const bool use_transposition_table = depth - game_state.get_number_of_moves() > 10;
     if (use_transposition_table)
     {
         key = game_state.get_key();
