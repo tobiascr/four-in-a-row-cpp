@@ -310,6 +310,13 @@ int EngineAPI::root_negamax(const short int depth, std::array<int,7> move_order,
     return best_move;
 }
 
+int EngineAPI::position_value(short int depth)
+{
+    transposition_table.clear();
+    return negamax(depth, -1000, 1000);
+}
+
+
 int EngineAPI::engine_move(const short int depth)
 {
     short int alpha = -1000;

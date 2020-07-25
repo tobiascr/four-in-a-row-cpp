@@ -109,7 +109,7 @@ void write_to_file(std::unordered_map<uint64_t, std::string>& transposition_map,
                    std::string file_name)
 {
     std::ofstream file;
-    file.open (file_name);
+    file.open(file_name);
     for (auto i = transposition_map.begin(); i != transposition_map.end(); ++i)
     {
         auto element = *i;

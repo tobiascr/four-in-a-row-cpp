@@ -236,6 +236,17 @@ void test_engine_API()
 //    print_board(engine);
 //    std::cout << engine.open_four_in_a_row_heuristic(0) << std::endl;
 //    std::cout << engine.open_four_in_a_row_heuristic(4) << std::endl;
+
+    load_position(engine, "33224331");
+    print_board(engine);
+    std::cout << "Depth 42: " << engine.position_value(42) << std::endl;
+    std::cout << "Depth 20: " << engine.position_value(20) << std::endl;
+    std::cout << "Depth 9: " << engine.position_value(9) << std::endl;
+    load_position(engine, "044502445224");
+    print_board(engine);
+    std::cout << "Depth 42: " << engine.position_value(42) << std::endl;
+    std::cout << "Depth 20: " << engine.position_value(20) << std::endl;
+    std::cout << "Depth 15: " << engine.position_value(15) << std::endl;
 }
 
 void test_transposition_table()
