@@ -490,17 +490,17 @@ int main()
 //    test_game_state();
 //    test_engine_API();
 
-    Engine::EngineAPI engine(914635);
-    engine.set_difficulty_level(3);
-    TestEngine::EngineAPI test_engine(35540);
-    test_engine.set_difficulty_level(3);
-
-//    Engine::EngineAPI engine;
+//    Engine::EngineAPI engine(914635);
 //    engine.set_difficulty_level(3);
-//    TestEngine::EngineAPI test_engine;
+//    TestEngine::EngineAPI test_engine(35540);
 //    test_engine.set_difficulty_level(3);
 
-//    benchmark(engine);
+    Engine::EngineAPI engine;
+    engine.set_difficulty_level(3);
+    TestEngine::EngineAPI test_engine;
+    test_engine.set_difficulty_level(3);
+
+    benchmark(engine);
     engine_vs_engine(engine, test_engine, 20, false);
 
     return 0;

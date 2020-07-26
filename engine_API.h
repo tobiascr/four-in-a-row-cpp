@@ -45,17 +45,21 @@ public:
        A win at move 42 give the value 1, a win at move 41 give a the value 2 etc,
        and vice versa for losses.
        Depth is counted as the move number at which the search is stopped. For example,
-       depth=42 give a maximum depth search. This function can only for positions that
+       depth=42 give a maximum depth search. Since the program uses an opening book,
+       sometimes a more accurate position value might be returned than a only a
+       search to the given depth. This function can only for positions that
        have no four in a rows.
     */
 
 private:
     Engine::GameState game_state;
     int difficulty_level_;
-
+    const int max_number_of_moves_in_opening_book = 9;
     std::mt19937 random_generator;
-
     std::unordered_map<uint64_t, std::array<short int, 3>> transposition_table;
+    std::unordered_map<uint64_t, short int> opening_book;
+
+    void load_opening_book();
 
     int position_heuristic(int move) const;
 
@@ -75,7 +79,7 @@ private:
 
     std::array<int,7> move_order_open_four_in_a_row();
 
-    int negamax(const short int depth, short int alpha, short int beta);
+    short int negamax(const short int depth, short int alpha, short int beta);
     /* Compute a value of game_state. Return a positive integer for a winning game_state for
        the player in turn, 0 for a draw or unknown outcome and a negative integer for a loss.
        A win at move 42 give the value 1, a win at move 41 give a the value 2 etc,

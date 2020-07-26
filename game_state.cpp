@@ -5,7 +5,7 @@ namespace Engine
 
 GameState::GameState()
 {
-    GameState::reset();
+    reset();
 }
 
 void GameState::reset()

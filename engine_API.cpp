@@ -1,5 +1,6 @@
 #include <algorithm>
-//#include <iostream>
+#include <fstream>
+#include <string>
 #include "engine_API.h"
 #include "game_state.h"
 
@@ -12,6 +13,7 @@ EngineAPI::EngineAPI()
     std::random_device rd;
     random_generator.seed(rd());
     difficulty_level_ = 2;
+    load_opening_book();
 }
 
 EngineAPI::EngineAPI(unsigned int seed)
@@ -19,6 +21,54 @@ EngineAPI::EngineAPI(unsigned int seed)
     // Initialize the random number generator.
     random_generator.seed(seed);
     difficulty_level_ = 2;
+    load_opening_book();
+}
+
+void EngineAPI::load_opening_book()
+{
+    std::ifstream file_to_read("opening_book_9_move_33");
+    std::string line, move, c;
+    uint64_t key;
+    while (std::getline(file_to_read, line))
+    {
+        // Load position.
+        game_state.reset();
+        int space_index;
+        for (int n=0; n<line.length(); n++)
+        {
+            if (line[n] == ' ')
+            {
+                space_index = n;
+                break;
+            }
+            move = line[n];
+            game_state.make_move(std::stoi(move));
+        }
+
+        // Find value.
+        std::string value_string = "";
+        for (int n=space_index+1; n<line.length(); n++)
+        {
+            c = line[n];
+            value_string.append(c);
+        }
+        int value = std::stoi(value_string);
+        key = game_state.get_key();
+        opening_book[key] = value;
+
+        // Load mirrored position.
+        game_state.reset();
+        for (int n=0; n<line.length(); n++)
+        {
+            if (line[n] == ' ') break;
+            move = line[n];
+            game_state.make_move(6 - std::stoi(move));
+        }
+        key = game_state.get_key();
+        opening_book[key] = value;
+    }
+    file_to_read.close();
+    game_state.reset();
 }
 
 void EngineAPI::set_difficulty_level(int difficulty_level)
@@ -184,7 +234,7 @@ std::array<int,7> EngineAPI::move_order_open_four_in_a_row()
     return moves;
 }
 
-int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
+short int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
 {
     uint64_t key;
     short int original_alpha = alpha;
@@ -199,8 +249,16 @@ int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
         return 0;
     }
 
+    if (game_state.get_number_of_moves() <= max_number_of_moves_in_opening_book)
+    {
+        key = game_state.get_key();
+        if (opening_book.count(key) == 1)
+        {
+            return opening_book[key];
+        }
+    }
+
     const bool use_transposition_table = depth - game_state.get_number_of_moves() > 5;
-//    const bool use_transposition_table = depth - game_state.get_number_of_moves() > 10;
     if (use_transposition_table)
     {
         key = game_state.get_key();
@@ -369,18 +427,10 @@ int EngineAPI::engine_move_medium()
 int EngineAPI::engine_move_hard()
 {
     int number_of_moves = game_state.get_number_of_moves();
-    short int depth;
 
     // Some opening moves.
     if (number_of_moves < 2) {return 3;}
 
-    if (number_of_moves > 10) //10
-    {
-        return engine_move(42);
-    }
-
-    depth = number_of_moves + 14; //14
-    if (depth > 42) {depth = 42;}
-    return engine_move(depth);
+    return engine_move(42);
 }
 }
