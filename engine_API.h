@@ -38,17 +38,12 @@ public:
 
     bool four_in_a_row();
 
-    int position_value(short int depth);
-    /* Compute a value of the current position. Return a positive integer for a winning
-       game_state for the player in turn, 0 for a draw or unknown outcome and a negative
-       integer for a loss.
-       A win at move 42 give the value 1, a win at move 41 give a the value 2 etc,
-       and vice versa for losses.
-       Depth is counted as the move number at which the search is stopped. For example,
-       depth=42 give a maximum depth search. Since the program uses an opening book,
-       sometimes a more accurate position value might be returned than a only a
-       search to the given depth. This function can only for positions that
-       have no four in a rows.
+    int position_value_full_depth();
+    /* Compute a value of the current position at full depth. Return a positive
+       integer for a winning game_state for the player in turn, 0 for a draw or unknown
+       outcome and a negative integer for a loss. A win at move 42 give the value 1,
+       a win at move 41 give a the value 2 etc, and vice versa for losses.
+       This function can only used for positions that have no four in a rows.
     */
 
 private:

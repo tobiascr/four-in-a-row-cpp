@@ -66,7 +66,7 @@ int main()
     while (std::getline(file_to_read, transposition_move_string))
     {
         load_position(engine, transposition_move_string);
-        int value = engine.position_value(42);
+        int value = engine.position_value_full_depth();
         file_to_write << transposition_move_string << " " << std::to_string(value)  << std::endl;
         count++;
         std::cout << count << " transpositions computed" << std::endl;
