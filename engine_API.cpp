@@ -26,7 +26,7 @@ EngineAPI::EngineAPI(unsigned int seed)
 
 void EngineAPI::load_opening_book()
 {
-    std::ifstream file_to_read("opening_book_9_move_33");
+    std::ifstream file_to_read("opening_book_9_move");
     std::string line, move, c;
     uint64_t key;
     while (std::getline(file_to_read, line))
@@ -431,6 +431,16 @@ int EngineAPI::engine_move_hard()
     // Some opening moves.
     if (number_of_moves < 2) {return 3;}
 
-    return engine_move(42);
+    //return engine_move(42);
+
+    if (number_of_moves >= 9)
+    {
+        return engine_move(42);
+    }
+
+    int depth = number_of_moves + 14;
+    if (depth > 42) {depth = 42;}
+
+    return engine_move(depth);
 }
 }
