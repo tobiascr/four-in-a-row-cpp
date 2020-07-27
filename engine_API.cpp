@@ -235,6 +235,14 @@ std::array<int,7> EngineAPI::move_order_open_four_in_a_row()
 }
 
 short int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
+/* Compute a value of game_state. Return a positive integer for a winning game_state for
+   the player in turn, 0 for a draw or unknown outcome and a negative integer for a loss.
+   A win at move 42 give the value 1, a win at move 41 give a the value 2 etc,
+   and vice versa for losses.
+   Depth is counted as the move number at which the search is stopped. For example,
+   depth=42 give a maximum depth search. This function can only be used on if the game state
+   have no four in a row.
+*/
 {
     uint64_t key;
     short int original_alpha = alpha;
@@ -258,7 +266,7 @@ short int EngineAPI::negamax(const short int depth, short int alpha, short int b
         }
     }
 
-    const bool use_transposition_table = depth - game_state.get_number_of_moves() > 6;
+    const bool use_transposition_table = game_state.get_number_of_moves() < depth - 6;
     if (use_transposition_table)
     {
         key = game_state.get_key();
@@ -278,7 +286,7 @@ short int EngineAPI::negamax(const short int depth, short int alpha, short int b
                 return tt_value;
             }
 
-            if (tt_value >= beta and (tt_value != 0 or tt_depth >= depth)
+            if (tt_value >= beta and (tt_value != 0 or tt_depth >= depth))
             {
                 return beta;
             }

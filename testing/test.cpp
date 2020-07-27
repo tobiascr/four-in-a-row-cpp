@@ -503,7 +503,7 @@ int main()
 //    test_engine.set_difficulty_level(3);
 
 //    benchmark(engine);
-    engine_vs_engine(engine, test_engine, 20, false);
+    engine_vs_engine(engine, test_engine, 2, false);
 
     return 0;
 }
