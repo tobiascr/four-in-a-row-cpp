@@ -42,8 +42,8 @@ int main()
     using namespace Engine;
     EngineAPI engine;
 
-    std::string file_with_transpositions = "transposition_list_9_move";
-    std::string file_to_write_to = "tr_list_9_move_012";
+    std::string file_with_transpositions = "transposition_list_11_move";
+    std::string file_to_write_to = "tr_list_test";
 
     std::string transposition_move_string;
     std::ifstream file_to_read(file_with_transpositions);
@@ -53,7 +53,9 @@ int main()
     while (std::getline(file_to_read, transposition_move_string))
     {
         load_position(engine, transposition_move_string);
-        if(engine.get_value(3, 0) != '1')
+        if(engine.get_value(3, 4) != '0' and (
+           engine.get_value(1, 1) != '0' or engine.get_value(2, 1) != '0'
+           or engine.get_value(4, 1) != '0' or engine.get_value(5, 1) != '0'))
         {
             file_to_write << transposition_move_string << std::endl;
         }

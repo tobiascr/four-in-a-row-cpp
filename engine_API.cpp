@@ -258,21 +258,27 @@ short int EngineAPI::negamax(const short int depth, short int alpha, short int b
         }
     }
 
-    const bool use_transposition_table = depth - game_state.get_number_of_moves() > 5;
+    const bool use_transposition_table = depth - game_state.get_number_of_moves() > 6;
     if (use_transposition_table)
     {
         key = game_state.get_key();
         if (transposition_table.count(key) == 1)
         {
-            std::array<short int, 3> tt_array = transposition_table[key];
-            short int tt_depth = tt_array[0], tt_type = tt_array[1], tt_value = tt_array[2];
+            // Transposition table data are stored in an unsigned integer.
+            // The least significant bit is a store type. The next 7 bits store
+            // value + 50. 50 is added to guarantee that a positive integer is stored.
+            // The next 6 bits store depth.
+            uint_fast16_t tt_entry = transposition_table[key];
+            short int tt_type = tt_entry & 1;
+            short int tt_value = ((tt_entry & 0b11111110) >> 1) - 50;
+            short int tt_depth = (tt_entry & 0b11111100000000) >> 8;
 
-            if (tt_type == 2)
+            if (tt_type == 0)
             {
                 return tt_value;
             }
 
-            if (tt_value >= beta and (tt_value != 0 or tt_depth >= depth))
+            if (tt_value >= beta and (tt_value != 0 or tt_depth >= depth)
             {
                 return beta;
             }
@@ -298,7 +304,7 @@ short int EngineAPI::negamax(const short int depth, short int alpha, short int b
             {
                 if (use_transposition_table)
                 {
-                    transposition_table[key] = std::array<short int, 3>{depth, 1, beta};
+                    transposition_table[key] = (depth << 8) | ((beta + 50) << 1) | 1;
                 }
                 return beta;
             }
@@ -315,7 +321,7 @@ short int EngineAPI::negamax(const short int depth, short int alpha, short int b
         {
             if (alpha != 0)
             {
-                transposition_table[key] = std::array<short int, 3>{depth, 2, alpha};
+                transposition_table[key] = (depth << 8) | ((alpha + 50) << 1);
             }
         }
     }

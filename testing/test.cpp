@@ -244,6 +244,10 @@ void test_engine_API()
     load_position(engine, "044502445224");
     print_board(engine);
     std::cout << "Depth 42: " << engine.position_value_full_depth() << std::endl;
+    engine.new_game();
+    load_position(engine, "33"); 
+    print_board(engine);
+    std::cout << "Depth 42: " << engine.position_value_full_depth() << std::endl;
 }
 
 void test_transposition_table()
@@ -308,6 +312,7 @@ void benchmark(Engine::EngineAPI& engine)
 //    test_position(engine, "33344334", 4);
 //    test_position(engine, "3333335", 4);
 //    test_position(engine, "3332224", 3);
+    test_position(engine, "01234560660", 3);
     test_position(engine, "444320", 2);
     test_position(engine, "333333561", 0);
     test_position(engine, "33630445", 3);
