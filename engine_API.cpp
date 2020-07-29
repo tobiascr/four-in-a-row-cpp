@@ -299,10 +299,10 @@ short int EngineAPI::negamax(const short int depth, short int alpha, short int b
 //        return 0;
 //    }
 
-//    if (game_state.can_win_this_move())
-//    {
-//        return 42 - game_state.get_number_of_moves();
-//    }
+    if (game_state.can_win_this_move())
+    {
+        return 42 - game_state.get_number_of_moves();
+    }
 
     // Maybe look in the book first.
     if (game_state.get_number_of_moves() == depth - 1) 
@@ -372,38 +372,38 @@ short int EngineAPI::negamax(const short int depth, short int alpha, short int b
 //            }
 //        }
 //    }
-    int blocking_move;
-    int number_of_blocking_moves = 0;
-    for (int move=0; move<=6; move++)
-    {
-        if (game_state.column_not_full(move))
-        {
-            if(game_state.is_blocking_move(move))
-            {
-                blocking_move = move;
-                number_of_blocking_moves++;
-            }
-        }
-    }
-    if (number_of_blocking_moves > 1)
-    {
-        return game_state.get_number_of_moves() - 41;
-    }
+//    int blocking_move;
+//    int number_of_blocking_moves = 0;
+//    for (int move=0; move<=6; move++)
+//    {
+//        if (game_state.column_not_full(move))
+//        {
+//            if(game_state.is_blocking_move(move))
+//            {
+//                blocking_move = move;
+//                number_of_blocking_moves++;
+//            }
+//        }
+//    }
+//    if (number_of_blocking_moves > 1)
+//    {
+//        return game_state.get_number_of_moves() - 41;
+//    }
 
 
     short int value;
-    if(number_of_blocking_moves == 1)
-    {
-        if (game_state.opponent_four_in_a_row_above(blocking_move))
-        {
-            return game_state.get_number_of_moves() - 41;
-        }
-        game_state.make_move(blocking_move);
-        value = -negamax(depth, -beta, -alpha);
-        game_state.undo_move(blocking_move);
-        return value;
-        // Possibly, write to the tt.
-    }
+//    if(number_of_blocking_moves == 1)
+//    {
+//        if (game_state.opponent_four_in_a_row_above(blocking_move))
+//        {
+//            return game_state.get_number_of_moves() - 41;
+//        }
+//        game_state.make_move(blocking_move);
+//        value = -negamax(depth, -beta, -alpha);
+//        game_state.undo_move(blocking_move);
+//        return value;
+//        // Possibly, write to the tt.
+//    }
 
 
     for (int i=0; i<=6; i++)
@@ -411,10 +411,10 @@ short int EngineAPI::negamax(const short int depth, short int alpha, short int b
         short int move = moves[i];
         if (game_state.column_not_full(move))
         {
-            if (game_state.opponent_four_in_a_row_above(move))
-            {
-                value = game_state.get_number_of_moves() - 41;
-            }
+//            if (game_state.opponent_four_in_a_row_above(move))
+//            {
+//                value = game_state.get_number_of_moves() - 41;
+//            }
             game_state.make_move(move);
             value = -negamax(depth, -beta, -alpha);
             game_state.undo_move(move);
@@ -483,15 +483,15 @@ the move number at which the search is stopped.*/
         if (game_state.column_not_full(move))
         {
             game_state.make_move(move);
-            if(game_state.can_win_this_move())
-            {
-//                new_value = -1000;
-                new_value = game_state.get_number_of_moves() - 41;
-            }
-            else
-            {
-               new_value = -negamax(depth, -beta, -alpha);
-            }
+//            if(game_state.can_win_this_move())
+//            {
+////                new_value = -1000;
+//                new_value = game_state.get_number_of_moves() - 41;
+//            }
+//            else
+//            {
+                new_value = -negamax(depth, -beta, -alpha);
+//            }
             game_state.undo_move(move);
             if (new_value > alpha)
             {
