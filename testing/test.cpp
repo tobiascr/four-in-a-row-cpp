@@ -361,6 +361,7 @@ void test_position(Engine::EngineAPI& engine, std::string move_string, int expec
 void benchmark(Engine::EngineAPI& engine)
 {
 //    test_position(engine, "256555226", 6); Extremely show and have high memory usage.
+    test_position(engine, "333345550", 3); //1 and 2 are as good.
     test_position(engine, "334233650026", 5);
     test_position(engine, "01234560660", 3);
     test_position(engine, "00000055551", 2);
@@ -547,7 +548,7 @@ int main()
 //    TestEngine::EngineAPI test_engine;
 //    test_engine.set_difficulty_level(3);
 
-//   benchmark(engine);
+//    benchmark(engine);
     engine_vs_engine(engine, test_engine, 10, false);
 
     return 0;

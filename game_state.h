@@ -94,6 +94,8 @@ private:
 
     bool four_in_a_row(uint64_t bitboard) const;
     /* Return true iff there is a four in a row of 1:s on the bitboard.*/
+
+    bool four_in_a_row_no_vertical(uint64_t bitboard) const;
 };
 }
 

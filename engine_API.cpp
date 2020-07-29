@@ -276,6 +276,121 @@ short int EngineAPI::negamax_2_ply(short int alpha)
     return game_state.get_number_of_moves() - 42;
 }
 
+std::vector<int> EngineAPI::non_losing_moves()
+/*Return a list of moves (0, 1, ..., 6) that the player in turn can make such that the opponent
+can't make a four in a row the next move. It returns the moves in an order with central
+moves first.*/
+{
+    std::vector<int> moves = {0, 0, 0, 0, 0, 0, 0};
+
+    // Look for blocking moves.
+    int blocking_move;
+    int number_of_blocking_moves = 0;
+    for (int move=0; move<=6; move++)
+    {
+        if (game_state.column_not_full(move))
+        {
+            if(game_state.is_blocking_move(move))
+            {
+                blocking_move = move;
+                number_of_blocking_moves++;
+                if (number_of_blocking_moves > 1)
+                {
+                    moves.resize(0);
+                    return moves; // No non losing moves were found.
+                }
+            }
+        }
+    }
+
+    if(number_of_blocking_moves == 1)
+    {
+        if (game_state.opponent_four_in_a_row_above(blocking_move))
+        {
+            return moves; // No non losing moves were found.
+        }
+        else
+        {
+            moves[0] = blocking_move;
+            moves.resize(1);
+            return moves;
+        }
+    }
+
+    std::array<int,7> move_order = {3, 2, 4, 1, 5, 0, 6};
+    return {3, 2, 4, 1, 5, 0, 6};
+    int i = 0;
+    for (int move : move_order)
+    {
+        if (game_state.column_not_full(move))
+        {
+            if(not game_state.opponent_four_in_a_row_above(move))
+            {
+                moves[i] = move;
+                i++;
+            }
+        }
+    }
+
+    moves.resize(i);
+
+    return moves;
+}
+
+//std::array<int,7> EngineAPI::non_losing_moves()
+///*Return a list of moves (0, 1, ..., 6) that the player in turn can make such that the opponent
+//can't make a four in a row the next move. It returns the moves in an order with central
+//moves first.*/
+//{
+//    std::array<int,7> moves = {-1, -1, -1, -1, -1, -1, -1};
+
+//    // Look for blocking moves.
+//    int blocking_move;
+//    int number_of_blocking_moves = 0;
+//    for (int move=0; move<=6; move++)
+//    {
+//        if (game_state.column_not_full(move))
+//        {
+//            if(game_state.is_blocking_move(move))
+//            {
+//                blocking_move = move;
+//                number_of_blocking_moves++;
+//                if (number_of_blocking_moves > 1)
+//                {
+//                    return moves; // No non losing moves were found.
+//                }
+//            }
+//        }
+//    }
+
+//    if(number_of_blocking_moves == 1)
+//    {
+//        if (game_state.opponent_four_in_a_row_above(blocking_move))
+//        {
+//            return moves; // No non losing moves were found.
+//        }
+//        else
+//        {
+//            moves.push_back(blocking_move);
+//            return {blocking_move, -1, -1, -1, -1, -1, -1};
+//        }
+//    }
+
+//    std::array<int,7> move_order = {3, 2, 4, 1, 5, 0, 6};
+//    for (int move : move_order)
+//    {
+//        if (game_state.column_not_full(move))
+//        {
+//            if(not game_state.opponent_four_in_a_row_above(move))
+//            {
+//                moves.push_back(move);
+//            }
+//        }
+//    }
+
+//    return moves;
+//}
+
 short int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
 /* Compute a value of game_state. Return a positive integer for a winning game_state for
    the player in turn, 0 for a draw or unknown outcome and a negative integer for a loss.
@@ -288,21 +403,10 @@ short int EngineAPI::negamax(const short int depth, short int alpha, short int b
     uint64_t key;
     short int original_alpha = alpha;
 
-//    short int v = negamax_2_ply(alpha);
-//    if(v != 0)
+//    if (game_state.can_win_this_move())
 //    {
-//        return v;
+//        return 42 - game_state.get_number_of_moves();
 //    }
-
-//    if (game_state.get_number_of_moves() >= depth - 2) 
-//    {
-//        return 0;
-//    }
-
-    if (game_state.can_win_this_move())
-    {
-        return 42 - game_state.get_number_of_moves();
-    }
 
     // Maybe look in the book first.
     if (game_state.get_number_of_moves() == depth - 1) 
@@ -348,76 +452,92 @@ short int EngineAPI::negamax(const short int depth, short int alpha, short int b
 
     // Move order.
     std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
+//    if (depth > 30)
     if (game_state.get_number_of_moves() < depth - 15)
+    if (game_state.get_number_of_moves() < 22) //22
     {
         moves = move_order_open_four_in_a_row();
     }
 
-    // Look for blocking moves.
-//    int blocking_move = -1;
-//    for (int move=0; move<=6; move++)
-//    {
-//        if (game_state.column_not_full(move))
-//        {
-//            if(game_state.is_blocking_move(move))
-//            {
-//                if(blocking_move != -1) // If first blocking move found.
-//                {
-//                    blocking_move = move;
-//                }
-//                else // If second blocking move found.
-//                {
-//                    return game_state.get_number_of_moves() - 41;
-//                }
-//            }
-//        }
-//    }
-//    int blocking_move;
-//    int number_of_blocking_moves = 0;
-//    for (int move=0; move<=6; move++)
-//    {
-//        if (game_state.column_not_full(move))
-//        {
-//            if(game_state.is_blocking_move(move))
-//            {
-//                blocking_move = move;
-//                number_of_blocking_moves++;
-//            }
-//        }
-//    }
-//    if (number_of_blocking_moves > 1)
+//    std::vector<int> move_vector = non_losing_moves();
+
+//    if(move_vector.size() == 0)
 //    {
 //        return game_state.get_number_of_moves() - 41;
 //    }
 
+    // Look for blocking moves.
+    int blocking_move;
+    int number_of_blocking_moves = 0;
+    for (int move=0; move<=6; move++)
+    {
+        if (game_state.column_not_full(move))
+        {
+            if(game_state.is_blocking_move(move))
+            {
+                blocking_move = move;
+                number_of_blocking_moves++;
+                if (number_of_blocking_moves > 1)
+                {
+                    return game_state.get_number_of_moves() - 41;
+                }
+            }
+        }
+    }
 
     short int value;
-//    if(number_of_blocking_moves == 1)
-//    {
-//        if (game_state.opponent_four_in_a_row_above(blocking_move))
-//        {
-//            return game_state.get_number_of_moves() - 41;
-//        }
-//        game_state.make_move(blocking_move);
-//        value = -negamax(depth, -beta, -alpha);
-//        game_state.undo_move(blocking_move);
-//        return value;
-//        // Possibly, write to the tt.
-//    }
+    if(number_of_blocking_moves == 1)
+    {
+        if (game_state.opponent_four_in_a_row_above(blocking_move))
+        {
+            return game_state.get_number_of_moves() - 41;
+        }
+        game_state.make_move(blocking_move);
+        value = -negamax(depth, -beta, -alpha);
+        game_state.undo_move(blocking_move);
+        if (value >= beta) // Fail hard beta-cutoff.
+        {
+            if (use_transposition_table)
+            {
+                transposition_table[key] = (depth << 8) | ((beta + 50) << 1) | 1;
+            }
+            return beta;
+        }
+        if (value > alpha)
+        {
+            alpha = value;
+        }
+        if (use_transposition_table)
+        {
+            if (alpha > original_alpha) // Exact values.
+            {
+                if (alpha != 0)
+                {
+                    transposition_table[key] = (depth << 8) | ((alpha + 50) << 1);
+                }
+            }
+        }
+        return alpha;
+    }
 
+//    short int value;
 
     for (int i=0; i<=6; i++)
+//    for (int move : move_vector)
     {
         short int move = moves[i];
         if (game_state.column_not_full(move))
         {
-//            if (game_state.opponent_four_in_a_row_above(move))
-//            {
-//                value = game_state.get_number_of_moves() - 41;
-//            }
-            game_state.make_move(move);
-            value = -negamax(depth, -beta, -alpha);
-            game_state.undo_move(move);
+            if (game_state.opponent_four_in_a_row_above(move))
+            {
+                value = game_state.get_number_of_moves() - 41;
+            }
+            else
+            {
+                game_state.make_move(move);
+                value = -negamax(depth, -beta, -alpha);
+                game_state.undo_move(move);
+            }
             if (value >= beta) // Fail hard beta-cutoff.
             {
                 if (use_transposition_table)
@@ -483,15 +603,14 @@ the move number at which the search is stopped.*/
         if (game_state.column_not_full(move))
         {
             game_state.make_move(move);
-//            if(game_state.can_win_this_move())
-//            {
-////                new_value = -1000;
-//                new_value = game_state.get_number_of_moves() - 41;
-//            }
-//            else
-//            {
+            if(game_state.can_win_this_move())
+            {
+                new_value = game_state.get_number_of_moves() - 41;
+            }
+            else
+            {
                 new_value = -negamax(depth, -beta, -alpha);
-//            }
+            }
             game_state.undo_move(move);
             if (new_value > alpha)
             {

@@ -96,6 +96,24 @@ bool GameState::four_in_a_row(uint64_t bitboard) const
     return false;
 }
 
+bool GameState::four_in_a_row_no_vertical(uint64_t bitboard) const
+{
+    /* Looking for four in a rows is done in two steps. The first step produces
+    a bitboard with a three in a row if there is a four in a row. The second step
+    checks if there exist points that are two steps distant from each other.*/
+
+    uint64_t a;
+    const int shifts[3] = {6, 8, 7};
+
+    for (int n=0; n<=2; n++)
+    {
+        a = (bitboard << shifts[n]) & bitboard;
+        if (a & (a << (shifts[n] * 2))) {return true;}
+    }
+
+    return false;
+}
+
 bool GameState::four_in_a_row(int player, int column, int row) const
 {
     return four_in_a_row(bitboard[player] | (one << (column * 7 + row)));
@@ -147,8 +165,8 @@ bool GameState::forced_loss_next_move() const
 
 bool GameState::opponent_four_in_a_row_above(int column) const
 {
-    if (column_height[column] > 4) {return false;}
-    return four_in_a_row(bitboard[1 - player_in_turn] | (next_move[column] << 1));
+    if (column_height[column] >= 5) {return false;}
+    return four_in_a_row_no_vertical(bitboard[1 - player_in_turn] | (next_move[column] << 1));
 }
 
 bool GameState::is_blocking_move(int column) const
