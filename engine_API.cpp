@@ -119,10 +119,9 @@ bool EngineAPI::four_in_a_row()
 }
 
 int EngineAPI::position_heuristic(int move) const
-/*Give a heuristic evaluation in form of a number of how good it would be to make
- the given move to the current game state. The value is higher the better the move.
- Central positions are given higher values. If the move is not legal, the value is 0.
-*/
+/* Give a heuristic evaluation in form of a number of how good it would be to make
+the given move to the current game state. The value is higher the better the move.
+Central positions are given higher values. If the move is not legal, the value is 0.*/
 {
     if (not game_state.column_not_full(move)) {return 0;}
     int row = game_state.get_number_of_disks_in_column(move);
@@ -137,10 +136,9 @@ int EngineAPI::position_heuristic(int move) const
 }
 
 int EngineAPI::position_heuristic_2(int move) const
-/*Give a heuristic evaluation in form of a number of how good it would be to make
- the given move to the current game state. The value is higher the better the move.
- Central positions are given higher values. If the move is not legal, the value is 0.
-*/
+/* Give a heuristic evaluation in form of a number of how good it would be to make
+the given move to the current game state. The value is higher the better the move.
+Central positions are given higher values. If the move is not legal, the value is 0.*/
 {
     if (not game_state.column_not_full(move)) {return 0;}
     int row = game_state.get_number_of_disks_in_column(move);
@@ -156,8 +154,8 @@ int EngineAPI::position_heuristic_2(int move) const
 
 int EngineAPI::open_four_in_a_row_count(int player) const
 /* Return the number of unoccupied places on the board that are not in the bottom
-   of the columns, that give player a four in a row. player is 0 for the player
-   making the first move and 1 for the other player.*/
+of the columns, that give player a four in a row. player is 0 for the player
+making the first move and 1 for the other player.*/
 {
     int count = 0;
     for (int col=0; col<=6; col++)
@@ -176,8 +174,7 @@ int EngineAPI::open_four_in_a_row_count(int player) const
 int EngineAPI::open_four_in_a_row_heuristic(int move)
 /* Give a heuristic evaluation in form of a number of how good it would be to make
  the given move to the current game state. The value is higher the better the move.
- The value is based on the number of open four in a rows.
-*/
+ The value is based on the number of open four in a rows.*/
 {
     int player = game_state.get_number_of_moves() % 2;
     game_state.make_move(move);
@@ -187,6 +184,9 @@ int EngineAPI::open_four_in_a_row_heuristic(int move)
 }
 
 std::array<int,7> EngineAPI::move_order()
+/* Return a move order for a root negamax search based on a heuristic evaluation
+of the current game state. There is some randomness included in the move ordering
+for moves that are estimated to be equally strong.*/
 {
     std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
     int values[7];
@@ -208,13 +208,20 @@ std::array<int,7> EngineAPI::move_order(int first_move)
 {
     switch (first_move)
     {
-        case 0: return {0, 3, 2, 4, 1, 5, 6};
-        case 1: return {1, 3, 2, 4, 5, 0, 6};
-        case 2: return {2, 3, 4, 1, 5, 0, 6};
+//        case 0: return {0, 3, 2, 4, 1, 5, 6};
+//        case 1: return {1, 3, 2, 4, 5, 0, 6};
+//        case 2: return {2, 3, 4, 1, 5, 0, 6};
+//        case 3: return {3, 2, 4, 1, 5, 0, 6};
+//        case 4: return {4, 3, 2, 1, 5, 0, 6};
+//        case 5: return {5, 3, 2, 4, 1, 0, 6};
+//        case 6: return {6, 3, 2, 4, 1, 5, 0};
+        case 0: return {0, 1, 2, 3, 4, 5, 6};
+        case 1: return {1, 2, 0, 3, 4, 5, 6};
+        case 2: return {2, 3, 1, 4, 0, 5, 6};
         case 3: return {3, 2, 4, 1, 5, 0, 6};
-        case 4: return {4, 3, 2, 1, 5, 0, 6};
-        case 5: return {5, 3, 2, 4, 1, 0, 6};
-        case 6: return {6, 3, 2, 4, 1, 5, 0};
+        case 4: return {4, 3, 5, 2, 6, 1, 0};
+        case 5: return {5, 4, 6, 3, 2, 1, 0};
+        case 6: return {6, 5, 4, 3, 2, 1, 0};
     }
     return {3, 2, 4, 1, 5, 0, 6};
 }
@@ -234,6 +241,41 @@ std::array<int,7> EngineAPI::move_order_open_four_in_a_row()
     return moves;
 }
 
+short int EngineAPI::negamax_2_ply(short int alpha)
+// A negamax function that looks two moves ahead.
+{
+//    if (game_state.can_win_this_move())
+//    {
+//        return 42 - game_state.get_number_of_moves();
+//    }
+
+    // Just for safety. Remove later.
+    if(game_state.get_number_of_moves() == 42)
+    {
+        return 0;
+    }
+
+    if (alpha >= 0)
+    {
+        return 0;
+    }
+
+    for (int move=0; move<=6; move++)
+    {
+        if (game_state.column_not_full(move))
+        {
+            game_state.make_move(move);
+            if (not game_state.can_win_this_move())
+            {
+                game_state.undo_move(move);
+                return 0;
+            }
+            game_state.undo_move(move);
+        }
+    }
+    return game_state.get_number_of_moves() - 42;
+}
+
 short int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
 /* Compute a value of game_state. Return a positive integer for a winning game_state for
    the player in turn, 0 for a draw or unknown outcome and a negative integer for a loss.
@@ -241,18 +283,29 @@ short int EngineAPI::negamax(const short int depth, short int alpha, short int b
    and vice versa for losses.
    Depth is counted as the move number at which the search is stopped. For example,
    depth=42 give a maximum depth search. This function can only be used on if the game state
-   have no four in a row.
-*/
+   have no four in a row.*/
 {
     uint64_t key;
     short int original_alpha = alpha;
 
-    if (game_state.can_win_this_move())
-    {
-        return 42 - game_state.get_number_of_moves();
-    }
+//    short int v = negamax_2_ply(alpha);
+//    if(v != 0)
+//    {
+//        return v;
+//    }
 
-    if (game_state.get_number_of_moves() == depth - 1)
+//    if (game_state.get_number_of_moves() >= depth - 2) 
+//    {
+//        return 0;
+//    }
+
+//    if (game_state.can_win_this_move())
+//    {
+//        return 42 - game_state.get_number_of_moves();
+//    }
+
+    // Maybe look in the book first.
+    if (game_state.get_number_of_moves() == depth - 1) 
     {
         return 0;
     }
@@ -266,16 +319,16 @@ short int EngineAPI::negamax(const short int depth, short int alpha, short int b
         }
     }
 
-    const bool use_transposition_table = game_state.get_number_of_moves() < depth - 6;
+    const bool use_transposition_table = game_state.get_number_of_moves() < depth - 6; //6
     if (use_transposition_table)
     {
         key = game_state.get_key();
         if (transposition_table.count(key) == 1)
         {
-            // Transposition table data are stored in an unsigned integer.
-            // The least significant bit is a store type. The next 7 bits store
-            // value + 50. 50 is added to guarantee that a positive integer is stored.
-            // The next 6 bits store depth.
+            /* Transposition table data are stored in an unsigned integer.
+            The least significant bit is a store type. The next 7 bits store
+            value + 50. 50 is added to guarantee that a positive integer is stored.
+            The next 6 bits store depth.*/
             uint_fast16_t tt_entry = transposition_table[key];
             short int tt_type = tt_entry & 1;
             short int tt_value = ((tt_entry & 0b11111110) >> 1) - 50;
@@ -295,18 +348,75 @@ short int EngineAPI::negamax(const short int depth, short int alpha, short int b
 
     // Move order.
     std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
-    if (depth - game_state.get_number_of_moves() > 15)
+    if (game_state.get_number_of_moves() < depth - 15)
     {
         moves = move_order_open_four_in_a_row();
     }
+
+    // Look for blocking moves.
+//    int blocking_move = -1;
+//    for (int move=0; move<=6; move++)
+//    {
+//        if (game_state.column_not_full(move))
+//        {
+//            if(game_state.is_blocking_move(move))
+//            {
+//                if(blocking_move != -1) // If first blocking move found.
+//                {
+//                    blocking_move = move;
+//                }
+//                else // If second blocking move found.
+//                {
+//                    return game_state.get_number_of_moves() - 41;
+//                }
+//            }
+//        }
+//    }
+    int blocking_move;
+    int number_of_blocking_moves = 0;
+    for (int move=0; move<=6; move++)
+    {
+        if (game_state.column_not_full(move))
+        {
+            if(game_state.is_blocking_move(move))
+            {
+                blocking_move = move;
+                number_of_blocking_moves++;
+            }
+        }
+    }
+    if (number_of_blocking_moves > 1)
+    {
+        return game_state.get_number_of_moves() - 41;
+    }
+
+
+    short int value;
+    if(number_of_blocking_moves == 1)
+    {
+        if (game_state.opponent_four_in_a_row_above(blocking_move))
+        {
+            return game_state.get_number_of_moves() - 41;
+        }
+        game_state.make_move(blocking_move);
+        value = -negamax(depth, -beta, -alpha);
+        game_state.undo_move(blocking_move);
+        return value;
+        // Possibly, write to the tt.
+    }
+
 
     for (int i=0; i<=6; i++)
     {
         short int move = moves[i];
         if (game_state.column_not_full(move))
         {
+            if (game_state.opponent_four_in_a_row_above(move))
+            {
+                value = game_state.get_number_of_moves() - 41;
+            }
             game_state.make_move(move);
-            short int value = -negamax(depth, -beta, -alpha);
+            value = -negamax(depth, -beta, -alpha);
             game_state.undo_move(move);
             if (value >= beta) // Fail hard beta-cutoff.
             {
@@ -339,6 +449,8 @@ short int EngineAPI::negamax(const short int depth, short int alpha, short int b
 
 int EngineAPI::root_negamax(const short int depth, std::array<int,7> move_order,
                             short int alpha, short int beta)
+/* Return a move (0 to 6) computed with the negamax algorithm. Depth is counted as
+the move number at which the search is stopped.*/
 {
     int new_value, move, result, best_move;
 
@@ -371,7 +483,15 @@ int EngineAPI::root_negamax(const short int depth, std::array<int,7> move_order,
         if (game_state.column_not_full(move))
         {
             game_state.make_move(move);
-            new_value = -negamax(depth, -beta, -alpha);
+            if(game_state.can_win_this_move())
+            {
+//                new_value = -1000;
+                new_value = game_state.get_number_of_moves() - 41;
+            }
+            else
+            {
+               new_value = -negamax(depth, -beta, -alpha);
+            }
             game_state.undo_move(move);
             if (new_value > alpha)
             {
@@ -390,6 +510,9 @@ int EngineAPI::position_value_full_depth()
 }
 
 int EngineAPI::engine_move(const short int depth)
+/* Return an integer from 0 to 6 that represents a best move made by the engine
+at the given depth level. Depth is counted as the move number at which the search is stopped.
+For example, depth=42 give a maximum depth search.*/
 {
     short int alpha = -1000;
     short int beta = 1000;

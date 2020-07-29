@@ -184,6 +184,60 @@ void test_game_state()
     print_board(game_state);
     std::cout << game_state.four_in_a_row(0, 5, 0) << std::endl;
     std::cout << game_state.four_in_a_row(1, 4, 3) << std::endl;
+
+    std::cout << "Test opponent_four_in_a_row_above(int column)" << std::endl;
+    load_position(game_state, "33224331");
+    print_board(game_state);
+    std::cout << "Column 3: " << game_state.opponent_four_in_a_row_above(3) << std::endl;
+    load_position(game_state, "332243313");
+    print_board(game_state);
+    std::cout << "Column 3: " << game_state.opponent_four_in_a_row_above(3) << std::endl;
+    load_position(game_state, "3322433133");
+    print_board(game_state);
+    std::cout << "Column 3: " << game_state.opponent_four_in_a_row_above(3) << std::endl;
+    load_position(game_state, "334455");
+    print_board(game_state);
+    std::cout << "Column 6: " << game_state.opponent_four_in_a_row_above(6) << std::endl;
+    load_position(game_state, "123423463");
+    print_board(game_state);
+    std::cout << "Column 2: " << game_state.opponent_four_in_a_row_above(2) << std::endl;
+    std::cout << "Column 3: " << game_state.opponent_four_in_a_row_above(3) << std::endl;
+    std::cout << "Column 4: " << game_state.opponent_four_in_a_row_above(4) << std::endl;
+
+    load_position(game_state, "334");
+    print_board(game_state);
+    int blocking_move;
+    int number_of_blocking_moves = 0;
+    for (int move=0; move<=6; move++)
+    {
+        if (game_state.column_not_full(move))
+        {
+            if(game_state.is_blocking_move(move))
+            {
+                blocking_move = move;
+                number_of_blocking_moves++;
+                std::cout << move << std::endl;
+            }
+        }
+    }
+    std::cout << number_of_blocking_moves << std::endl;
+
+    load_position(game_state, "33435");
+    print_board(game_state);
+    number_of_blocking_moves = 0;
+    for (int move=0; move<=6; move++)
+    {
+        if (game_state.column_not_full(move))
+        {
+            if(game_state.is_blocking_move(move))
+            {
+                blocking_move = move;
+                number_of_blocking_moves++;
+                std::cout << move << std::endl;
+            }
+        }
+    }
+    std::cout << number_of_blocking_moves << std::endl;
 }
 
 void test_engine_API()
@@ -306,24 +360,15 @@ void test_position(Engine::EngineAPI& engine, std::string move_string, int expec
 
 void benchmark(Engine::EngineAPI& engine)
 {
-//    test_position(engine, "333335", 5); // Very slow
-//    test_position(engine, "33333530", 5);
-//    test_position(engine, "333304", 1);
-//    test_position(engine, "33344334", 4);
-//    test_position(engine, "3333335", 4);
-//    test_position(engine, "3332224", 3);
-    test_position(engine, "01234560660", 3);
-    test_position(engine, "444320", 2);
-    test_position(engine, "333333561", 0);
-    test_position(engine, "33630445", 3);
+//    test_position(engine, "256555226", 6); Extremely show and have high memory usage.
     test_position(engine, "334233650026", 5);
+    test_position(engine, "01234560660", 3);
+    test_position(engine, "00000055551", 2);
+    test_position(engine, "2222223456", 3);
+    test_position(engine, "333333561", 0);
     test_position(engine, "33423365002630", 1);
     test_position(engine, "3000011243563", 3);
     test_position(engine, "333335302255", 5);
-    test_position(engine, "01234560000", 2);
-    test_position(engine, "333222323314", 4);
-
-
 }
 
 void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_engine, int number_of_games,
@@ -502,8 +547,8 @@ int main()
 //    TestEngine::EngineAPI test_engine;
 //    test_engine.set_difficulty_level(3);
 
-//    benchmark(engine);
-    engine_vs_engine(engine, test_engine, 2, false);
+   benchmark(engine);
+//    engine_vs_engine(engine, test_engine, 10, false);
 
     return 0;
 }
