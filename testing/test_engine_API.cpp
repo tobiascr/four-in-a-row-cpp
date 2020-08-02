@@ -354,7 +354,7 @@ int EngineAPI::engine_move(const short int depth)
 //        moves = move_order();
 //    }
 
-//    transposition_table.clear();
+    transposition_table.clear();
 
     // Iterative deepening.
     if (depth == 42)

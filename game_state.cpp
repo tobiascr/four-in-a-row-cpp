@@ -174,6 +174,114 @@ bool GameState::is_blocking_move(int column) const
     return four_in_a_row(bitboard[1 - player_in_turn] | next_move[column]);
 }
 
+uint64_t GameState::get_opponent_winning_positions_bitboard() const
+{
+    return get_winning_positions_bitboard(bitboard[1 - player_in_turn]);
+}
+
+uint64_t GameState::get_winning_positions_bitboard(uint64_t bitboard) const
+/* Can also include already occupied positions and positions outside the board.*/
+{
+    uint64_t winning_positions = 0;
+
+    // Vertical direction
+    winning_positions = (bitboard & (bitboard << 1) & (bitboard << 2)) << 1;
+
+    // Horizontal direction
+    uint64_t b_012 = bitboard & (bitboard << 7) & (bitboard << 14);
+    uint64_t b_03 = bitboard & (bitboard << 21);
+    winning_positions |= b_012 << 7; // ooox
+    winning_positions |= b_012 >> 21; // xooo
+    winning_positions |= (b_03 & (bitboard << 14)) >> 7; // ooxo
+    winning_positions |= (b_03 & (bitboard << 7)) >> 14; // oxoo
+
+    // Diagonal direction 1
+    b_012 = bitboard & (bitboard << 6) & (bitboard << 12);
+    b_03 = bitboard & (bitboard << 18);
+    winning_positions |= b_012 << 6; // ooox
+    winning_positions |= b_012 >> 18; // xooo
+    winning_positions |= (b_03 & (bitboard << 12)) >> 6; // ooxo
+    winning_positions |= (b_03 & (bitboard << 6)) >> 12; // oxoo
+
+    // Diagonal direction 2
+    b_012 = bitboard & (bitboard << 8) & (bitboard << 16);
+    b_03 = bitboard & (bitboard << 24);
+    winning_positions |= b_012 << 8; // ooox
+    winning_positions |= b_012 >> 24; // xooo
+    winning_positions |= (b_03 & (bitboard << 16)) >> 8; // ooxo
+    winning_positions |= (b_03 & (bitboard << 8)) >> 16; // oxoo
+
+    return winning_positions;
+}
+
+std::array<bool,7> GameState::get_non_losing_moves()
+{
+    uint64_t opponent_winning_positions =
+              get_winning_positions_bitboard(bitboard[1 - player_in_turn]);
+    const uint64_t board_mask = 0b0111111011111101111110111111011111101111110111111;
+    opponent_winning_positions &= board_mask;
+
+//    blocking_moves = winning_positions & next_moves;
+
+//    if(blocking_moves == 0)
+//    {
+//        
+//    }
+//    else
+//    {
+//    
+//    }
+
+//    uint64_t positions_above_with_opponent_four_in_a_row =
+//                   opponent_winning_positions & ((next_moves & board_mask) << 1);
+
+    std::array<bool,7> values = {false, false, false, false, false, false, false};
+
+    // Look in the center first might be better.
+    int blocking_move;
+    int number_of_blocking_moves = 0;
+    for (int column=0; column<=6; column++)
+    {
+        if (opponent_winning_positions & next_move[column])
+        {
+            blocking_move = column;
+            number_of_blocking_moves++;
+            if (number_of_blocking_moves > 1)
+            {
+                return values;
+            }
+        }
+    }
+
+    if(number_of_blocking_moves == 1)
+    {
+        if(opponent_winning_positions
+                                 & ((next_move[blocking_move] & board_mask) << 1))
+        {
+            return values;
+        }
+        else
+        {
+            values[blocking_move] = true;
+            return values;
+        }
+    }
+
+    for (int column=0; column<=6; column++)
+    {
+        if (column_not_full(column))
+        {
+            if(not (opponent_winning_positions
+                                 & ((next_move[column] & board_mask) << 1)))
+            {
+                values[column] = true;
+            }
+        }
+    }
+
+    return values;
+}
+
 bool GameState::board_full() const
 {
     return number_of_moves == 42;

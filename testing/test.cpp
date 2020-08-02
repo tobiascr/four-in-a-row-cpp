@@ -91,6 +91,25 @@ void print_board(Engine::EngineAPI& engine)
     std::cout << std::endl;
 }
 
+void print_bitboard(uint64_t bitboard)
+{
+    uint64_t one = 1;
+    for (int row=6; row>=0; row--)
+    {
+        for (int col=0; col<9; col++)
+        {
+            int bit = row + col * 7;
+            std::cout << ((bitboard & (one << bit)) != 0);
+        }
+        if (row > 0)
+        {
+            std::cout << std::endl;
+        }
+    }
+    std::cout << ((bitboard & (one << 63)) != 0);
+    std::cout << std::endl;
+}
+
 void test_game_state()
 {
     using namespace Engine;
@@ -238,6 +257,109 @@ void test_game_state()
         }
     }
     std::cout << number_of_blocking_moves << std::endl;
+
+    std::cout << std::endl;
+    std::cout << "Test print_bitboard" << std::endl;
+    std::cout << std::endl;
+    print_bitboard(0b0111111011111101111110111111011111101111110111111);
+    std::cout << std::endl;
+    print_bitboard(0b1011111101111110111111011111101111110111111011111101111110111111);
+    std::cout << std::endl;
+    print_bitboard(0b1011111101111110111111011111101111110111111000111101111110101011);
+
+    std::cout << std::endl;
+    std::cout << "Test get_opponent_winning_positions_bitboard()" << std::endl;
+
+    load_position(game_state, "33435");
+    std::cout << (game_state.get_number_of_moves() % 2) + 1 << " to play:"<< std::endl;
+    print_board(game_state);
+    print_bitboard(game_state.get_opponent_winning_positions_bitboard());
+    std::array<bool,7> non_losing_moves = game_state.get_non_losing_moves();
+    std::cout << "Non losing moves: ";
+    for(int i=0; i<=6; i++)
+    {
+        std::cout << non_losing_moves[i];
+    }
+    std::cout << std::endl;
+    std::cout << std::endl;
+
+    load_position(game_state, "01010");
+    std::cout << (game_state.get_number_of_moves() % 2) + 1 << " to play:"<< std::endl;
+    print_board(game_state);
+    print_bitboard(game_state.get_opponent_winning_positions_bitboard());
+    non_losing_moves = game_state.get_non_losing_moves();
+    std::cout << "Non losing moves: ";
+    for(int i=0; i<=6; i++)
+    {
+        std::cout << non_losing_moves[i];
+    }
+    std::cout << std::endl;
+    std::cout << std::endl;
+
+    load_position(game_state, "23340445505");
+    std::cout << (game_state.get_number_of_moves() % 2) + 1 << " to play:"<< std::endl;
+    print_board(game_state);
+    print_bitboard(game_state.get_opponent_winning_positions_bitboard());
+    non_losing_moves = game_state.get_non_losing_moves();
+    std::cout << "Non losing moves: ";
+    for(int i=0; i<=6; i++)
+    {
+        std::cout << non_losing_moves[i];
+    }
+    std::cout << std::endl;
+    std::cout << std::endl;
+
+    load_position(game_state, "233404455050");
+    std::cout << (game_state.get_number_of_moves() % 2) + 1 << " to play:"<< std::endl;
+    print_board(game_state);
+    print_bitboard(game_state.get_opponent_winning_positions_bitboard());
+    non_losing_moves = game_state.get_non_losing_moves();
+    std::cout << "Non losing moves: ";
+    for(int i=0; i<=6; i++)
+    {
+        std::cout << non_losing_moves[i];
+    }
+    std::cout << std::endl;
+    std::cout << std::endl;
+
+    load_position(game_state, "0000101122");
+    std::cout << (game_state.get_number_of_moves() % 2) + 1 << " to play:"<< std::endl;
+    print_board(game_state);
+    print_bitboard(game_state.get_opponent_winning_positions_bitboard());
+    non_losing_moves = game_state.get_non_losing_moves();
+    std::cout << "Non losing moves: ";
+    for(int i=0; i<=6; i++)
+    {
+        std::cout << non_losing_moves[i];
+    }
+    std::cout << std::endl;
+    std::cout << std::endl;
+
+    load_position(game_state, "0011333");
+    std::cout << (game_state.get_number_of_moves() % 2) + 1 << " to play:"<< std::endl;
+    print_board(game_state);
+    print_bitboard(game_state.get_opponent_winning_positions_bitboard());
+    non_losing_moves = game_state.get_non_losing_moves();
+    std::cout << "Non losing moves: ";
+    for(int i=0; i<=6; i++)
+    {
+        std::cout << non_losing_moves[i];
+    }
+    std::cout << std::endl;
+    std::cout << std::endl;
+
+    load_position(game_state, "2244550");
+    std::cout << (game_state.get_number_of_moves() % 2) + 1 << " to play:"<< std::endl;
+    print_board(game_state);
+    print_bitboard(game_state.get_opponent_winning_positions_bitboard());
+    non_losing_moves = game_state.get_non_losing_moves();
+    std::cout << "Non losing moves: ";
+    for(int i=0; i<=6; i++)
+    {
+        std::cout << non_losing_moves[i];
+    }
+    std::cout << std::endl;
+    std::cout << std::endl;
 }
 
 void test_engine_API()
@@ -362,6 +484,7 @@ void benchmark(Engine::EngineAPI& engine)
 {
 //    test_position(engine, "256555226", 6); Extremely show and have high memory usage.
     test_position(engine, "333345550", 3); //1 and 2 are as good.
+    test_position(engine, "333333010", 0);
     test_position(engine, "334233650026", 5);
     test_position(engine, "01234560660", 3);
     test_position(engine, "00000055551", 2);
@@ -538,18 +661,18 @@ int main()
 //    test_game_state();
 //    test_engine_API();
 
-    Engine::EngineAPI engine(91635);
-    engine.set_difficulty_level(3);
-    TestEngine::EngineAPI test_engine(35790);
-    test_engine.set_difficulty_level(3);
-
-//    Engine::EngineAPI engine;
+//    Engine::EngineAPI engine(91635);
 //    engine.set_difficulty_level(3);
-//    TestEngine::EngineAPI test_engine;
+//    TestEngine::EngineAPI test_engine(35790);
 //    test_engine.set_difficulty_level(3);
 
-//    benchmark(engine);
-    engine_vs_engine(engine, test_engine, 10, false);
+    Engine::EngineAPI engine;
+    engine.set_difficulty_level(3);
+    TestEngine::EngineAPI test_engine;
+    test_engine.set_difficulty_level(3);
+
+//   benchmark(engine);
+    engine_vs_engine(engine, test_engine, 200, false);
 
     return 0;
 }

@@ -208,13 +208,6 @@ std::array<int,7> EngineAPI::move_order(int first_move)
 {
     switch (first_move)
     {
-//        case 0: return {0, 3, 2, 4, 1, 5, 6};
-//        case 1: return {1, 3, 2, 4, 5, 0, 6};
-//        case 2: return {2, 3, 4, 1, 5, 0, 6};
-//        case 3: return {3, 2, 4, 1, 5, 0, 6};
-//        case 4: return {4, 3, 2, 1, 5, 0, 6};
-//        case 5: return {5, 3, 2, 4, 1, 0, 6};
-//        case 6: return {6, 3, 2, 4, 1, 5, 0};
         case 0: return {0, 1, 2, 3, 4, 5, 6};
         case 1: return {1, 2, 0, 3, 4, 5, 6};
         case 2: return {2, 3, 1, 4, 0, 5, 6};
@@ -244,161 +237,17 @@ std::array<int,7> EngineAPI::move_order_open_four_in_a_row()
 short int EngineAPI::negamax_2_ply(short int alpha)
 // A negamax function that looks two moves ahead.
 {
-//    if (game_state.can_win_this_move())
-//    {
-//        return 42 - game_state.get_number_of_moves();
-//    }
-
-    // Just for safety. Remove later.
-    if(game_state.get_number_of_moves() == 42)
-    {
-        return 0;
-    }
-
-    if (alpha >= 0)
-    {
-        return 0;
-    }
-
-    for (int move=0; move<=6; move++)
-    {
-        if (game_state.column_not_full(move))
-        {
-            game_state.make_move(move);
-            if (not game_state.can_win_this_move())
-            {
-                game_state.undo_move(move);
-                return 0;
-            }
-            game_state.undo_move(move);
-        }
-    }
-    return game_state.get_number_of_moves() - 42;
+    return 0;
 }
-
-std::vector<int> EngineAPI::non_losing_moves()
-/*Return a list of moves (0, 1, ..., 6) that the player in turn can make such that the opponent
-can't make a four in a row the next move. It returns the moves in an order with central
-moves first.*/
-{
-    std::vector<int> moves = {0, 0, 0, 0, 0, 0, 0};
-
-    // Look for blocking moves.
-    int blocking_move;
-    int number_of_blocking_moves = 0;
-    for (int move=0; move<=6; move++)
-    {
-        if (game_state.column_not_full(move))
-        {
-            if(game_state.is_blocking_move(move))
-            {
-                blocking_move = move;
-                number_of_blocking_moves++;
-                if (number_of_blocking_moves > 1)
-                {
-                    moves.resize(0);
-                    return moves; // No non losing moves were found.
-                }
-            }
-        }
-    }
-
-    if(number_of_blocking_moves == 1)
-    {
-        if (game_state.opponent_four_in_a_row_above(blocking_move))
-        {
-            return moves; // No non losing moves were found.
-        }
-        else
-        {
-            moves[0] = blocking_move;
-            moves.resize(1);
-            return moves;
-        }
-    }
-
-    std::array<int,7> move_order = {3, 2, 4, 1, 5, 0, 6};
-    return {3, 2, 4, 1, 5, 0, 6};
-    int i = 0;
-    for (int move : move_order)
-    {
-        if (game_state.column_not_full(move))
-        {
-            if(not game_state.opponent_four_in_a_row_above(move))
-            {
-                moves[i] = move;
-                i++;
-            }
-        }
-    }
-
-    moves.resize(i);
-
-    return moves;
-}
-
-//std::array<int,7> EngineAPI::non_losing_moves()
-///*Return a list of moves (0, 1, ..., 6) that the player in turn can make such that the opponent
-//can't make a four in a row the next move. It returns the moves in an order with central
-//moves first.*/
-//{
-//    std::array<int,7> moves = {-1, -1, -1, -1, -1, -1, -1};
-
-//    // Look for blocking moves.
-//    int blocking_move;
-//    int number_of_blocking_moves = 0;
-//    for (int move=0; move<=6; move++)
-//    {
-//        if (game_state.column_not_full(move))
-//        {
-//            if(game_state.is_blocking_move(move))
-//            {
-//                blocking_move = move;
-//                number_of_blocking_moves++;
-//                if (number_of_blocking_moves > 1)
-//                {
-//                    return moves; // No non losing moves were found.
-//                }
-//            }
-//        }
-//    }
-
-//    if(number_of_blocking_moves == 1)
-//    {
-//        if (game_state.opponent_four_in_a_row_above(blocking_move))
-//        {
-//            return moves; // No non losing moves were found.
-//        }
-//        else
-//        {
-//            moves.push_back(blocking_move);
-//            return {blocking_move, -1, -1, -1, -1, -1, -1};
-//        }
-//    }
-
-//    std::array<int,7> move_order = {3, 2, 4, 1, 5, 0, 6};
-//    for (int move : move_order)
-//    {
-//        if (game_state.column_not_full(move))
-//        {
-//            if(not game_state.opponent_four_in_a_row_above(move))
-//            {
-//                moves.push_back(move);
-//            }
-//        }
-//    }
-
-//    return moves;
-//}
 
 short int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
-/* Compute a value of game_state. Return a positive integer for a winning game_state for
-   the player in turn, 0 for a draw or unknown outcome and a negative integer for a loss.
-   A win at move 42 give the value 1, a win at move 41 give a the value 2 etc,
-   and vice versa for losses.
-   Depth is counted as the move number at which the search is stopped. For example,
-   depth=42 give a maximum depth search. This function can only be used on if the game state
-   have no four in a row.*/
+/* Compute a value of game_state. Return a positive integer for a winning
+game_state for the player in turn, 0 for a draw or unknown outcome and a
+negative integer for a loss. A win at move 42 give the value 1, a win at move 41
+give a the value 2 etc, and vice versa for losses.
+Depth is counted as the move number at which the search is stopped. For example,
+depth=42 give a maximum depth search. This function can only be used on if the
+game state have no four in a row.*/
 {
     uint64_t key;
     short int original_alpha = alpha;
@@ -408,7 +257,6 @@ short int EngineAPI::negamax(const short int depth, short int alpha, short int b
 //        return 42 - game_state.get_number_of_moves();
 //    }
 
-    // Maybe look in the book first.
     if (game_state.get_number_of_moves() == depth - 1) 
     {
         return 0;
@@ -423,7 +271,7 @@ short int EngineAPI::negamax(const short int depth, short int alpha, short int b
         }
     }
 
-    const bool use_transposition_table = game_state.get_number_of_moves() < depth - 6; //6
+    const bool use_transposition_table = game_state.get_number_of_moves() < depth - 6;
     if (use_transposition_table)
     {
         key = game_state.get_key();
@@ -459,85 +307,32 @@ short int EngineAPI::negamax(const short int depth, short int alpha, short int b
         moves = move_order_open_four_in_a_row();
     }
 
-//    std::vector<int> move_vector = non_losing_moves();
-
-//    if(move_vector.size() == 0)
-//    {
-//        return game_state.get_number_of_moves() - 41;
-//    }
-
-    // Look for blocking moves.
-    int blocking_move;
-    int number_of_blocking_moves = 0;
-    for (int move=0; move<=6; move++)
+    std::array<bool,7> non_losing_moves = game_state.get_non_losing_moves();
+    int c = 0;
+    for (int i=0; i<=6; i++)
     {
-        if (game_state.column_not_full(move))
+        if(non_losing_moves[i])
         {
-            if(game_state.is_blocking_move(move))
-            {
-                blocking_move = move;
-                number_of_blocking_moves++;
-                if (number_of_blocking_moves > 1)
-                {
-                    return game_state.get_number_of_moves() - 41;
-                }
-            }
+            c++;
+            break;
         }
+    }
+    if (c == 0)
+    {
+        return game_state.get_number_of_moves() - 41;
     }
 
     short int value;
-    if(number_of_blocking_moves == 1)
-    {
-        if (game_state.opponent_four_in_a_row_above(blocking_move))
-        {
-            return game_state.get_number_of_moves() - 41;
-        }
-        game_state.make_move(blocking_move);
-        value = -negamax(depth, -beta, -alpha);
-        game_state.undo_move(blocking_move);
-        if (value >= beta) // Fail hard beta-cutoff.
-        {
-            if (use_transposition_table)
-            {
-                transposition_table[key] = (depth << 8) | ((beta + 50) << 1) | 1;
-            }
-            return beta;
-        }
-        if (value > alpha)
-        {
-            alpha = value;
-        }
-        if (use_transposition_table)
-        {
-            if (alpha > original_alpha) // Exact values.
-            {
-                if (alpha != 0)
-                {
-                    transposition_table[key] = (depth << 8) | ((alpha + 50) << 1);
-                }
-            }
-        }
-        return alpha;
-    }
-
-//    short int value;
 
     for (int i=0; i<=6; i++)
-//    for (int move : move_vector)
     {
         short int move = moves[i];
-        if (game_state.column_not_full(move))
+//        if(game_state.column_not_full(move))
+        if (non_losing_moves[move])
         {
-            if (game_state.opponent_four_in_a_row_above(move))
-            {
-                value = game_state.get_number_of_moves() - 41;
-            }
-            else
-            {
-                game_state.make_move(move);
-                value = -negamax(depth, -beta, -alpha);
-                game_state.undo_move(move);
-            }
+            game_state.make_move(move);
+            value = -negamax(depth, -beta, -alpha);
+            game_state.undo_move(move);
             if (value >= beta) // Fail hard beta-cutoff.
             {
                 if (use_transposition_table)
@@ -630,8 +425,8 @@ int EngineAPI::position_value_full_depth()
 
 int EngineAPI::engine_move(const short int depth)
 /* Return an integer from 0 to 6 that represents a best move made by the engine
-at the given depth level. Depth is counted as the move number at which the search is stopped.
-For example, depth=42 give a maximum depth search.*/
+at the given depth level. Depth is counted as the move number at which the search
+is stopped. For example, depth=42 give a maximum depth search.*/
 {
     short int alpha = -1000;
     short int beta = 1000;
@@ -643,9 +438,9 @@ For example, depth=42 give a maximum depth search.*/
         moves = move_order(3);
     }
 
-    // Clearing the transposition table between moves makes the total move time a little
-    // slower. But the maximum move is not likely to be affected, since it's typically
-    // the first move. Clearing table makes it easier to use.
+    /* Clearing the transposition table between moves makes the total move time a
+    little slower. But the maximum move is not likely to be affected, since it's
+    typically the first move. Clearing table makes it easier to use.*/
     transposition_table.clear();
 
     // Iterative deepening.
@@ -681,21 +476,6 @@ int EngineAPI::engine_move_medium()
 
 int EngineAPI::engine_move_hard()
 {
-    int number_of_moves = game_state.get_number_of_moves();
-
-    // Some opening moves.
-    if (number_of_moves < 2) {return 3;}
-
-    //return engine_move(42);
-
-    if (number_of_moves >= 9)
-    {
-        return engine_move(42);
-    }
-
-    int depth = number_of_moves + 14;
-    if (depth > 42) {depth = 42;}
-
-    return engine_move(depth);
+    return engine_move(42);
 }
 }

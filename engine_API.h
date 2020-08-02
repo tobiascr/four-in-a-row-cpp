@@ -2,7 +2,6 @@
 #define ENGINE_API_H
 
 #include <array>
-#include <vector>
 #include <random>
 #include <unordered_map>
 #include "game_state.h"
@@ -71,10 +70,6 @@ private:
     std::array<int,7> move_order_open_four_in_a_row();
 
     short int negamax_2_ply(short int alpha);
-
-    std::vector<int> non_losing_moves();
-
-//    std::array<int,7> non_losing_moves();
 
     short int negamax(const short int depth, short int alpha, short int beta);
 

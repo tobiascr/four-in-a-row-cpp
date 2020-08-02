@@ -1,6 +1,7 @@
 #ifndef GAMESTATE_H
 #define GAMESTATE_H
 
+#include <array>
 #include <stdint.h>
 
 namespace Engine
@@ -52,6 +53,15 @@ public:
     /* Return true iff making a move in column blocks the opponent from making a
     four in a row in the next move. The move must be legal.*/
 
+    uint64_t get_opponent_winning_positions_bitboard() const;
+    /* Can also include already occupied positions and positions outside the board.*/
+
+    std::array<bool,7> get_non_losing_moves();
+    /*Return a list of values that tells if that the player in turn can make
+    a move such that the opponent can't make a four in a row the next move.
+    For example if the first value is true, it means that the move is not
+    losing.*/
+
     bool board_full() const;
 
     int get_number_of_moves() const;
@@ -96,6 +106,9 @@ private:
     /* Return true iff there is a four in a row of 1:s on the bitboard.*/
 
     bool four_in_a_row_no_vertical(uint64_t bitboard) const;
+
+    uint64_t get_winning_positions_bitboard(uint64_t bitboard) const;
+    /* Can also include already occupied positions and positions outside the board.*/
 };
 }
 
