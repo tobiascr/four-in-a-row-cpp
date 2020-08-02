@@ -208,13 +208,21 @@ std::array<int,7> EngineAPI::move_order(int first_move)
 {
     switch (first_move)
     {
-        case 0: return {0, 1, 2, 3, 4, 5, 6};
-        case 1: return {1, 2, 0, 3, 4, 5, 6};
-        case 2: return {2, 3, 1, 4, 0, 5, 6};
+        case 0: return {0, 3, 2, 4, 1, 5, 6};
+        case 1: return {1, 3, 2, 4, 5, 0, 6};
+        case 2: return {2, 3, 4, 1, 5, 0, 6};
         case 3: return {3, 2, 4, 1, 5, 0, 6};
-        case 4: return {4, 3, 5, 2, 6, 1, 0};
-        case 5: return {5, 4, 6, 3, 2, 1, 0};
-        case 6: return {6, 5, 4, 3, 2, 1, 0};
+        case 4: return {4, 3, 2, 1, 5, 0, 6};
+        case 5: return {5, 3, 2, 4, 1, 0, 6};
+        case 6: return {6, 3, 2, 4, 1, 5, 0};
+
+//        case 0: return {0, 1, 2, 3, 4, 5, 6};
+//        case 1: return {1, 2, 0, 3, 4, 5, 6};
+//        case 2: return {2, 3, 1, 4, 0, 5, 6};
+//        case 3: return {3, 2, 4, 1, 5, 0, 6};
+//        case 4: return {4, 3, 5, 2, 6, 1, 0};
+//        case 5: return {5, 4, 6, 3, 2, 1, 0};
+//        case 6: return {6, 5, 4, 3, 2, 1, 0};
     }
     return {3, 2, 4, 1, 5, 0, 6};
 }
@@ -300,7 +308,7 @@ game state have no four in a row.*/
 
     // Move order.
     std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
-//    if (depth > 30)
+    if (depth > 30)
     if (game_state.get_number_of_moves() < depth - 15)
     if (game_state.get_number_of_moves() < 22) //22
     {
