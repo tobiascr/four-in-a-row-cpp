@@ -73,8 +73,11 @@ private:
 
     short int negamax(const short int depth, short int alpha, short int beta);
 
-    int root_negamax(const short int depth, std::array<int,7> move_order,
-                     short int alpha, short int beta);
+/*    int root_negamax(const short int depth, std::array<int,7> move_order,*/
+/*                     short int alpha, short int beta);*/
+
+    std::array<int,2> root_negamax(const short int depth,
+                  std::array<int,7> move_order, short int alpha, short int beta);
 
     int engine_move(const short int depth);
 

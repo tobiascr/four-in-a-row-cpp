@@ -420,7 +420,7 @@ void test_engine_API()
     load_position(engine, "044502445224");
     print_board(engine);
     std::cout << "Depth 42: " << engine.position_value_full_depth() << std::endl;
-    engine.new_game();
+
     load_position(engine, "33"); 
     print_board(engine);
     std::cout << "Depth 42: " << engine.position_value_full_depth() << std::endl;
@@ -458,7 +458,6 @@ void test_position(Engine::EngineAPI& engine, std::string move_string, int expec
     std::chrono::steady_clock::time_point t1;
     std::chrono::steady_clock::duration move_time;
     load_position(engine, move_string);
-//    print_board(engine);
     t0 = std::chrono::steady_clock::now();
     int move = engine.engine_move();
     t1 = std::chrono::steady_clock::now();
@@ -470,6 +469,33 @@ void test_position(Engine::EngineAPI& engine, std::string move_string, int expec
               << std::chrono::duration_cast<std::chrono::milliseconds>(move_time).count()
               << " ms" << std::endl;
     if (move == expected_move)
+    {
+        std::cout << "Test successful!" << std::endl;
+    }
+    else
+    {
+        std::cout << "Test failed!" << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+void test_position_value(Engine::EngineAPI& engine, std::string move_string, int expected_value)
+{
+    std::chrono::steady_clock::time_point t0;
+    std::chrono::steady_clock::time_point t1;
+    std::chrono::steady_clock::duration move_time;
+    load_position(engine, move_string);
+    t0 = std::chrono::steady_clock::now();
+    int value = engine.position_value_full_depth();
+    t1 = std::chrono::steady_clock::now();
+    move_time = t1 - t0;
+    std::cout << "Position: " <<  move_string << std::endl;
+    std::cout << "Value: " << value;
+    std::cout << ", Expected value: " <<  expected_value;
+    std::cout << ", Time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(move_time).count()
+              << " ms" << std::endl;
+    if (value == expected_value)
     {
         std::cout << "Test successful!" << std::endl;
     }
@@ -492,7 +518,22 @@ void benchmark(Engine::EngineAPI& engine)
     test_position(engine, "333333561", 0);
     test_position(engine, "33423365002630", 1);
     test_position(engine, "3000011243563", 3);
-    test_position(engine, "333335302255", 5);
+}
+
+void benchmark_position_values(Engine::EngineAPI& engine)
+{
+    test_position_value(engine, "333033112", 1);
+    test_position_value(engine, "155233161", -6);
+    test_position_value(engine, "002230532", -32);
+    test_position_value(engine, "242222334", 7);
+    test_position_value(engine, "", 2);
+    test_position_value(engine, "0", 3);
+    test_position_value(engine, "1", 1);
+    test_position_value(engine, "2", 0);
+    test_position_value(engine, "3", -2);
+    test_position_value(engine, "33432", -36);
+    test_position_value(engine, "3343", 36);
+    test_position_value(engine, "33423365002", 0);
 }
 
 void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_engine, int number_of_games,
@@ -661,18 +702,19 @@ int main()
 //    test_game_state();
 //    test_engine_API();
 
-//    Engine::EngineAPI engine(91635);
-//    engine.set_difficulty_level(3);
-//    TestEngine::EngineAPI test_engine(35790);
-//    test_engine.set_difficulty_level(3);
-
-    Engine::EngineAPI engine;
+    Engine::EngineAPI engine(91635);
     engine.set_difficulty_level(3);
-    TestEngine::EngineAPI test_engine;
+    TestEngine::EngineAPI test_engine(35790);
     test_engine.set_difficulty_level(3);
 
-//   benchmark(engine);
-    engine_vs_engine(engine, test_engine, 200, false);
+//    Engine::EngineAPI engine;
+//    engine.set_difficulty_level(3);
+//    TestEngine::EngineAPI test_engine;
+//    test_engine.set_difficulty_level(3);
+
+//    benchmark(engine);
+    benchmark_position_values(engine);
+//    engine_vs_engine(engine, test_engine, 100, false);
 
     return 0;
 }

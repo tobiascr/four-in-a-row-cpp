@@ -215,14 +215,6 @@ std::array<int,7> EngineAPI::move_order(int first_move)
         case 4: return {4, 3, 2, 1, 5, 0, 6};
         case 5: return {5, 3, 2, 4, 1, 0, 6};
         case 6: return {6, 3, 2, 4, 1, 5, 0};
-
-//        case 0: return {0, 1, 2, 3, 4, 5, 6};
-//        case 1: return {1, 2, 0, 3, 4, 5, 6};
-//        case 2: return {2, 3, 1, 4, 0, 5, 6};
-//        case 3: return {3, 2, 4, 1, 5, 0, 6};
-//        case 4: return {4, 3, 5, 2, 6, 1, 0};
-//        case 5: return {5, 4, 6, 3, 2, 1, 0};
-//        case 6: return {6, 5, 4, 3, 2, 1, 0};
     }
     return {3, 2, 4, 1, 5, 0, 6};
 }
@@ -255,7 +247,8 @@ negative integer for a loss. A win at move 42 give the value 1, a win at move 41
 give a the value 2 etc, and vice versa for losses.
 Depth is counted as the move number at which the search is stopped. For example,
 depth=42 give a maximum depth search. This function can only be used on if the
-game state have no four in a row.*/
+game state have no four in a row and the player in turn can't make a four
+in a row.*/
 {
     uint64_t key;
     short int original_alpha = alpha;
@@ -265,7 +258,7 @@ game state have no four in a row.*/
 //        return 42 - game_state.get_number_of_moves();
 //    }
 
-    if (game_state.get_number_of_moves() == depth - 1) 
+    if (game_state.get_number_of_moves() == depth - 1)
     {
         return 0;
     }
@@ -370,35 +363,15 @@ game state have no four in a row.*/
     return alpha;
 }
 
-int EngineAPI::root_negamax(const short int depth, std::array<int,7> move_order,
-                            short int alpha, short int beta)
-/* Return a move (0 to 6) computed with the negamax algorithm. Depth is counted as
-the move number at which the search is stopped.*/
+std::array<int,2> EngineAPI::root_negamax(const short int depth,
+                  std::array<int,7> move_order, short int alpha, short int beta)
+/* Return a move (0 to 6) and a value for the current game state computed
+with the negamax algorithm. Depth is counted as the move number at which
+the search is stopped. This function can only be used on if the
+game state have no four in a row and the player in turn can't make a four
+in a row.*/
 {
-    int new_value, move, result, best_move;
-
-    // Look for a move that makes a four in a row.
-    for (int n=0; n<=6; n++)
-    {
-        move = move_order[n];
-        if (game_state.column_not_full(move))
-        {
-            game_state.make_move(move);
-            result = game_state.four_in_a_row();
-            game_state.undo_move(move);
-            if (result) {return move;}
-        }
-    }
-
-    // Look for blocking moves.
-    for (int n=0; n<=6; n++)
-    {
-        move = move_order[n];
-        if (game_state.column_not_full(move))
-        {
-            if (game_state.is_blocking_move(move)) {return move;}
-        }
-    }
+    int new_value, move, best_move;
 
     for (int n=0; n<=6; n++)
     {
@@ -422,13 +395,37 @@ the move number at which the search is stopped.*/
             }
         }
     }
-    return best_move;
+    return {best_move, alpha};
 }
 
 int EngineAPI::position_value_full_depth()
 {
     transposition_table.clear();
-    return negamax(42, -1000, 1000);
+    if(game_state.can_win_this_move())
+    {
+        return 42 - game_state.get_number_of_moves();
+    }
+    if (game_state.get_number_of_moves() <= max_number_of_moves_in_opening_book)
+    {
+        return negamax(max_number_of_moves_in_opening_book + 2, -1000, 1000);
+    }
+
+    short int alpha = -1000;
+    short int beta = 1000;
+    short int depth = 42;
+
+    std::array<int,7> moves = move_order(3);
+
+    // Iterative deepening.
+    int d = game_state.get_number_of_moves() + 2;
+    while (d < depth)
+    {
+       std::array<int,2> values = root_negamax(d, moves, alpha, beta);
+       d++;
+    }
+
+    std::array<int,2> values = root_negamax(depth, moves, alpha, beta);
+    return values[1];
 }
 
 int EngineAPI::engine_move(const short int depth)
@@ -451,19 +448,49 @@ is stopped. For example, depth=42 give a maximum depth search.*/
     typically the first move. Clearing table makes it easier to use.*/
     transposition_table.clear();
 
+    // Look for a move that makes a four in a row.
+    for (int n=0; n<=6; n++)
+    {
+        int move = moves[n];
+        if (game_state.column_not_full(move))
+        {
+            game_state.make_move(move);
+            int result = game_state.four_in_a_row();
+            game_state.undo_move(move);
+            if (result) {return move;}
+        }
+    }
+
+    // Look for blocking moves.
+    for (int n=0; n<=6; n++)
+    {
+        int move = moves[n];
+        if (game_state.column_not_full(move))
+        {
+            if (game_state.is_blocking_move(move)) {return move;}
+        }
+    }
+
+    if (game_state.get_number_of_moves() <= max_number_of_moves_in_opening_book)
+    {
+        std::array<int,2> values = root_negamax(
+              max_number_of_moves_in_opening_book + 2, moves, alpha, beta);
+        return values[0];
+    }
+
     // Iterative deepening.
     if (depth == 42)
     {
         int d = game_state.get_number_of_moves() + 2;
         while (d < depth)
         {
-            int move = root_negamax(d, moves, alpha, beta);
-            moves = move_order(move);
+            std::array<int,2> values = root_negamax(d, moves, alpha, beta);
             d++;
         }
     }
 
-    return root_negamax(depth, moves, alpha, beta);
+    std::array<int,2> values = root_negamax(depth, moves, alpha, beta);
+    return values[0];
 }
 
 int EngineAPI::engine_move_easy()
