@@ -369,7 +369,7 @@ in a row.*/
             game_state.make_move(move);
             if(game_state.can_win_this_move())
             {
-                new_value = game_state.get_number_of_moves() - 41;
+                new_value = game_state.get_number_of_moves() - 42;
             }
             else
             {

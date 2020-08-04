@@ -713,8 +713,8 @@ int main()
 //    test_engine.set_difficulty_level(3);
 
 //    benchmark(engine);
-    benchmark_position_values(engine);
-//    engine_vs_engine(engine, test_engine, 10, false);
+//    benchmark_position_values(engine);
+    engine_vs_engine(engine, test_engine, 10, false);
 
     return 0;
 }
