@@ -234,12 +234,6 @@ std::array<int,7> EngineAPI::move_order_open_four_in_a_row()
     return moves;
 }
 
-short int EngineAPI::negamax_2_ply(short int alpha)
-// A negamax function that looks two moves ahead.
-{
-    return 0;
-}
-
 short int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
 /* Compute a value of game_state. Return a positive integer for a winning
 game_state for the player in turn, 0 for a draw or unknown outcome and a
@@ -252,11 +246,6 @@ in a row.*/
 {
     uint64_t key;
     short int original_alpha = alpha;
-
-//    if (game_state.can_win_this_move())
-//    {
-//        return 42 - game_state.get_number_of_moves();
-//    }
 
     if (game_state.get_number_of_moves() == depth - 1)
     {
@@ -328,7 +317,6 @@ in a row.*/
     for (int i=0; i<=6; i++)
     {
         short int move = moves[i];
-//        if(game_state.column_not_full(move))
         if (non_losing_moves[move])
         {
             game_state.make_move(move);
@@ -398,6 +386,26 @@ in a row.*/
     return {best_move, alpha};
 }
 
+std::array<int,2> EngineAPI::iterative_deepening(const short int depth,
+                  std::array<int,7> move_order_, short int alpha, short int beta)
+/* A faster way of getting the same result as a single use of root negamax would
+give.*/
+{
+    int d = game_state.get_number_of_moves() + 2;
+    while (d < depth)
+    {
+        std::array<int,2> values = root_negamax(d, move_order_, alpha, beta);
+        int best_move = values[0];
+        move_order_ = move_order(best_move);
+        if(values[1] != 0)
+        {
+            alpha == values[1];
+        }
+        d++;
+    }
+    return root_negamax(depth, move_order_, alpha, beta);
+}
+
 int EngineAPI::position_value_full_depth()
 {
     transposition_table.clear();
@@ -410,21 +418,9 @@ int EngineAPI::position_value_full_depth()
         return negamax(max_number_of_moves_in_opening_book + 2, -1000, 1000);
     }
 
-    short int alpha = -1000;
-    short int beta = 1000;
-    short int depth = 42;
-
+    short int alpha = -1000, beta = 1000, depth = 42;
     std::array<int,7> moves = move_order(3);
-
-    // Iterative deepening.
-    int d = game_state.get_number_of_moves() + 2;
-    while (d < depth)
-    {
-       std::array<int,2> values = root_negamax(d, moves, alpha, beta);
-       d++;
-    }
-
-    std::array<int,2> values = root_negamax(depth, moves, alpha, beta);
+    std::array<int,2> values = iterative_deepening(depth, moves, alpha, beta);
     return values[1];
 }
 
@@ -471,25 +467,14 @@ is stopped. For example, depth=42 give a maximum depth search.*/
         }
     }
 
-    if (game_state.get_number_of_moves() <= max_number_of_moves_in_opening_book)
+    if (game_state.get_number_of_moves() < max_number_of_moves_in_opening_book)
     {
-        std::array<int,2> values = root_negamax(
+        std::array<int,2> values = iterative_deepening(
               max_number_of_moves_in_opening_book + 2, moves, alpha, beta);
         return values[0];
     }
 
-    // Iterative deepening.
-    if (depth == 42)
-    {
-        int d = game_state.get_number_of_moves() + 2;
-        while (d < depth)
-        {
-            std::array<int,2> values = root_negamax(d, moves, alpha, beta);
-            d++;
-        }
-    }
-
-    std::array<int,2> values = root_negamax(depth, moves, alpha, beta);
+    std::array<int,2> values = iterative_deepening(depth, moves, alpha, beta);
     return values[0];
 }
 

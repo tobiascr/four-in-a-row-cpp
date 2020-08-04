@@ -42,9 +42,6 @@ public:
     /* Return true iff a the player in turn can make a move a move that gives
     a four in a row.*/
 
-    bool forced_loss_next_move() const;
-    /* This function assumes that the player in turn can not make a four in a row.*/
-
     bool opponent_four_in_a_row_above(int column) const;
     /* Return true iff the opponent can make a four in a row in column the next move
     if the player in turn makes a move to column.*/

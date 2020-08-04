@@ -158,11 +158,6 @@ bool GameState::can_win_this_move() const
     return false;
 }
 
-bool GameState::forced_loss_next_move() const
-{
-    return 0;
-}
-
 bool GameState::opponent_four_in_a_row_above(int column) const
 {
     if (column_height[column] >= 5) {return false;}
@@ -221,21 +216,10 @@ std::array<bool,7> GameState::get_non_losing_moves()
     const uint64_t board_mask = 0b0111111011111101111110111111011111101111110111111;
     opponent_winning_positions &= board_mask;
 
-//    blocking_moves = winning_positions & next_moves;
-
-//    if(blocking_moves == 0)
-//    {
-//        
-//    }
-//    else
-//    {
-//    
-//    }
-
-//    uint64_t positions_above_with_opponent_four_in_a_row =
-//                   opponent_winning_positions & ((next_moves & board_mask) << 1);
-
     std::array<bool,7> values = {false, false, false, false, false, false, false};
+
+//    if(opponent_winning_positions & next_moves != 0)
+//    {
 
     // Look in the center first might be better.
     int blocking_move;
@@ -266,6 +250,7 @@ std::array<bool,7> GameState::get_non_losing_moves()
             return values;
         }
     }
+//    }
 
     for (int column=0; column<=6; column++)
     {

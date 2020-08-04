@@ -714,7 +714,7 @@ int main()
 
 //    benchmark(engine);
     benchmark_position_values(engine);
-//    engine_vs_engine(engine, test_engine, 100, false);
+//    engine_vs_engine(engine, test_engine, 10, false);
 
     return 0;
 }
