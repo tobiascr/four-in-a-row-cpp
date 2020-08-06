@@ -16,7 +16,7 @@ EngineAPI::EngineAPI()
     load_opening_book("opening_book_6_move");
     load_opening_book("opening_book_9_move");
 }
-q
+
 EngineAPI::EngineAPI(unsigned int seed)
 {
     // Initialize the random number generator.
