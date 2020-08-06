@@ -4,6 +4,7 @@
 #include <array>
 #include <random>
 #include <unordered_map>
+#include <string>
 #include "game_state.h"
 
 namespace Engine
@@ -43,7 +44,7 @@ public:
     integer for a winning game_state for the player in turn, 0 for a draw or unknown
     outcome and a negative integer for a loss. A win at move 42 give the value 1,
     a win at move 41 give a the value 2 etc, and vice versa for losses.
-    This function can only used for positions that have no four in a rows.*/
+    This function can only used for positions that has no four in a rows.*/
 
 private:
     Engine::GameState game_state;
@@ -53,7 +54,7 @@ private:
     std::unordered_map<uint64_t, uint_fast16_t> transposition_table;
     std::unordered_map<uint64_t, short int> opening_book;
 
-    void load_opening_book();
+    void load_opening_book(std::string file_name);
 
     int position_heuristic(int move) const;
 

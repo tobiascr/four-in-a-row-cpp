@@ -506,41 +506,6 @@ void test_position_value(Engine::EngineAPI& engine, std::string move_string, int
     std::cout << std::endl;
 }
 
-void benchmark(Engine::EngineAPI& engine)
-{
-//    test_position(engine, "256555226", 6); Extremely show and have high memory usage.
-    test_position(engine, "333345550", 3); //1 and 2 are as good.
-    test_position(engine, "333333010", 0);
-    test_position(engine, "334233650026", 5);
-    test_position(engine, "01234560660", 3);
-    test_position(engine, "00000055551", 2);
-    test_position(engine, "2222223456", 3);
-    test_position(engine, "333333561", 0);
-    test_position(engine, "33423365002630", 1);
-    test_position(engine, "3000011243563", 3);
-}
-
-void benchmark_position_values(Engine::EngineAPI& engine)
-{
-    test_position_value(engine, "333033112", 1);
-    test_position_value(engine, "155233161", -6);
-    test_position_value(engine, "002230532", -32);
-    test_position_value(engine, "242222334", 7);
-    test_position_value(engine, "3366455", 0);
-    test_position_value(engine, "336645", 0);
-    test_position_value(engine, "33664", 0);
-    test_position_value(engine, "2543", 0);
-    test_position_value(engine, "300", 0);
-    test_position_value(engine, "", 2);
-    test_position_value(engine, "0", 3);
-    test_position_value(engine, "1", 1);
-    test_position_value(engine, "2", 0);
-    test_position_value(engine, "3", -2);
-    test_position_value(engine, "33432", -36);
-    test_position_value(engine, "3343", 36);
-//    test_position_value(engine, "33423365002", 0);
-}
-
 void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_engine, int number_of_games,
                 bool display_move_times)
 // Let engine and test_engine play against each other.
@@ -700,6 +665,42 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
               << " ms" << std::endl;
 }
 
+void benchmark(Engine::EngineAPI& engine)
+{
+//    test_position(engine, "256555226", 6); Extremely show and have high memory usage.
+    test_position(engine, "333345550", 3); //1 and 2 are as good.
+    test_position(engine, "333333010", 0);
+    test_position(engine, "334233650026", 5);
+    test_position(engine, "01234560660", 3);
+    test_position(engine, "00000055551", 2);
+    test_position(engine, "2222223456", 3);
+    test_position(engine, "333333561", 0);
+    test_position(engine, "33423365002630", 1);
+    test_position(engine, "3000011243563", 3);
+}
+
+void benchmark_position_values(Engine::EngineAPI& engine)
+{
+    test_position_value(engine, "333033112", 1);
+    test_position_value(engine, "155233161", -6);
+    test_position_value(engine, "002230532", -32);
+    test_position_value(engine, "242222334", 7);
+    test_position_value(engine, "3366455", 0);
+    test_position_value(engine, "336645", 0);
+    test_position_value(engine, "33664", 0);
+    test_position_value(engine, "2543", 0);
+    test_position_value(engine, "300", 0);
+    test_position_value(engine, "", 2);
+    test_position_value(engine, "0", 3);
+    test_position_value(engine, "1", 1);
+    test_position_value(engine, "2", 0);
+    test_position_value(engine, "3", -2);
+    test_position_value(engine, "33432", -36);
+    test_position_value(engine, "3343", 36);
+    test_position_value(engine, "33423365002", 0);
+    test_position_value(engine, "05216116610", 5);
+}
+
 int main()
 {
     std::srand(time(NULL)); // Initialize the random number generator.
@@ -719,7 +720,7 @@ int main()
 
 //    benchmark(engine);
 //    benchmark_position_values(engine);
-    engine_vs_engine(engine, test_engine, 10, false);
+    engine_vs_engine(engine, test_engine, 10, true);
 
     return 0;
 }

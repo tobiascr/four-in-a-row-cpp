@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <fstream>
-#include <string>
 #include "engine_API.h"
 #include "game_state.h"
 
@@ -13,7 +12,9 @@ EngineAPI::EngineAPI()
     std::random_device rd;
     random_generator.seed(rd());
     difficulty_level_ = 2;
-    load_opening_book();
+    load_opening_book("opening_book_3_move");
+    load_opening_book("opening_book_6_move");
+    load_opening_book("opening_book_9_move");
 }
 
 EngineAPI::EngineAPI(unsigned int seed)
@@ -21,12 +22,14 @@ EngineAPI::EngineAPI(unsigned int seed)
     // Initialize the random number generator.
     random_generator.seed(seed);
     difficulty_level_ = 2;
-    load_opening_book();
+    load_opening_book("opening_book_3_move");
+    load_opening_book("opening_book_6_move");
+    load_opening_book("opening_book_9_move");
 }
 
-void EngineAPI::load_opening_book()
+void EngineAPI::load_opening_book(std::string file_name)
 {
-    std::ifstream file_to_read("opening_book_9_move");
+    std::ifstream file_to_read(file_name);
     std::string line, move, c;
     uint64_t key;
 
@@ -477,7 +480,7 @@ is stopped. For example, depth=42 give a maximum depth search.*/
 int EngineAPI::engine_move_easy()
 {
     int moves = game_state.get_number_of_moves();
-    short int depth = moves + 2;
+    short int depth = moves + 3;
     if (depth > 42) {depth = 42;}
     return engine_move(depth);
 }
@@ -485,7 +488,7 @@ int EngineAPI::engine_move_easy()
 int EngineAPI::engine_move_medium()
 {
     int moves = game_state.get_number_of_moves();
-    short int depth = moves + 4;
+    short int depth = moves + 10;
     if (depth > 42) {depth = 42;}
     return engine_move(depth);
 }
