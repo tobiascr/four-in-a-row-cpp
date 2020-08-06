@@ -29,6 +29,7 @@ void EngineAPI::load_opening_book()
     std::ifstream file_to_read("opening_book_9_move");
     std::string line, move, c;
     uint64_t key;
+
     while (std::getline(file_to_read, line))
     {
         // Load position.
@@ -307,12 +308,7 @@ in a row.*/
             break;
         }
     }
-    if (c == 0)
-    {
-        return game_state.get_number_of_moves() - 41;
-    }
-
-    short int value;
+    if (c == 0) {return game_state.get_number_of_moves() - 41;}
 
     for (int i=0; i<=6; i++)
     {
@@ -320,7 +316,7 @@ in a row.*/
         if (non_losing_moves[move])
         {
             game_state.make_move(move);
-            value = -negamax(depth, -beta, -alpha);
+            short int value = -negamax(depth, -beta, -alpha);
             game_state.undo_move(move);
             if (value >= beta) // Fail hard beta-cutoff.
             {

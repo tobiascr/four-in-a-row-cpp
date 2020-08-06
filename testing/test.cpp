@@ -526,6 +526,11 @@ void benchmark_position_values(Engine::EngineAPI& engine)
     test_position_value(engine, "155233161", -6);
     test_position_value(engine, "002230532", -32);
     test_position_value(engine, "242222334", 7);
+    test_position_value(engine, "3366455", 0);
+    test_position_value(engine, "336645", 0);
+    test_position_value(engine, "33664", 0);
+    test_position_value(engine, "2543", 0);
+    test_position_value(engine, "300", 0);
     test_position_value(engine, "", 2);
     test_position_value(engine, "0", 3);
     test_position_value(engine, "1", 1);
@@ -533,7 +538,7 @@ void benchmark_position_values(Engine::EngineAPI& engine)
     test_position_value(engine, "3", -2);
     test_position_value(engine, "33432", -36);
     test_position_value(engine, "3343", 36);
-    test_position_value(engine, "33423365002", 0);
+//    test_position_value(engine, "33423365002", 0);
 }
 
 void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_engine, int number_of_games,
