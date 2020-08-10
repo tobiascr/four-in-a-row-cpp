@@ -1,5 +1,5 @@
 A four in a row game programmed with C++. It is developed for Linux. It can
-compute moves to full depth and can therefore make perfect moves.
+compute moves to full depth and can make perfect moves.
 
 I uses bitboards, negamax, alpha beta pruning, transposition table,
 iterative deepening, move sorting based on heuristics, and an opening book.
