@@ -19,7 +19,8 @@ public:
     // This constructor take a random number generator seed as an argument.
 
     void set_difficulty_level(int difficulty_level);
-    // difficulty_level can be 1, 2 or 3.
+    // difficulty_level intended for game play are 1, 2 or 3.
+    // Some other levels can be made as well. See the code.
 
     void new_game();
 
@@ -39,7 +40,7 @@ public:
 
     bool four_in_a_row();
 
-    int position_value_full_depth();
+    int position_value_full_depth(const bool use_opening_book=true);
     /* Compute a value of the current position at full depth. Return a positive
     integer for a winning game_state for the player in turn, 0 for a draw or unknown
     outcome and a negative integer for a loss. A win at move 42 give the value 1,
@@ -70,15 +71,26 @@ private:
 
     std::array<int,7> move_order_open_four_in_a_row();
 
-    short int negamax(const short int depth, short int alpha, short int beta);
+    short int negamax(const short int depth, short int alpha, short int beta,
+                      const bool use_opening_book);
 
     std::array<int,2> root_negamax(const short int depth,
-                  std::array<int,7> move_order, short int alpha, short int beta);
+                  std::array<int,7> move_order, short int alpha, short int beta,
+                  const bool use_opening_book);
 
     std::array<int,2> iterative_deepening(const short int depth,
-                  std::array<int,7> move_order_, short int alpha, short int beta);
+                  std::array<int,7> move_order_, short int alpha, short int beta,
+                  const bool use_opening_book);
 
-    int engine_move(const short int depth);
+    int engine_move(const short int depth, const bool use_opening_book);
+
+    int random_move();
+
+    int random_win_not_lose_move();
+
+    int random_best_opening_move();
+
+    int engine_move_random();
 
     int engine_move_easy();
 

@@ -99,6 +99,8 @@ int EngineAPI::engine_move()
         return engine_move_medium();
     if (difficulty_level_ == 3)
         return engine_move_hard();
+    if (difficulty_level_ == 4)
+        return random_move();
     return 0;
 }
 
@@ -196,7 +198,7 @@ for moves that are estimated to be equally strong.*/
     int values[7];
 
     // Adding randomness to the move order.
-    shuffle (moves.begin(), moves.end(), random_generator);
+    shuffle(moves.begin(), moves.end(), random_generator);
 
     for (int n=0; n<=6; n++)
     {
@@ -230,7 +232,7 @@ std::array<int,7> EngineAPI::move_order_open_four_in_a_row()
 
     for (int n=0; n<=6; n++)
     {
-          values[n] = open_four_in_a_row_heuristic(n);
+         values[n] = open_four_in_a_row_heuristic(n);
     }
 
     std::stable_sort(moves.begin(), moves.end(),
@@ -238,7 +240,9 @@ std::array<int,7> EngineAPI::move_order_open_four_in_a_row()
     return moves;
 }
 
-short int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
+//short int EngineAPI::negamax(const short int depth, short int alpha, short int beta)
+short int EngineAPI::negamax(const short int depth, short int alpha, short int beta,
+                             const bool use_opening_book)
 /* Compute a value of game_state. Return a positive integer for a winning
 game_state for the player in turn, 0 for a draw or unknown outcome and a
 negative integer for a loss. A win at move 42 give the value 1, a win at move 41
@@ -256,12 +260,15 @@ in a row.*/
         return 0;
     }
 
-    if (game_state.get_number_of_moves() <= max_number_of_moves_in_opening_book)
+    if(use_opening_book)
     {
-        key = game_state.get_key();
-        if (opening_book.count(key) == 1)
+        if (game_state.get_number_of_moves() <= max_number_of_moves_in_opening_book)
         {
-            return opening_book[key];
+            key = game_state.get_key();
+            if (opening_book.count(key) == 1)
+            {
+                return opening_book[key];
+            }
         }
     }
 
@@ -294,7 +301,6 @@ in a row.*/
 
     // Move order.
     std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
-    if (depth > 30)
     if (game_state.get_number_of_moves() < depth - 15)
     if (game_state.get_number_of_moves() < 22) //22
     {
@@ -319,7 +325,7 @@ in a row.*/
         if (non_losing_moves[move])
         {
             game_state.make_move(move);
-            short int value = -negamax(depth, -beta, -alpha);
+            short int value = -negamax(depth, -beta, -alpha, use_opening_book);
             game_state.undo_move(move);
             if (value >= beta) // Fail hard beta-cutoff.
             {
@@ -351,7 +357,8 @@ in a row.*/
 }
 
 std::array<int,2> EngineAPI::root_negamax(const short int depth,
-                  std::array<int,7> move_order, short int alpha, short int beta)
+                  std::array<int,7> move_order, short int alpha, short int beta,
+                  const bool use_opening_book)
 /* Return a move (0 to 6) and a value for the current game state computed
 with the negamax algorithm. Depth is counted as the move number at which
 the search is stopped. This function can only be used on if the
@@ -372,9 +379,13 @@ in a row.*/
             }
             else
             {
-                new_value = -negamax(depth, -beta, -alpha);
+                new_value = -negamax(depth, -beta, -alpha, use_opening_book);
             }
             game_state.undo_move(move);
+//            if (new_value >= beta) // Fail hard beta-cutoff.
+//            {
+//                return {move, beta};
+//            }
             if (new_value > alpha)
             {
                 alpha = new_value;
@@ -386,14 +397,14 @@ in a row.*/
 }
 
 std::array<int,2> EngineAPI::iterative_deepening(const short int depth,
-                  std::array<int,7> move_order_, short int alpha, short int beta)
-/* A faster way of getting the same result as a single use of root negamax would
-give.*/
+                  std::array<int,7> move_order_, short int alpha, short int beta,
+                  const bool use_opening_book)
 {
     int d = game_state.get_number_of_moves() + 2;
     while (d < depth)
     {
-        std::array<int,2> values = root_negamax(d, move_order_, alpha, beta);
+        std::array<int,2> values = root_negamax(d, move_order_, alpha, beta,
+                                                use_opening_book);
         int best_move = values[0];
         move_order_ = move_order(best_move);
         if(values[1] != 0)
@@ -402,34 +413,41 @@ give.*/
         }
         d++;
     }
-    return root_negamax(depth, move_order_, alpha, beta);
+    return root_negamax(depth, move_order_, alpha, beta, use_opening_book);
 }
 
-int EngineAPI::position_value_full_depth()
+int EngineAPI::position_value_full_depth(const bool use_opening_book)
 {
     transposition_table.clear();
     if(game_state.can_win_this_move())
     {
         return 42 - game_state.get_number_of_moves();
     }
-    if (game_state.get_number_of_moves() <= max_number_of_moves_in_opening_book)
+    if(use_opening_book)
     {
-        return negamax(max_number_of_moves_in_opening_book + 2, -1000, 1000);
+        if (game_state.get_number_of_moves() <= max_number_of_moves_in_opening_book)
+        {
+            return negamax(max_number_of_moves_in_opening_book + 2, -1000, 1000, true);
+        }
     }
 
     short int alpha = -1000, beta = 1000, depth = 42;
     std::array<int,7> moves = move_order(3);
-    std::array<int,2> values = iterative_deepening(depth, moves, alpha, beta);
+    std::array<int,2> values = iterative_deepening(depth, moves, alpha, beta,
+                                                   use_opening_book);
     return values[1];
 }
 
-int EngineAPI::engine_move(const short int depth)
+int EngineAPI::engine_move(const short int depth, const bool use_opening_book)
 /* Return an integer from 0 to 6 that represents a best move made by the engine
 at the given depth level. Depth is counted as the move number at which the search
 is stopped. For example, depth=42 give a maximum depth search.*/
 {
     short int alpha = -1000;
     short int beta = 1000;
+
+//    alpha = -1;
+//    beta = 1;
 
     std::array<int,7> moves = move_order();
 
@@ -466,35 +484,109 @@ is stopped. For example, depth=42 give a maximum depth search.*/
         }
     }
 
-    if (game_state.get_number_of_moves() < max_number_of_moves_in_opening_book)
+    if(use_opening_book)
     {
-        std::array<int,2> values = iterative_deepening(
-              max_number_of_moves_in_opening_book + 2, moves, alpha, beta);
-        return values[0];
+        if (game_state.get_number_of_moves() < max_number_of_moves_in_opening_book)
+        {
+            std::array<int,2> values = iterative_deepening(
+                  max_number_of_moves_in_opening_book + 2, moves, alpha, beta, true);
+            return values[0];
+        }
     }
 
-    std::array<int,2> values = iterative_deepening(depth, moves, alpha, beta);
+    std::array<int,2> values;
+    if(depth == 42)
+    {
+        values = iterative_deepening(depth, moves, alpha, beta, use_opening_book);
+    }
+    else
+    {
+        values = root_negamax(depth, moves, alpha, beta, use_opening_book);
+    }
+
     return values[0];
+}
+
+int EngineAPI::random_move()
+{
+    std::array<int,7> moves = {0, 1, 2, 3, 4, 5, 6};
+    shuffle(moves.begin(), moves.end(), random_generator);
+    for(int move : moves)
+    {
+        if (game_state.column_not_full(move))
+        {
+            return move;
+        }
+    }
+    return 0;
+}
+
+int EngineAPI::random_win_not_lose_move()
+{
+    return 0;
+}
+
+int EngineAPI::random_best_opening_move()
+/* Return a randomly chosen move with the highest possible position value.
+This function is indented to be used for ply levels that are completely
+covered by the opening book.*/
+{
+    std::array<int,7> moves = {0, 1, 2, 3, 4, 5, 6};
+    shuffle(moves.begin(), moves.end(), random_generator);
+    int value, best_move;
+    int best_value = -1000;
+
+    for(int move : moves)
+    {
+        if(game_state.column_not_full(move))
+        {
+            if(not game_state.four_in_a_row())
+            {
+                game_state.make_move(move);
+                value = -position_value_full_depth();
+                if(value > best_value)
+                {
+                    best_value = value;
+                    best_move = move;
+                }
+                game_state.undo_move(move);
+            }
+        }
+    }
+
+    return best_move;
+}
+
+int EngineAPI::engine_move_random()
+{
+    return random_move();
 }
 
 int EngineAPI::engine_move_easy()
 {
     int moves = game_state.get_number_of_moves();
-    short int depth = moves + 3;
+    short int depth;
+    if (moves < 10)
+    {
+        depth = moves + 4;
+    }
+    else
+    {
+        depth = moves + 2;
+    }
     if (depth > 42) {depth = 42;}
-    return engine_move(depth);
+    return engine_move(depth, false);
 }
 
 int EngineAPI::engine_move_medium()
 {
-    int moves = game_state.get_number_of_moves();
-    short int depth = moves + 10;
+    short int depth = game_state.get_number_of_moves() + 10;
     if (depth > 42) {depth = 42;}
-    return engine_move(depth);
+    return engine_move(depth, true);
 }
 
 int EngineAPI::engine_move_hard()
 {
-    return engine_move(42);
+    return engine_move(42, true);
 }
 }

@@ -479,14 +479,15 @@ void test_position(Engine::EngineAPI& engine, std::string move_string, int expec
     std::cout << std::endl;
 }
 
-void test_position_value(Engine::EngineAPI& engine, std::string move_string, int expected_value)
+void test_position_value(Engine::EngineAPI& engine, std::string move_string,
+                         int expected_value, const int use_opening_book=true)
 {
     std::chrono::steady_clock::time_point t0;
     std::chrono::steady_clock::time_point t1;
     std::chrono::steady_clock::duration move_time;
     load_position(engine, move_string);
     t0 = std::chrono::steady_clock::now();
-    int value = engine.position_value_full_depth();
+    int value = engine.position_value_full_depth(use_opening_book);
     t1 = std::chrono::steady_clock::now();
     move_time = t1 - t0;
     std::cout << "Position: " <<  move_string << std::endl;
@@ -699,6 +700,7 @@ void benchmark_position_values(Engine::EngineAPI& engine)
     test_position_value(engine, "3343", 36);
     test_position_value(engine, "33423365002", 0);
     test_position_value(engine, "05216116610", 5);
+//    test_position_value(engine, "3366455", 0, false);
 }
 
 int main()
@@ -720,7 +722,7 @@ int main()
 
 //    benchmark(engine);
 //    benchmark_position_values(engine);
-    engine_vs_engine(engine, test_engine, 10, true);
+    engine_vs_engine(engine, test_engine, 10, false);
 
     return 0;
 }
