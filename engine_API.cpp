@@ -488,6 +488,7 @@ is stopped. For example, depth=42 give a maximum depth search.*/
     {
         if (game_state.get_number_of_moves() < max_number_of_moves_in_opening_book)
         {
+            moves = move_order();
             std::array<int,2> values = iterative_deepening(
                   max_number_of_moves_in_opening_book + 2, moves, alpha, beta, true);
             return values[0];
@@ -564,6 +565,10 @@ int EngineAPI::engine_move_random()
 
 int EngineAPI::engine_move_easy()
 {
+    if (game_state.get_number_of_moves() < 9)
+    {
+        return random_best_opening_move();
+    }
     int moves = game_state.get_number_of_moves();
     short int depth;
     if (moves < 10)
@@ -575,7 +580,7 @@ int EngineAPI::engine_move_easy()
         depth = moves + 2;
     }
     if (depth > 42) {depth = 42;}
-    return engine_move(depth, false);
+    return engine_move(depth, true);
 }
 
 int EngineAPI::engine_move_medium()

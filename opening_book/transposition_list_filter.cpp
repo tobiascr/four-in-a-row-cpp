@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <algorithm>
 #include "../engine_API.h"
 
 /* This program filters transposition files to smaller files.
@@ -42,7 +43,7 @@ int main()
     using namespace Engine;
     EngineAPI engine;
 
-    std::string file_with_transpositions = "transposition_list_11_move";
+    std::string file_with_transpositions = "transposition_list_12_move_sorted";
     std::string file_to_write_to = "tr_list_test";
 
     std::string transposition_move_string;
@@ -52,10 +53,14 @@ int main()
 
     while (std::getline(file_to_read, transposition_move_string))
     {
-        load_position(engine, transposition_move_string);
-        if(engine.get_value(3, 4) != '0' and (
-           engine.get_value(1, 1) != '0' or engine.get_value(2, 1) != '0'
-           or engine.get_value(4, 1) != '0' or engine.get_value(5, 1) != '0'))
+//        load_position(engine, transposition_move_string);
+//        if(engine.get_value(3, 4) != '0' and (
+//           engine.get_value(1, 1) != '0' or engine.get_value(2, 1) != '0'
+//           or engine.get_value(4, 1) != '0' or engine.get_value(5, 1) != '0'))
+        if(std::count(transposition_move_string.begin(),
+           transposition_move_string.end(), '3') + std::count(transposition_move_string.begin(),
+           transposition_move_string.end(), '2') + std::count(transposition_move_string.begin(),
+           transposition_move_string.end(), '4') >= 4)
         {
             file_to_write << transposition_move_string << std::endl;
         }

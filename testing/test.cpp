@@ -678,6 +678,7 @@ void benchmark(Engine::EngineAPI& engine)
     test_position(engine, "333333561", 0);
     test_position(engine, "33423365002630", 1);
     test_position(engine, "3000011243563", 3);
+    test_position(engine, "166553001163", 4);
 }
 
 void benchmark_position_values(Engine::EngineAPI& engine)
@@ -701,6 +702,45 @@ void benchmark_position_values(Engine::EngineAPI& engine)
     test_position_value(engine, "33423365002", 0);
     test_position_value(engine, "05216116610", 5);
 //    test_position_value(engine, "3366455", 0, false);
+    test_position(engine, "166553001163", -5);
+}
+
+void opening_test()
+{
+    Engine::EngineAPI engine_1;
+    engine_1.set_difficulty_level(2);
+    Engine::EngineAPI engine_2;
+    engine_2.set_difficulty_level(2);
+
+    for(int k=1; k<=1000; k++)
+    {
+        engine_1.new_game();
+        engine_2.new_game();
+        int c = 0;
+        while(true)
+        {
+            int move = engine_1.engine_move();
+            engine_1.make_move(move);
+            engine_2.make_move(move);
+            if (engine_1.four_in_a_row())
+            {
+                break;
+            }
+            c++;
+            if(c == 9) {break;}
+            move = engine_2.engine_move();
+            engine_1.make_move(move);
+            engine_2.make_move(move);
+            if (engine_2.four_in_a_row())
+            {
+                break;
+            }
+            c++;
+            if(c == 9) {break;}
+        }
+        print_board(engine_1);
+    }
+
 }
 
 int main()
@@ -709,6 +749,7 @@ int main()
 
 //    test_game_state();
 //    test_engine_API();
+//    opening_test();
 
     Engine::EngineAPI engine(91635);
     engine.set_difficulty_level(3);
@@ -716,9 +757,9 @@ int main()
     test_engine.set_difficulty_level(3);
 
 //    Engine::EngineAPI engine;
-//    engine.set_difficulty_level(3);
+//    engine.set_difficulty_level(2);
 //    TestEngine::EngineAPI test_engine;
-//    test_engine.set_difficulty_level(3);
+//    test_engine.set_difficulty_level(2);
 
 //    benchmark(engine);
 //    benchmark_position_values(engine);

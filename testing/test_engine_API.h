@@ -4,6 +4,7 @@
 #include <array>
 #include <random>
 #include <unordered_map>
+#include <string>
 #include "test_game_state.h"
 
 namespace TestEngine
@@ -18,7 +19,8 @@ public:
     // This constructor take a random number generator seed as an argument.
 
     void set_difficulty_level(int difficulty_level);
-    // difficulty_level can be 1, 2 or 3.
+    // difficulty_level intended for game play are 1, 2 or 3.
+    // Some other levels can be made as well. See the code.
 
     void new_game();
 
@@ -33,18 +35,27 @@ public:
 
     char get_value(int column, int row);
     /* Return '1', '2' or '0' depending on the state of the corresponding position.
-       '1' represents the player making the first move, '2' the player making
-       second move and '0' that the position is empty.*/
+    '1' represents the player making the first move, '2' the player making
+    second move and '0' that the position is empty.*/
 
     bool four_in_a_row();
+
+    int position_value_full_depth(const bool use_opening_book=true);
+    /* Compute a value of the current position at full depth. Return a positive
+    integer for a winning game_state for the player in turn, 0 for a draw or unknown
+    outcome and a negative integer for a loss. A win at move 42 give the value 1,
+    a win at move 41 give a the value 2 etc, and vice versa for losses.
+    This function can only used for positions that has no four in a rows.*/
 
 private:
     TestEngine::GameState game_state;
     int difficulty_level_;
-
+    const int max_number_of_moves_in_opening_book = 9;
     std::mt19937 random_generator;
+    std::unordered_map<uint64_t, uint_fast16_t> transposition_table;
+    std::unordered_map<uint64_t, short int> opening_book;
 
-    std::unordered_map<uint64_t, std::array<short int, 3>> transposition_table;
+    void load_opening_book(std::string file_name);
 
     int position_heuristic(int move) const;
 
@@ -55,35 +66,31 @@ private:
     int open_four_in_a_row_heuristic(int move);
 
     std::array<int,7> move_order();
-    /* Return a move order for a root negamax search based on a heuristic evaluation
-       of the current game state. There is some randomness included in the move ordering
-       for moves that are estimated to be equally strong.*/
-
-    std::array<int,7> move_order2();
 
     std::array<int,7> move_order(int first_move);
-    /* Return a move order with the given first move.*/
 
-    int negamax(const short int depth, short int alpha, short int beta);
-    /* Compute a value of game_state. Return a positive integer for a winning game_state for
-       the player in turn, 0 for a draw or unknown outcome and a negative integer for a loss.
-       A win at move 42 give the score 1, a win at move 41 give a the score 2 etc,
-       and vice versa for losses.
-       Depth is counted as the move number at which the search is stopped. For example,
-       depth=42 give a maximum depth search. This function can only be used on if the game state
-       have no four in a row.
-    */
+    std::array<int,7> move_order_open_four_in_a_row();
 
-    int root_negamax(const short int depth, std::array<int,7> move_order, short int alpha, short int beta);
-    /* Return a move (0 to 6) computed with the negamax algorithm. Depth is counted as
-    the move number at which the search is stopped.*/
+    short int negamax(const short int depth, short int alpha, short int beta,
+                      const bool use_opening_book);
 
-    int engine_move(const short int depth);
-    /* Return an integer from 0 to 6 that represents a best move made by the engine
-       at the given depth level. If there are several equally good moves, one of them
-       is chosen randomly. Depth is counted as the move number at which the search is stopped.
-       For example, depth=42 give a maximum depth search.
-    */
+    std::array<int,2> root_negamax(const short int depth,
+                  std::array<int,7> move_order, short int alpha, short int beta,
+                  const bool use_opening_book);
+
+    std::array<int,2> iterative_deepening(const short int depth,
+                  std::array<int,7> move_order_, short int alpha, short int beta,
+                  const bool use_opening_book);
+
+    int engine_move(const short int depth, const bool use_opening_book);
+
+    int random_move();
+
+    int random_win_not_lose_move();
+
+    int random_best_opening_move();
+
+    int engine_move_random();
 
     int engine_move_easy();
 
