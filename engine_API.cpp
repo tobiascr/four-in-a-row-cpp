@@ -163,7 +163,6 @@ int EngineAPI::open_four_in_a_row_heuristic(int move)
  the given move to the current game state. The value is higher the better the move.
  The value is based on the number of open four in a rows.*/
 {
-//    return game_state.new_open_four_in_row(move);
     int player = game_state.get_number_of_moves() % 2;
     game_state.make_move(move);
     int value = game_state.open_four_in_a_row_count(player);

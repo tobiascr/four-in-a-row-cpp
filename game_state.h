@@ -59,9 +59,6 @@ public:
     For example if the first value is true, it means that the move is not
     losing.*/
 
-    bool new_open_four_in_row(int column);
-    /* Return true iff a move to column creates a new open four in a row.*/
-
     int open_four_in_a_row_count(int player) const;
     /* Return the number of unoccupied places on the board that are not in the bottom
     of the columns, that give player a four in a row. player is 0 for the player

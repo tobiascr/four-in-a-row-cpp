@@ -1,3 +1,4 @@
+#include <bitset>
 #include "game_state.h"
 
 namespace Engine
@@ -266,27 +267,11 @@ std::array<bool,7> GameState::get_non_losing_moves()
     return values;
 }
 
-bool GameState::new_open_four_in_row(int column)
-{
-    uint64_t current_positions =
-                       get_winning_positions_bitboard(bitboard[player_in_turn])
-                       & board_mask;
-    uint64_t new_positions = get_winning_positions_bitboard(
-                       bitboard[player_in_turn] | next_move[column]) & board_mask;
-    return new_positions != current_positions;
-}
-
 int GameState::open_four_in_a_row_count(int player) const
 {
-    uint64_t winning_positions = get_winning_positions_bitboard(bitboard[player])
+    std::bitset<64> winning_positions = get_winning_positions_bitboard(bitboard[player])
                                  & board_mask & (~(bitboard[0] | bitboard[1]));
-    int c = 0;
-    for(int n=0; n<=46; n++)
-    {
-        c += winning_positions & 1;
-        winning_positions >>= 1;
-    }
-    return c;
+    return winning_positions.count();
 }
 
 bool GameState::board_full() const
