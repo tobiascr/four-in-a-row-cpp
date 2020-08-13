@@ -360,6 +360,49 @@ void test_game_state()
     }
     std::cout << std::endl;
     std::cout << std::endl;
+
+    std::cout << "Test open_four_in_a_row_count" << std::endl;
+    load_position(game_state, "2244550");
+    print_board(game_state);
+    std::cout << "Open four in a row count player 0: " << 
+                  game_state.open_four_in_a_row_count(0) << std::endl;
+    std::cout << "Open four in a row count player 1: " << 
+                  game_state.open_four_in_a_row_count(1) << std::endl;
+
+    load_position(game_state, "1115433452");
+    print_board(game_state);
+    std::cout << "Open four in a row count player 0: " << 
+                  game_state.open_four_in_a_row_count(0) << std::endl;
+    std::cout << "Open four in a row count player 1: " << 
+                  game_state.open_four_in_a_row_count(1) << std::endl;
+
+    load_position(game_state, "3323133");
+    print_board(game_state);
+    std::cout << "Open four in a row count player 0: " << 
+                  game_state.open_four_in_a_row_count(0) << std::endl;
+    std::cout << "Open four in a row count player 1: " << 
+                  game_state.open_four_in_a_row_count(1) << std::endl;
+
+    load_position(game_state, "225361134123");
+    print_board(game_state);
+    std::cout << "Open four in a row count player 0: " << 
+                  game_state.open_four_in_a_row_count(0) << std::endl;
+    std::cout << "Open four in a row count player 1: " << 
+                  game_state.open_four_in_a_row_count(1) << std::endl;
+
+    load_position(game_state, "523012231");
+    print_board(game_state);
+    std::cout << "Open four in a row count player 0: " << 
+                  game_state.open_four_in_a_row_count(0) << std::endl;
+    std::cout << "Open four in a row count player 1: " << 
+                  game_state.open_four_in_a_row_count(1) << std::endl;
+
+    load_position(game_state, "0045002523412413");
+    print_board(game_state);
+    std::cout << "Open four in a row count player 0: " << 
+                  game_state.open_four_in_a_row_count(0) << std::endl;
+    std::cout << "Open four in a row count player 1: " << 
+                  game_state.open_four_in_a_row_count(1) << std::endl;
 }
 
 void test_engine_API()
@@ -708,9 +751,9 @@ void benchmark_position_values(Engine::EngineAPI& engine)
 void opening_test()
 {
     Engine::EngineAPI engine_1;
-    engine_1.set_difficulty_level(2);
+    engine_1.set_difficulty_level(1);
     Engine::EngineAPI engine_2;
-    engine_2.set_difficulty_level(2);
+    engine_2.set_difficulty_level(4);
 
     for(int k=1; k<=1000; k++)
     {
@@ -751,19 +794,19 @@ int main()
 //    test_engine_API();
 //    opening_test();
 
-    Engine::EngineAPI engine(91635);
-    engine.set_difficulty_level(3);
-    TestEngine::EngineAPI test_engine(35790);
-    test_engine.set_difficulty_level(3);
+//    Engine::EngineAPI engine(91635);
+//    engine.set_difficulty_level(3);
+//    TestEngine::EngineAPI test_engine(35790);
+//    test_engine.set_difficulty_level(3);
 
-//    Engine::EngineAPI engine;
-//    engine.set_difficulty_level(2);
-//    TestEngine::EngineAPI test_engine;
-//    test_engine.set_difficulty_level(2);
+    Engine::EngineAPI engine;
+    engine.set_difficulty_level(3);
+    TestEngine::EngineAPI test_engine;
+    test_engine.set_difficulty_level(3);
 
 //    benchmark(engine);
 //    benchmark_position_values(engine);
-    engine_vs_engine(engine, test_engine, 10, false);
+    engine_vs_engine(engine, test_engine, 50, false);
 
     return 0;
 }

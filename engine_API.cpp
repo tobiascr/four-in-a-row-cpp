@@ -158,33 +158,15 @@ Central positions are given higher values. If the move is not legal, the value i
     return values[row][move];
 }
 
-int EngineAPI::open_four_in_a_row_count(int player) const
-/* Return the number of unoccupied places on the board that are not in the bottom
-of the columns, that give player a four in a row. player is 0 for the player
-making the first move and 1 for the other player.*/
-{
-    int count = 0;
-    for (int col=0; col<=6; col++)
-    {
-        for (int row=game_state.get_number_of_disks_in_column(col) + 1; row<=5; row++)
-        {
-            if (game_state.four_in_a_row(player, col, row))
-            {
-                count++;
-            }
-        }
-    }
-    return count;
-}
-
 int EngineAPI::open_four_in_a_row_heuristic(int move)
 /* Give a heuristic evaluation in form of a number of how good it would be to make
  the given move to the current game state. The value is higher the better the move.
  The value is based on the number of open four in a rows.*/
 {
+//    return game_state.new_open_four_in_row(move);
     int player = game_state.get_number_of_moves() % 2;
     game_state.make_move(move);
-    int value = EngineAPI::open_four_in_a_row_count(player);
+    int value = game_state.open_four_in_a_row_count(player);
     game_state.undo_move(move);
     return value;
 }
@@ -302,7 +284,6 @@ in a row.*/
     // Move order.
     std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
     if (game_state.get_number_of_moves() < depth - 15)
-    if (game_state.get_number_of_moves() < 22) //22
     {
         moves = move_order_open_four_in_a_row();
     }

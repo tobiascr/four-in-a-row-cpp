@@ -59,6 +59,14 @@ public:
     For example if the first value is true, it means that the move is not
     losing.*/
 
+    bool new_open_four_in_row(int column);
+    /* Return true iff a move to column creates a new open four in a row.*/
+
+    int open_four_in_a_row_count(int player) const;
+    /* Return the number of unoccupied places on the board that are not in the bottom
+    of the columns, that give player a four in a row. player is 0 for the player
+    making the first move and 1 for the other player.*/
+
     bool board_full() const;
 
     int get_number_of_moves() const;
@@ -95,6 +103,7 @@ private:
     int number_of_moves;
     uint64_t history[42]; // Bitboards from earlier moves.
     const uint64_t one = 1;
+    const uint64_t board_mask = 0b0111111011111101111110111111011111101111110111111;
     uint64_t next_move[7];
     uint64_t next_moves;
     uint64_t next_moves_history[42];
