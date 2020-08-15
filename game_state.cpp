@@ -122,7 +122,7 @@ bool GameState::four_in_a_row(int player, int column, int row) const
 
 bool GameState::can_win_this_move() const
 {
-    uint64_t b = bitboard[player_in_turn];
+    const uint64_t b = bitboard[player_in_turn];
 
     // Masks for various columns.
     const uint64_t mask_0246 = 0b0111111000000001111110000000011111100000000111111;
@@ -184,87 +184,67 @@ uint64_t GameState::get_winning_positions_bitboard(uint64_t bitboard) const
     winning_positions = (bitboard & (bitboard << 1) & (bitboard << 2)) << 1;
 
     // Horizontal direction
-    uint64_t b_012 = bitboard & (bitboard << 7) & (bitboard << 14);
-    uint64_t b_03 = bitboard & (bitboard << 21);
-    winning_positions |= b_012 << 7; // ooox
-    winning_positions |= b_012 >> 21; // xooo
-    winning_positions |= (b_03 & (bitboard << 14)) >> 7; // ooxo
-    winning_positions |= (b_03 & (bitboard << 7)) >> 14; // oxoo
+    winning_positions |= (bitboard & (bitboard << 7) & (bitboard << 14)) << 7; // ooox
+    winning_positions |= (bitboard & (bitboard << 7) & (bitboard << 14)) >> 21; // xooo
+    winning_positions |= ((bitboard & (bitboard << 21)) & (bitboard << 14)) >> 7; // ooxo
+    winning_positions |= ((bitboard & (bitboard << 21)) & (bitboard << 7)) >> 14; // oxoo
 
     // Diagonal direction 1
-    b_012 = bitboard & (bitboard << 6) & (bitboard << 12);
-    b_03 = bitboard & (bitboard << 18);
-    winning_positions |= b_012 << 6; // ooox
-    winning_positions |= b_012 >> 18; // xooo
-    winning_positions |= (b_03 & (bitboard << 12)) >> 6; // ooxo
-    winning_positions |= (b_03 & (bitboard << 6)) >> 12; // oxoo
+    winning_positions |= (bitboard & (bitboard << 6) & (bitboard << 12)) << 6; // ooox
+    winning_positions |= (bitboard & (bitboard << 6) & (bitboard << 12)) >> 18; // xooo
+    winning_positions |= ((bitboard & (bitboard << 18)) & (bitboard << 12)) >> 6; // ooxo
+    winning_positions |= ((bitboard & (bitboard << 18)) & (bitboard << 6)) >> 12; // oxoo
 
     // Diagonal direction 2
-    b_012 = bitboard & (bitboard << 8) & (bitboard << 16);
-    b_03 = bitboard & (bitboard << 24);
-    winning_positions |= b_012 << 8; // ooox
-    winning_positions |= b_012 >> 24; // xooo
-    winning_positions |= (b_03 & (bitboard << 16)) >> 8; // ooxo
-    winning_positions |= (b_03 & (bitboard << 8)) >> 16; // oxoo
+    winning_positions |= (bitboard & (bitboard << 8) & (bitboard << 16)) << 8; // ooox
+    winning_positions |= (bitboard & (bitboard << 8) & (bitboard << 16)) >> 24; // xooo
+    winning_positions |= ((bitboard & (bitboard << 24)) & (bitboard << 16)) >> 8; // ooxo
+    winning_positions |= ((bitboard & (bitboard << 24)) & (bitboard << 8)) >> 16; // oxoo
 
     return winning_positions;
 }
 
 std::array<bool,7> GameState::get_non_losing_moves()
 {
-    uint64_t opponent_winning_positions =
-              get_winning_positions_bitboard(bitboard[1 - player_in_turn]);
-    opponent_winning_positions &= board_mask;
+    const uint64_t opponent_winning_positions =
+              get_winning_positions_bitboard(bitboard[1 - player_in_turn])
+              & board_mask;
+    uint64_t possible_moves;
+    const uint64_t blocking_moves = opponent_winning_positions & next_moves;
 
-    std::array<bool,7> values = {false, false, false, false, false, false, false};
-
-//    if(opponent_winning_positions & next_moves != 0)
-//    {
-
-    // Look in the center first might be better.
-    int blocking_move;
-    int number_of_blocking_moves = 0;
-    for (int column=0; column<=6; column++)
+    if(blocking_moves)
     {
-        if (opponent_winning_positions & next_move[column])
-        {
-            blocking_move = column;
-            number_of_blocking_moves++;
-            if (number_of_blocking_moves > 1)
-            {
-                return values;
-            }
-        }
-    }
+        std::bitset<64> bl = blocking_moves;
+        int number_of_blocking_moves = bl.count();
 
-    if(number_of_blocking_moves == 1)
-    {
-        if(opponent_winning_positions
-                                 & ((next_move[blocking_move] & board_mask) << 1))
+        if(number_of_blocking_moves > 1)
         {
-            return values;
+            return {false, false, false, false, false, false, false};
         }
         else
         {
-            values[blocking_move] = true;
-            return values;
-        }
-    }
-//    }
-
-    for (int column=0; column<=6; column++)
-    {
-        if (column_not_full(column))
-        {
-            if(not (opponent_winning_positions
-                                 & ((next_move[column] & board_mask) << 1)))
+            if((opponent_winning_positions >> 1) & blocking_moves)
             {
-                values[column] = true;
+                return {false, false, false, false, false, false, false};
+            }
+            else
+            {
+                possible_moves = blocking_moves;
             }
         }
     }
+    else
+    {
+        possible_moves = next_moves & board_mask & (~(opponent_winning_positions >> 1));
+    }
 
-    return values;
+    return {possible_moves & 0b0000000000000000000000000000000000000000000111111,
+            possible_moves & 0b0000000000000000000000000000000000001111110000000,
+            possible_moves & 0b0000000000000000000000000000011111100000000000000,
+            possible_moves & 0b0000000000000000000000111111000000000000000000000,
+            possible_moves & 0b0000000000000001111110000000000000000000000000000,
+            possible_moves & 0b0000000011111100000000000000000000000000000000000,
+            possible_moves & 0b0111111000000000000000000000000000000000000000000};
 }
 
 int GameState::open_four_in_a_row_count(int player) const

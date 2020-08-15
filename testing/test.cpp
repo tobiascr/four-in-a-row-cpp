@@ -745,7 +745,7 @@ void benchmark_position_values(Engine::EngineAPI& engine)
     test_position_value(engine, "33423365002", 0);
     test_position_value(engine, "05216116610", 5);
 //    test_position_value(engine, "3366455", 0, false);
-    test_position(engine, "166553001163", -5);
+    test_position_value(engine, "166553001163", -5);
 }
 
 void opening_test()
@@ -806,7 +806,7 @@ int main()
 
 //    benchmark(engine);
 //    benchmark_position_values(engine);
-    engine_vs_engine(engine, test_engine, 10, false);
+    engine_vs_engine(engine, test_engine, 200, false);
 
     return 0;
 }
