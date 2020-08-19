@@ -82,7 +82,7 @@ private:
                   std::array<int,7> move_order_, short int alpha, short int beta,
                   const bool use_opening_book);
 
-    int engine_move(const short int depth, const bool use_opening_book);
+    int engine_move(const int short depth, const bool use_opening_book);
 
     int random_move();
 

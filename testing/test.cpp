@@ -806,7 +806,11 @@ int main()
 
 //    benchmark(engine);
 //    benchmark_position_values(engine);
-    engine_vs_engine(engine, test_engine, 200, false);
+    engine_vs_engine(engine, test_engine, 10, false);
+
+//    load_position(engine, "3");
+//    int a = engine.engine_move();
+//    std::cout << a << std::endl;
 
     return 0;
 }

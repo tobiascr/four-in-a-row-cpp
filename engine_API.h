@@ -69,18 +69,17 @@ private:
 
     std::array<int,7> move_order_open_four_in_a_row();
 
-    short int negamax(const short int depth, short int alpha, short int beta,
-                      const bool use_opening_book);
+    int negamax(const int depth, int alpha, int beta, const bool use_opening_book);
 
-    std::array<int,2> root_negamax(const short int depth,
-                  std::array<int,7> move_order, short int alpha, short int beta,
+    std::array<int,2> root_negamax(const int depth,
+                  std::array<int,7> move_order, int alpha, int beta,
                   const bool use_opening_book);
 
-    std::array<int,2> iterative_deepening(const short int depth,
-                  std::array<int,7> move_order_, short int alpha, short int beta,
+    std::array<int,2> iterative_deepening(const int depth,
+                  std::array<int,7> move_order_, int alpha, int beta,
                   const bool use_opening_book);
 
-    int engine_move(const short int depth, const bool use_opening_book);
+    int engine_move(const int depth, const bool use_opening_book);
 
     int random_move();
 
