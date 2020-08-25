@@ -286,7 +286,7 @@ in a row.*/
 
     // Move order.
     std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
-    if (game_state.get_number_of_moves() < depth - 15)
+    if (game_state.get_number_of_moves() < depth - 12)
     {
         moves = move_order_open_four_in_a_row();
     }
