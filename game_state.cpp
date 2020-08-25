@@ -15,26 +15,18 @@ void GameState::reset()
     bitboard[1] = 0;
     for (int n=0; n<=6; n++)
         column_height[n] = 0;
-    number_of_moves = 0;;
+    number_of_moves = 0;
     player_in_turn = 0;
-    next_move[0] = 0b1;
-    next_move[1] = 0b10000000;
-    next_move[2] = 0b100000000000000;
-    next_move[3] = 0b1000000000000000000000;
-    next_move[4] = 0b10000000000000000000000000000;
-    next_move[5] = 0b100000000000000000000000000000000000;
-    next_move[6] = 0b1000000000000000000000000000000000000000000;
     next_moves = 0b0000001000000100000010000001000000100000010000001;
 }
 
 char GameState::get_value(int column, int row) const
 {
-    const uint64_t a = 1;
-    if ((bitboard[0] >> (column * 7 + row)) & a == 1)
+    if ((bitboard[0] >> (column * 7 + row)) & one == 1)
     {
         return '1';
     }
-    if ((bitboard[1] >> (column * 7 + row)) & a == 1)
+    if ((bitboard[1] >> (column * 7 + row)) & one == 1)
     {
         return '2';
     }
@@ -53,15 +45,14 @@ int GameState::get_number_of_disks_in_column(int column) const
 
 void GameState::make_move(int column)
 {
+    const uint64_t nm = next_move(column);
     history[number_of_moves] = bitboard[player_in_turn];
     next_moves_history[number_of_moves] = next_moves;
-    bitboard[player_in_turn] |= next_move[column];
-    next_moves ^= next_move[column];
+    bitboard[player_in_turn] |= nm;
     column_height[column]++;
     number_of_moves++;
     player_in_turn = 1 - player_in_turn;
-    next_move[column] <<= 1;
-    next_moves |= next_move[column];
+    next_moves ^= nm | (nm << 1);
 }
 
 void GameState::undo_move(int column)
@@ -71,7 +62,16 @@ void GameState::undo_move(int column)
     player_in_turn = 1 - player_in_turn;
     bitboard[player_in_turn] = history[number_of_moves];
     next_moves = next_moves_history[number_of_moves];
-    next_move[column] >>= 1;
+}
+
+int GameState::player_in_turn_() const
+{
+    return number_of_moves % 2;
+}
+
+uint64_t GameState::next_move(int column) const
+{
+    return one << (column * 7 + column_height[column]);
 }
 
 bool GameState::four_in_a_row() const
@@ -162,12 +162,12 @@ bool GameState::can_win_this_move() const
 bool GameState::opponent_four_in_a_row_above(int column) const
 {
     if (column_height[column] >= 5) {return false;}
-    return four_in_a_row_no_vertical(bitboard[1 - player_in_turn] | (next_move[column] << 1));
+    return four_in_a_row_no_vertical(bitboard[1 - player_in_turn] | (next_move(column) << 1));
 }
 
 bool GameState::is_blocking_move(int column) const
 {
-    return four_in_a_row(bitboard[1 - player_in_turn] | next_move[column]);
+    return four_in_a_row(bitboard[1 - player_in_turn] | next_move(column));
 }
 
 uint64_t GameState::get_opponent_winning_positions_bitboard() const
@@ -262,6 +262,43 @@ bool GameState::board_full() const
 int GameState::get_number_of_moves() const
 {
     return number_of_moves;
+}
+
+int GameState::position_value_40_ply()
+{
+    int value = 0;
+    const uint64_t fifth_row = 0b0010000001000000100000010000001000000100000010000;
+
+    // If there is only one column that is not filled.
+    if (next_moves ^ fifth_row)
+    {
+        if (four_in_a_row_no_vertical(bitboard[1] | ((next_moves & board_mask) << 1)))
+        {
+            return -1;
+        }
+    }
+
+    // If there are two columns that are not filled.
+
+    // Testing both last moves at the same time.
+    if (not four_in_a_row(bitboard[1] | (next_moves & board_mask)))
+    {
+        return 0;
+    }
+
+    // To rule out false positives, test the last moves one at a time.
+    for (int col=0; col<=6; col++)
+    {
+        if (column_height[col] < 6)
+        {
+            if (four_in_a_row(bitboard[1] | next_move(col)))
+            {
+                return -1;
+            }
+        }
+    }
+
+    return 0;
 }
 
 uint64_t GameState::get_key() const

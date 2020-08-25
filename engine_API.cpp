@@ -244,12 +244,7 @@ in a row.*/
     uint64_t key;
     int original_alpha = alpha;
 
-    if (game_state.get_number_of_moves() == depth - 1)
-    {
-        return 0;
-    }
-
-    if(use_opening_book)
+    if (use_opening_book)
     {
         if (game_state.get_number_of_moves() <= max_number_of_moves_in_opening_book)
         {
@@ -307,6 +302,11 @@ in a row.*/
         }
     }
     if (c == 0) {return game_state.get_number_of_moves() - 41;}
+
+    if (game_state.get_number_of_moves() >= depth - 2)
+    {
+        return 0;
+    }
 
     for (int i=0; i<=6; i++)
     {
