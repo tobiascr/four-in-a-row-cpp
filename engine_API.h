@@ -61,13 +61,12 @@ private:
 
     int position_heuristic_2(int move) const;
 
-    int open_four_in_a_row_heuristic(int move);
-
     std::array<int,7> move_order();
 
     std::array<int,7> move_order(int first_move);
 
-    std::array<int,7> move_order_open_four_in_a_row();
+    std::array<int,7> move_order_open_four_in_a_row(std::array<bool,7>&
+                                                    non_losing_moves);
 
     int negamax(const int depth, int alpha, int beta, const bool use_opening_book);
 

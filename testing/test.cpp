@@ -744,8 +744,22 @@ void benchmark_position_values(Engine::EngineAPI& engine)
     test_position_value(engine, "3343", 36);
     test_position_value(engine, "33423365002", 0);
     test_position_value(engine, "05216116610", 5);
-//    test_position_value(engine, "3366455", 0, false);
+    test_position_value(engine, "3366455", 0, false);
     test_position_value(engine, "166553001163", -5);
+}
+
+void benchmark_position_values_no_opening_book(Engine::EngineAPI& engine)
+{
+//    test_position_value(engine, "3366455", 0, false);
+//    test_position_value(engine, "336645", 0, false);
+    test_position_value(engine, "334232", -5, false);
+//    test_position_value(engine, "3342", -3, false);
+    test_position_value(engine, "3342000", 7, false);
+//    test_position_value(engine, "333", -2, false);
+//    test_position_value(engine, "33", 2, false);
+//    test_position_value(engine, "3", -2, false); // The program crashes with this.
+//    test_position_value(engine, "00343", -4, false);
+    test_position_value(engine, "3563", -3, false);
 }
 
 void opening_test()
@@ -783,7 +797,6 @@ void opening_test()
         }
         print_board(engine_1);
     }
-
 }
 
 int main()
@@ -794,23 +807,20 @@ int main()
 //    test_engine_API();
 //    opening_test();
 
-//    Engine::EngineAPI engine(91635);
-//    engine.set_difficulty_level(3);
-//    TestEngine::EngineAPI test_engine(35790);
-//    test_engine.set_difficulty_level(3);
-
-    Engine::EngineAPI engine;
+    Engine::EngineAPI engine(91635);
     engine.set_difficulty_level(3);
-    TestEngine::EngineAPI test_engine;
+    TestEngine::EngineAPI test_engine(35790);
     test_engine.set_difficulty_level(3);
+
+//    Engine::EngineAPI engine;
+//    engine.set_difficulty_level(3);
+//    TestEngine::EngineAPI test_engine;
+//    test_engine.set_difficulty_level(3);
 
 //    benchmark(engine);
 //    benchmark_position_values(engine);
+//    benchmark_position_values_no_opening_book(engine);
     engine_vs_engine(engine, test_engine, 100, false);
-
-//    load_position(engine, "3");
-//    int a = engine.engine_move();
-//    std::cout << a << std::endl;
 
     return 0;
 }

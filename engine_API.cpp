@@ -159,25 +159,6 @@ Central positions are given higher values. If the move is not legal, the value i
     return values[row][move];
 }
 
-int EngineAPI::open_four_in_a_row_heuristic(int move)
-/* Give a heuristic evaluation in form of a number of how good it would be to make
- the given move to the current game state. The value is higher the better the move.
- The value is based on the number of open four in a rows.*/
-{
-    if(game_state.column_not_full(move))
-    {
-        int player = game_state.get_number_of_moves() % 2;
-        game_state.make_move(move);
-        int value = game_state.open_four_in_a_row_count(player);
-        game_state.undo_move(move);
-        return value;
-    }
-    else
-    {
-        return 0;
-    }
-}
-
 std::array<int,7> EngineAPI::move_order()
 /* Return a move order for a root negamax search based on a heuristic evaluation
 of the current game state. There is some randomness included in the move ordering
@@ -214,14 +195,21 @@ std::array<int,7> EngineAPI::move_order(int first_move)
     return {3, 2, 4, 1, 5, 0, 6};
 }
 
-std::array<int,7> EngineAPI::move_order_open_four_in_a_row()
+std::array<int,7> EngineAPI::move_order_open_four_in_a_row(std::array<bool,7>&
+                                                           non_losing_moves)
 {
     std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
-    int values[7];
+    int values[7] = {0, 0, 0, 0, 0, 0, 0};
+    int player = game_state.get_number_of_moves() % 2;
 
-    for (int n=0; n<=6; n++)
+    for (int move=0; move<=6; move++)
     {
-         values[n] = open_four_in_a_row_heuristic(n);
+        if (non_losing_moves[move])
+        {
+            game_state.make_move(move);
+            values[move] = game_state.open_four_in_a_row_count(player);
+            game_state.undo_move(move);
+        }
     }
 
     std::stable_sort(moves.begin(), moves.end(),
@@ -257,7 +245,7 @@ in a row.*/
     }
 
     const bool use_transposition_table = game_state.get_number_of_moves() < depth - 6;
-//    const bool use_transposition_table = false;
+
     if (use_transposition_table)
     {
         key = game_state.get_key();
@@ -284,13 +272,6 @@ in a row.*/
         }
     }
 
-    // Move order.
-    std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
-    if (game_state.get_number_of_moves() < depth - 12)
-    {
-        moves = move_order_open_four_in_a_row();
-    }
-
     std::array<bool,7> non_losing_moves = game_state.get_non_losing_moves();
     int c = 0;
     for (int i=0; i<=6; i++)
@@ -306,6 +287,13 @@ in a row.*/
     if (game_state.get_number_of_moves() >= depth - 2)
     {
         return 0;
+    }
+
+    // Move order.
+    std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
+    if (game_state.get_number_of_moves() < depth - 12)
+    {
+        moves = move_order_open_four_in_a_row(non_losing_moves);
     }
 
     for (int i=0; i<=6; i++)
