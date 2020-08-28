@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <fstream>
-#include <iostream>
 #include "engine_API.h"
 #include "game_state.h"
 
@@ -343,12 +342,18 @@ game state have no four in a row and the player in turn can't make a four
 in a row.*/
 {
     int new_value, move, best_move;
+    bool flag = true;
 
     for (int n=0; n<=6; n++)
     {
         move = move_order[n];
         if (game_state.column_not_full(move))
         {
+            if (flag)
+            {
+                best_move = move;
+                flag = false;
+            }
             game_state.make_move(move);
             if(game_state.can_win_this_move())
             {

@@ -611,6 +611,8 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                 }
                 game_time_engine += move_time;
                 engine.make_move(move);
+//                print_board(engine);
+//                std::cout << "Move: " << move << std::endl;
                 test_engine.make_move(move);
                 if (engine.four_in_a_row())
                 {
@@ -657,6 +659,8 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                 }
                 game_time_test_engine += move_time;
                 engine.make_move(move);
+//                print_board(engine);
+//                std::cout << "Move: " << move << std::endl;
                 test_engine.make_move(move);
                 if (engine.four_in_a_row())
                 {
@@ -711,7 +715,7 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
 
 void benchmark(Engine::EngineAPI& engine)
 {
-//    test_position(engine, "256555226", 6); Extremely show and have high memory usage.
+    test_position(engine, "256555226", 6);
     test_position(engine, "333345550", 3); //1 and 2 are as good.
     test_position(engine, "333333010", 0);
     test_position(engine, "334233650026", 5);
@@ -820,7 +824,7 @@ int main()
 //    benchmark(engine);
 //    benchmark_position_values(engine);
 //    benchmark_position_values_no_opening_book(engine);
-    engine_vs_engine(engine, test_engine, 100, false);
+    engine_vs_engine(engine, test_engine, 10, false);
 
     return 0;
 }
