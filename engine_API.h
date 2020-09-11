@@ -50,7 +50,7 @@ public:
 private:
     Engine::GameState game_state;
     int difficulty_level_;
-    const int max_number_of_moves_in_opening_book = 12;
+    const int max_number_of_moves_in_opening_book = 10;
     std::mt19937 random_generator;
     std::unordered_map<uint64_t, uint_fast16_t> transposition_table;
     std::unordered_map<uint64_t, short int> opening_book;

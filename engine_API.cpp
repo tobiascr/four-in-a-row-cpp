@@ -19,7 +19,7 @@ EngineAPI::EngineAPI()
 //    load_opening_book("opening_book_12_move_6");
 //    load_opening_book("opening_book_10_move_no_immediate_win");
 //    load_opening_book("opening_book_11_move_no_immediate_win");
-    load_opening_book("opening_book_12_move_no_immediate_win");
+//    load_opening_book("opening_book_12_move_no_immediate_win");
 }
 
 EngineAPI::EngineAPI(unsigned int seed)
@@ -34,7 +34,7 @@ EngineAPI::EngineAPI(unsigned int seed)
 //    load_opening_book("opening_book_12_move_6");
 //    load_opening_book("opening_book_10_move_no_immediate_win");
 //    load_opening_book("opening_book_11_move_no_immediate_win");
-    load_opening_book("opening_book_12_move_no_immediate_win");
+//    load_opening_book("opening_book_12_move_no_immediate_win");
 }
 
 void EngineAPI::load_opening_book(std::string file_name)
