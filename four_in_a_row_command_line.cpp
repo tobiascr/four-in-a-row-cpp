@@ -74,12 +74,13 @@ int main()
             return 0;
     }
 
+    print_board(engine, player_make_first_move);
+
     while (true)
     {
         if (player_in_turn)
         {
             // Player makes a move.
-            print_board(engine, player_make_first_move);
             move = -1;
             while (true)
             {
@@ -113,19 +114,20 @@ int main()
                 }
             }
             engine.make_move(move);
+            print_board(engine, player_make_first_move);
         }
         else
         {
             // Computer makes a move.
             move = engine.engine_move();
             engine.make_move(move);
+            print_board(engine, player_make_first_move);
         }
 
         // If four in a row.
         if (engine.four_in_a_row())
         {
             game_over = true;
-            print_board(engine, player_make_first_move);
             if (player_in_turn)
             {
                 std::cout << "You win!" << std::endl;
@@ -141,7 +143,6 @@ int main()
             if (engine.board_full())
             {
                 game_over = true;
-                print_board(engine, player_make_first_move);
                 std::cout << "Draw" << std::endl;
             }
 
@@ -162,9 +163,14 @@ int main()
                     engine.new_game();
                     player_make_first_move = not player_make_first_move;
                     if (player_make_first_move)
+                    {
                         player_in_turn = true;
+                        print_board(engine, player_make_first_move);
+                    }
                     else
+                    {
                         player_in_turn = false;
+                    }
                     break;
                 }
                 if (answer[0] == 'n')

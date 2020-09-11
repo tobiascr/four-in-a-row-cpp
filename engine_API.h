@@ -50,7 +50,7 @@ public:
 private:
     Engine::GameState game_state;
     int difficulty_level_;
-    const int max_number_of_moves_in_opening_book = 9;
+    const int max_number_of_moves_in_opening_book = 12;
     std::mt19937 random_generator;
     std::unordered_map<uint64_t, uint_fast16_t> transposition_table;
     std::unordered_map<uint64_t, short int> opening_book;
@@ -61,12 +61,15 @@ private:
 
     int position_heuristic_2(int move) const;
 
+    int left_right_balance() const;
+
+    int adjacent_filled_position_count(int column) const;
+
     std::array<int,7> move_order();
 
     std::array<int,7> move_order(int first_move);
 
-    std::array<int,7> move_order_open_four_in_a_row(std::array<bool,7>&
-                                                    non_losing_moves);
+    std::array<int,7> move_order_open_four_in_a_row();
 
     int negamax(const int depth, int alpha, int beta, const bool use_opening_book);
 
@@ -78,6 +81,8 @@ private:
                   std::array<int,7> move_order_, int alpha, int beta,
                   const bool use_opening_book);
 
+    std::array<int,2> iterative_deepening_2();
+
     int engine_move(const int depth, const bool use_opening_book);
 
     int random_move();
@@ -87,6 +92,8 @@ private:
     int random_best_opening_move();
 
     int engine_move_random();
+
+    int engine_move_hard_random_best_opening();
 
     int engine_move_easy();
 

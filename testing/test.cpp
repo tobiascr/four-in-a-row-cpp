@@ -601,6 +601,7 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                 move_time = t1 - t0;
                 if (display_move_times)
                 {
+                    std::cout << number_of_moves << ". ";
                     std::cout << "Engine made a move.      It took "
                     << std::chrono::duration_cast<std::chrono::microseconds>(move_time).count()
                     << " microseconds" << std::endl;
@@ -649,6 +650,7 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                 move_time = t1 - t0;
                 if (display_move_times)
                 {
+                    std::cout << number_of_moves << ". ";
                     std::cout << "Test engine made a move. It took "
                     << std::chrono::duration_cast<std::chrono::microseconds>(move_time).count()
                     << " microseconds" << std::endl;
@@ -748,7 +750,6 @@ void benchmark_position_values(Engine::EngineAPI& engine)
     test_position_value(engine, "3343", 36);
     test_position_value(engine, "33423365002", 0);
     test_position_value(engine, "05216116610", 5);
-    test_position_value(engine, "3366455", 0, false);
     test_position_value(engine, "166553001163", -5);
 }
 
@@ -763,15 +764,15 @@ void benchmark_position_values_no_opening_book(Engine::EngineAPI& engine)
 //    test_position_value(engine, "33", 2, false);
 //    test_position_value(engine, "3", -2, false); // The program crashes with this.
 //    test_position_value(engine, "00343", -4, false);
-    test_position_value(engine, "3563", -3, false);
+//    test_position_value(engine, "3563", -3, false);
 }
 
 void opening_test()
 {
     Engine::EngineAPI engine_1;
-    engine_1.set_difficulty_level(1);
+    engine_1.set_difficulty_level(4);
     Engine::EngineAPI engine_2;
-    engine_2.set_difficulty_level(4);
+    engine_2.set_difficulty_level(3);
 
     for(int k=1; k<=1000; k++)
     {
