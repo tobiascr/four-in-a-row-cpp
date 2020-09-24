@@ -364,45 +364,71 @@ void test_game_state()
     std::cout << "Test open_four_in_a_row_count" << std::endl;
     load_position(game_state, "2244550");
     print_board(game_state);
-    std::cout << "Open four in a row count player 0: " << 
+    std::cout << "Open four in a row count player 0: " <<
                   game_state.open_four_in_a_row_count(0) << std::endl;
-    std::cout << "Open four in a row count player 1: " << 
+    std::cout << "Open four in a row count player 1: " <<
                   game_state.open_four_in_a_row_count(1) << std::endl;
 
     load_position(game_state, "1115433452");
     print_board(game_state);
-    std::cout << "Open four in a row count player 0: " << 
+    std::cout << "Open four in a row count player 0: " <<
                   game_state.open_four_in_a_row_count(0) << std::endl;
-    std::cout << "Open four in a row count player 1: " << 
+    std::cout << "Open four in a row count player 1: " <<
                   game_state.open_four_in_a_row_count(1) << std::endl;
 
     load_position(game_state, "3323133");
     print_board(game_state);
-    std::cout << "Open four in a row count player 0: " << 
+    std::cout << "Open four in a row count player 0: " <<
                   game_state.open_four_in_a_row_count(0) << std::endl;
-    std::cout << "Open four in a row count player 1: " << 
+    std::cout << "Open four in a row count player 1: " <<
                   game_state.open_four_in_a_row_count(1) << std::endl;
 
     load_position(game_state, "225361134123");
     print_board(game_state);
-    std::cout << "Open four in a row count player 0: " << 
+    std::cout << "Open four in a row count player 0: " <<
                   game_state.open_four_in_a_row_count(0) << std::endl;
-    std::cout << "Open four in a row count player 1: " << 
+    std::cout << "Open four in a row count player 1: " <<
                   game_state.open_four_in_a_row_count(1) << std::endl;
 
     load_position(game_state, "523012231");
     print_board(game_state);
-    std::cout << "Open four in a row count player 0: " << 
+    std::cout << "Open four in a row count player 0: " <<
                   game_state.open_four_in_a_row_count(0) << std::endl;
-    std::cout << "Open four in a row count player 1: " << 
+    std::cout << "Open four in a row count player 1: " <<
                   game_state.open_four_in_a_row_count(1) << std::endl;
 
     load_position(game_state, "0045002523412413");
     print_board(game_state);
-    std::cout << "Open four in a row count player 0: " << 
+    std::cout << "Open four in a row count player 0: " <<
                   game_state.open_four_in_a_row_count(0) << std::endl;
-    std::cout << "Open four in a row count player 1: " << 
+    std::cout << "Open four in a row count player 1: " <<
                   game_state.open_four_in_a_row_count(1) << std::endl;
+
+    std::cout << std::endl;
+    std::cout << "Test keys" << std::endl;
+    std::cout << std::endl;
+    load_position(game_state, "0045002523412413");
+    print_bitboard(game_state.get_key());
+    std::cout << std::endl;
+    print_bitboard(game_state.get_mirror_key());
+    std::cout << std::endl;
+    load_position(game_state, "0013444");
+    print_bitboard(game_state.get_key());
+    std::cout << std::endl;
+    print_bitboard(game_state.get_mirror_key());
+    std::cout << std::endl;
+    load_position(game_state, "3");
+    print_bitboard(game_state.get_key());
+    std::cout << std::endl;
+    print_bitboard(game_state.get_mirror_key());
+    std::cout << std::endl;
+    load_position(game_state, "11466");
+    print_bitboard(game_state.get_key());
+    std::cout << std::endl;
+    print_bitboard(game_state.get_mirror_key());
+    std::cout << std::endl;
+    load_position(game_state, "55200");
+    print_bitboard(game_state.get_key());
 }
 
 void test_engine_API()
@@ -467,6 +493,21 @@ void test_engine_API()
     load_position(engine, "33"); 
     print_board(engine);
     std::cout << "Depth 42: " << engine.position_value_full_depth() << std::endl;
+
+    std::cout << "Test opening book" << std::endl;
+    engine.set_difficulty_level(3);
+    load_position(engine, "000003130");
+    print_board(engine);
+    std::cout << engine.engine_move() << std::endl;
+    load_position(engine, "000003130");
+    print_board(engine);
+    std::cout << engine.engine_move() << std::endl;
+    load_position(engine, "000003130");
+    print_board(engine);
+    std::cout << engine.engine_move() << std::endl;
+    load_position(engine, "000003130");
+    print_board(engine);
+    std::cout << engine.engine_move() << std::endl;
 }
 
 void test_transposition_table()
@@ -602,7 +643,7 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                 if (display_move_times)
                 {
                     std::cout << number_of_moves << ". ";
-                    std::cout << "Engine made a move.      It took "
+                    std::cout << "Engine made move " << move << ".      It took "
                     << std::chrono::duration_cast<std::chrono::microseconds>(move_time).count()
                     << " microseconds" << std::endl;
                 }
@@ -651,7 +692,7 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                 if (display_move_times)
                 {
                     std::cout << number_of_moves << ". ";
-                    std::cout << "Test engine made a move. It took "
+                    std::cout << "Test engine made move " << move << ". It took "
                     << std::chrono::duration_cast<std::chrono::microseconds>(move_time).count()
                     << " microseconds" << std::endl;
                 }
@@ -733,6 +774,7 @@ void benchmark(Engine::EngineAPI& engine)
 void benchmark_position_values(Engine::EngineAPI& engine)
 {
     test_position_value(engine, "333033112", 1);
+    test_position_value(engine, "333633554", 1);
     test_position_value(engine, "155233161", -6);
     test_position_value(engine, "002230532", -32);
     test_position_value(engine, "242222334", 7);
@@ -813,7 +855,7 @@ int main()
 //    opening_test();
 
     Engine::EngineAPI engine(91635);
-    engine.set_difficulty_level(3);
+    engine.set_difficulty_level(5);
     TestEngine::EngineAPI test_engine(35790);
     test_engine.set_difficulty_level(3);
 
@@ -823,9 +865,9 @@ int main()
 //    test_engine.set_difficulty_level(3);
 
 //    benchmark(engine);
-//    benchmark_position_values(engine);
+    benchmark_position_values(engine);
 //    benchmark_position_values_no_opening_book(engine);
-    engine_vs_engine(engine, test_engine, 10, false);
+//    engine_vs_engine(engine, test_engine, 20, false);
 
     return 0;
 }

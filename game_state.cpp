@@ -305,4 +305,25 @@ uint64_t GameState::get_key() const
 {
     return bitboard[0] | next_moves;
 }
+
+uint64_t GameState::get_mirror_key() const
+{
+    uint64_t key = get_key();
+    uint64_t mirrored_key = 0;
+    const int bitboard_height = 7;
+    mirrored_key |= (key & 0b0000000000000000000000000000000000000000001111111)
+                    << (bitboard_height * 6);
+    mirrored_key |= (key & 0b0000000000000000000000000000000000011111110000000)
+                    << (bitboard_height * 4);
+    mirrored_key |= (key & 0b0000000000000000000000000000111111100000000000000)
+                    << (bitboard_height * 2);
+    mirrored_key |= (key & 0b0000000000000000000001111111000000000000000000000);
+    mirrored_key |= (key & 0b0000000000000011111110000000000000000000000000000)
+                    >> (bitboard_height * 2);
+    mirrored_key |= (key & 0b0000000111111100000000000000000000000000000000000)
+                    >> (bitboard_height * 4);
+    mirrored_key |= (key & 0b1111111000000000000000000000000000000000000000000)
+                    >> (bitboard_height * 6);
+    return mirrored_key;
+}
 }

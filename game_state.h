@@ -73,7 +73,11 @@ public:
     player in turn to make a four in a row.*/
 
     uint64_t get_key() const;
-    // Return a unique key that corresponds to the current game state.
+    /* Return a unique key that corresponds to the current game state.*/
+
+    uint64_t get_mirror_key() const;
+    /* Return a unique key that corresponds to the mirrored version of the
+    current game state.*/
 
 private:
     /* The places where disks are positioned on the board is stored in bitboards

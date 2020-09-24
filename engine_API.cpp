@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <fstream>
+#include <iostream>
 #include "engine_API.h"
 #include "game_state.h"
 
@@ -14,12 +15,8 @@ EngineAPI::EngineAPI()
     difficulty_level_ = 2;
     load_opening_book("opening_book_3_move");
     load_opening_book("opening_book_6_move");
-    load_opening_book("opening_book_9_move");
-//    load_opening_book("opening_book_9_move_no_immediate_win");
-//    load_opening_book("opening_book_12_move_6");
-//    load_opening_book("opening_book_10_move_no_immediate_win");
-//    load_opening_book("opening_book_11_move_no_immediate_win");
-//    load_opening_book("opening_book_12_move_no_immediate_win");
+    load_opening_book("opening_book_9_ply");
+//    load_opening_book("opening_book_12_move");
 }
 
 EngineAPI::EngineAPI(unsigned int seed)
@@ -29,12 +26,8 @@ EngineAPI::EngineAPI(unsigned int seed)
     difficulty_level_ = 2;
     load_opening_book("opening_book_3_move");
     load_opening_book("opening_book_6_move");
-    load_opening_book("opening_book_9_move");
-//    load_opening_book("opening_book_9_move_no_immediate_win");
-//    load_opening_book("opening_book_12_move_6");
-//    load_opening_book("opening_book_10_move_no_immediate_win");
-//    load_opening_book("opening_book_11_move_no_immediate_win");
-//    load_opening_book("opening_book_12_move_no_immediate_win");
+    load_opening_book("opening_book_9_ply");
+//    load_opening_book("opening_book_12_move");
 }
 
 void EngineAPI::load_opening_book(std::string file_name)
@@ -66,20 +59,8 @@ void EngineAPI::load_opening_book(std::string file_name)
             c = line[n];
             value_string.append(c);
         }
-        int value = std::stoi(value_string);
         key = game_state.get_key();
-        opening_book[key] = value;
-
-        // Load mirrored position.
-        game_state.reset();
-        for (int n=0; n<line.length(); n++)
-        {
-            if (line[n] == ' ') break;
-            move = line[n];
-            game_state.make_move(6 - std::stoi(move));
-        }
-        key = game_state.get_key();
-        opening_book[key] = value;
+        opening_book[key] = value_string;
     }
     file_to_read.close();
     game_state.reset();
@@ -303,12 +284,24 @@ in a row.*/
 
     if (use_opening_book)
     {
-        if (game_state.get_number_of_moves() <= max_number_of_moves_in_opening_book)
+        if (game_state.get_number_of_moves() <= max_ply_in_opening_book)
         {
+            std::string book_string;
             key = game_state.get_key();
+
             if (opening_book.count(key) == 1)
             {
-                return opening_book[key];
+                book_string = opening_book[key];
+                return std::stoi(book_string);
+            }
+            else
+            {
+                key = game_state.get_mirror_key();
+                if (opening_book.count(key) == 1)
+                {
+                    book_string = opening_book[key];
+                    return std::stoi(book_string);
+                }
             }
         }
     }
@@ -484,9 +477,9 @@ int EngineAPI::position_value_full_depth(const bool use_opening_book)
     }
     if(use_opening_book)
     {
-        if (game_state.get_number_of_moves() <= max_number_of_moves_in_opening_book)
+        if (game_state.get_number_of_moves() <= max_ply_in_opening_book)
         {
-            return negamax(max_number_of_moves_in_opening_book + 2, -1000, 1000, true);
+            return negamax(max_ply_in_opening_book + 2, -1000, 1000, true);
         }
     }
 
@@ -551,10 +544,10 @@ is stopped. For example, depth=42 give a maximum depth search.*/
 
     if(use_opening_book)
     {
-        if (game_state.get_number_of_moves() < max_number_of_moves_in_opening_book)
+        if (game_state.get_number_of_moves() < max_ply_in_opening_book)
         {
             std::array<int,2> values = iterative_deepening(
-                  max_number_of_moves_in_opening_book + 2, moves, alpha, beta, true);
+                  max_ply_in_opening_book + 2, moves, alpha, beta, true);
             return values[0];
         }
     }
@@ -570,6 +563,62 @@ is stopped. For example, depth=42 give a maximum depth search.*/
     }
 
     return values[0];
+}
+
+int EngineAPI::random_best_10th_move()
+// Return a randomly chosen best move in positions where 9 moves are made.
+{
+    // Look for a move that makes a four in a row.
+    std::array<int,7> moves = {3, 2, 4, 1, 5, 6, 0};
+    for (int n=0; n<=6; n++)
+    {
+        int move = moves[n];
+        if (game_state.column_not_full(move))
+        {
+            game_state.make_move(move);
+            int result = game_state.four_in_a_row();
+            game_state.undo_move(move);
+            if (result) {return move;}
+        }
+    }
+
+    // Look for blocking moves.
+    for (int n=0; n<=6; n++)
+    {
+        int move = moves[n];
+        if (game_state.column_not_full(move))
+        {
+            if (game_state.is_blocking_move(move)) {return move;}
+        }
+    }
+
+    // Look in the opening book.
+    std::string book_string;
+    uint64_t key = game_state.get_key();
+
+    if (opening_book.count(key) == 1)
+    {
+        book_string = opening_book[key];
+    }
+    else
+    {
+        book_string = opening_book[game_state.get_mirror_key()];
+    }
+
+    // Find the best moves from the string in the opening book.
+    int i = book_string.size() - 1;
+    std::string move_string = "";
+    while(book_string[i] != ' ')
+    {
+        move_string += book_string[i];
+        i--;
+    }
+
+    // Select a random move from best moves.
+    std::uniform_int_distribution<> uid(0, move_string.size() - 1);
+    std::string move;
+    move = move_string[uid(random_generator)];
+    return std::stoi(move);
 }
 
 int EngineAPI::random_move()
@@ -633,6 +682,10 @@ int EngineAPI::engine_move_hard_random_best_opening()
     {
         return random_best_opening_move();
     }
+    if (game_state.get_number_of_moves() == 9)
+    {
+        return random_best_10th_move();
+    }
     int move = engine_move(42, true);
     return move;
 }
@@ -655,6 +708,7 @@ int EngineAPI::engine_move_medium()
 
 int EngineAPI::engine_move_hard()
 {
-    return engine_move(42, true);
+    return engine_move_hard_random_best_opening();
+//    return engine_move(42, true);
 }
 }
