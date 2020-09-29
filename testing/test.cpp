@@ -508,6 +508,56 @@ void test_engine_API()
     load_position(engine, "000003130");
     print_board(engine);
     std::cout << engine.engine_move() << std::endl;
+    std::cout << std::endl;
+    std::cout << "Expected: 456" << std::endl;
+    for(int n=0; n<=20; n++)
+    {
+        load_position(engine, "30314220");
+        std::cout << engine.engine_move() << std::endl;
+    }
+    std::cout << std::endl;
+    std::cout << "Expected: 15" << std::endl;
+    for(int n=0; n<=20; n++)
+    {
+        load_position(engine, "31153255");
+        std::cout << engine.engine_move() << std::endl;
+    }
+    std::cout << std::endl;
+    std::cout << "Expected: 0134" << std::endl;
+    for(int n=0; n<=20; n++)
+    {
+        load_position(engine, "33313612");
+        std::cout << engine.engine_move() << std::endl;
+    }
+    std::cout << std::endl;
+    std::cout << "Expected: 035" << std::endl;
+    for(int n=0; n<=20; n++)
+    {
+        load_position(engine, "33353022");
+        std::cout << engine.engine_move() << std::endl;
+    }
+    std::cout << std::endl;
+    std::cout << "Expected: 4" << std::endl;
+    for(int n=0; n<=20; n++)
+    {
+        load_position(engine, "3032335654");
+        std::cout << engine.engine_move() << std::endl;
+    }
+    std::cout << std::endl;
+    std::cout << "Expected: 01456" << std::endl;
+    for(int n=0; n<=20; n++)
+    {
+        load_position(engine, "010045110");
+        std::cout << engine.engine_move() << std::endl;
+    }
+    std::cout << std::endl;
+    std::cout << "Expected: 12" << std::endl;
+    for(int n=0; n<=20; n++)
+    {
+        load_position(engine, "3033334544");
+        std::cout << engine.engine_move() << std::endl;
+    }
+    std::cout << std::endl;
 }
 
 void test_transposition_table()
@@ -855,7 +905,7 @@ int main()
 //    opening_test();
 
     Engine::EngineAPI engine(91635);
-    engine.set_difficulty_level(5);
+    engine.set_difficulty_level(3);
     TestEngine::EngineAPI test_engine(35790);
     test_engine.set_difficulty_level(3);
 
@@ -865,9 +915,10 @@ int main()
 //    test_engine.set_difficulty_level(3);
 
 //    benchmark(engine);
-    benchmark_position_values(engine);
+//    benchmark_position_values(engine);
 //    benchmark_position_values_no_opening_book(engine);
-//    engine_vs_engine(engine, test_engine, 20, false);
+    engine_vs_engine(engine, test_engine, 10, true);
+//    engine_vs_engine(engine, test_engine, 100, false);
 
     return 0;
 }

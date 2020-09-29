@@ -599,6 +599,10 @@ int EngineAPI::engine_move_medium()
 
 int EngineAPI::engine_move_hard()
 {
+    if (game_state.get_number_of_moves() < 9)
+    {
+        return random_best_opening_move();
+    }
     return engine_move(42, true);
 }
 }

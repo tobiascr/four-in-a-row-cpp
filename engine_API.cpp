@@ -13,10 +13,12 @@ EngineAPI::EngineAPI()
     std::random_device rd;
     random_generator.seed(rd());
     difficulty_level_ = 2;
-    load_opening_book("opening_book_3_move");
-    load_opening_book("opening_book_6_move");
-    load_opening_book("opening_book_9_ply");
-//    load_opening_book("opening_book_12_move");
+    load_opening_book("opening_book_3_move", true);
+    load_opening_book("opening_book_6_move", true);
+    load_opening_book("opening_book_8_ply_values", true);
+    load_opening_book("opening_book_8_ply_best_moves", false);
+    load_opening_book("opening_book_9_ply_best_moves", false);
+    load_opening_book("opening_book_10_ply_best_moves", false);
 }
 
 EngineAPI::EngineAPI(unsigned int seed)
@@ -24,13 +26,17 @@ EngineAPI::EngineAPI(unsigned int seed)
     // Initialize the random number generator.
     random_generator.seed(seed);
     difficulty_level_ = 2;
-    load_opening_book("opening_book_3_move");
-    load_opening_book("opening_book_6_move");
-    load_opening_book("opening_book_9_ply");
-//    load_opening_book("opening_book_12_move");
+    load_opening_book("opening_book_3_move", true);
+    load_opening_book("opening_book_6_move", true);
+    load_opening_book("opening_book_8_ply_values", true);
+    load_opening_book("opening_book_8_ply_best_moves", false);
+    load_opening_book("opening_book_9_ply_best_moves", false);
+    load_opening_book("opening_book_10_ply_best_moves", false);
 }
 
-void EngineAPI::load_opening_book(std::string file_name)
+void EngineAPI::load_opening_book(std::string file_name, bool values)
+/* values should be set to true if the file contains values and false if it contains
+   moves.*/
 {
     std::ifstream file_to_read(file_name);
     std::string line, move, c;
@@ -60,10 +66,62 @@ void EngineAPI::load_opening_book(std::string file_name)
             value_string.append(c);
         }
         key = game_state.get_key();
-        opening_book[key] = value_string;
+        if(values)
+        {
+            opening_book_values[key] = value_string;
+        }
+        else
+        {
+            opening_book_moves[key] = value_string;
+        }
     }
     file_to_read.close();
     game_state.reset();
+}
+
+bool EngineAPI::can_find_best_moves_from_opening_book() const
+{
+    if(game_state.get_number_of_moves() < 8)
+    {
+        return true;
+    }
+    return (opening_book_moves.count(game_state.get_key()) == 1) or
+           (opening_book_moves.count(game_state.get_mirror_key()) == 1);
+}
+
+std::vector<int> EngineAPI::get_best_moves_from_opening_book() // const
+/* Return a vector with moves found in the opening book. If no moves can be
+   found from the book, an empty vector is returned.*/
+{
+    std::string book_string = "";
+    std::vector<int> best_moves;
+    uint64_t key = game_state.get_key();
+
+    if (opening_book_moves.count(key) == 1)
+    {
+        book_string = opening_book_moves[key];
+    }
+    else
+    {
+        key = game_state.get_mirror_key();
+        if (opening_book_moves.count(key) == 1)
+        {
+           book_string = opening_book_moves[key];
+        }
+    }
+
+    for(char move : book_string)
+    {
+        if (move == '0') best_moves.push_back(0);
+        if (move == '1') best_moves.push_back(1);
+        if (move == '2') best_moves.push_back(2);
+        if (move == '3') best_moves.push_back(3);
+        if (move == '4') best_moves.push_back(4);
+        if (move == '5') best_moves.push_back(5);
+        if (move == '6') best_moves.push_back(6);
+    }
+
+    return best_moves;
 }
 
 void EngineAPI::set_difficulty_level(int difficulty_level)
@@ -92,8 +150,6 @@ int EngineAPI::engine_move()
         return engine_move_hard();
     if (difficulty_level_ == 4)
         return random_move();
-    if (difficulty_level_ == 5)
-        return engine_move_hard_random_best_opening();
     return 0;
 }
 
@@ -284,22 +340,22 @@ in a row.*/
 
     if (use_opening_book)
     {
-        if (game_state.get_number_of_moves() <= max_ply_in_opening_book)
+        if (game_state.get_number_of_moves() <= max_ply_for_values_in_opening_book)
         {
             std::string book_string;
             key = game_state.get_key();
 
-            if (opening_book.count(key) == 1)
+            if (opening_book_values.count(key) == 1)
             {
-                book_string = opening_book[key];
+                book_string = opening_book_values[key];
                 return std::stoi(book_string);
             }
             else
             {
                 key = game_state.get_mirror_key();
-                if (opening_book.count(key) == 1)
+                if (opening_book_values.count(key) == 1)
                 {
-                    book_string = opening_book[key];
+                    book_string = opening_book_values[key];
                     return std::stoi(book_string);
                 }
             }
@@ -477,9 +533,9 @@ int EngineAPI::position_value_full_depth(const bool use_opening_book)
     }
     if(use_opening_book)
     {
-        if (game_state.get_number_of_moves() <= max_ply_in_opening_book)
+        if (game_state.get_number_of_moves() <= max_ply_for_values_in_opening_book)
         {
-            return negamax(max_ply_in_opening_book + 2, -1000, 1000, true);
+            return negamax(max_ply_for_values_in_opening_book + 2, -1000, 1000, true);
         }
     }
 
@@ -491,11 +547,6 @@ int EngineAPI::position_value_full_depth(const bool use_opening_book)
     return values[1];
 }
 
-std::array<int,2> EngineAPI::iterative_deepening_2()
-{
-
-}
-
 int EngineAPI::engine_move(const int depth, const bool use_opening_book)
 /* Return an integer from 0 to 6 that represents a best move made by the engine
 at the given depth level. Depth is counted as the move number at which the search
@@ -503,9 +554,6 @@ is stopped. For example, depth=42 give a maximum depth search.*/
 {
     int alpha = -1000;
     int beta = 1000;
-
-//    alpha = -10;
-//    beta = 1;
 
     std::array<int,7> moves = move_order();
 
@@ -544,10 +592,10 @@ is stopped. For example, depth=42 give a maximum depth search.*/
 
     if(use_opening_book)
     {
-        if (game_state.get_number_of_moves() < max_ply_in_opening_book)
+        if (game_state.get_number_of_moves() < max_ply_for_values_in_opening_book)
         {
             std::array<int,2> values = iterative_deepening(
-                  max_ply_in_opening_book + 2, moves, alpha, beta, true);
+                  max_ply_for_values_in_opening_book + 2, moves, alpha, beta, true);
             return values[0];
         }
     }
@@ -565,62 +613,6 @@ is stopped. For example, depth=42 give a maximum depth search.*/
     return values[0];
 }
 
-int EngineAPI::random_best_10th_move()
-// Return a randomly chosen best move in positions where 9 moves are made.
-{
-    // Look for a move that makes a four in a row.
-    std::array<int,7> moves = {3, 2, 4, 1, 5, 6, 0};
-    for (int n=0; n<=6; n++)
-    {
-        int move = moves[n];
-        if (game_state.column_not_full(move))
-        {
-            game_state.make_move(move);
-            int result = game_state.four_in_a_row();
-            game_state.undo_move(move);
-            if (result) {return move;}
-        }
-    }
-
-    // Look for blocking moves.
-    for (int n=0; n<=6; n++)
-    {
-        int move = moves[n];
-        if (game_state.column_not_full(move))
-        {
-            if (game_state.is_blocking_move(move)) {return move;}
-        }
-    }
-
-    // Look in the opening book.
-    std::string book_string;
-    uint64_t key = game_state.get_key();
-
-    if (opening_book.count(key) == 1)
-    {
-        book_string = opening_book[key];
-    }
-    else
-    {
-        book_string = opening_book[game_state.get_mirror_key()];
-    }
-
-    // Find the best moves from the string in the opening book.
-    int i = book_string.size() - 1;
-    std::string move_string = "";
-    while(book_string[i] != ' ')
-    {
-        move_string += book_string[i];
-        i--;
-    }
-
-    // Select a random move from best moves.
-    std::uniform_int_distribution<> uid(0, move_string.size() - 1);
-    std::string move;
-    move = move_string[uid(random_generator)];
-    return std::stoi(move);
-}
-
 int EngineAPI::random_move()
 {
     std::array<int,7> moves = {0, 1, 2, 3, 4, 5, 6};
@@ -632,11 +624,6 @@ int EngineAPI::random_move()
             return move;
         }
     }
-    return 0;
-}
-
-int EngineAPI::random_win_not_lose_move()
-{
     return 0;
 }
 
@@ -676,20 +663,6 @@ int EngineAPI::engine_move_random()
     return random_move();
 }
 
-int EngineAPI::engine_move_hard_random_best_opening()
-{
-    if (game_state.get_number_of_moves() < 9)
-    {
-        return random_best_opening_move();
-    }
-    if (game_state.get_number_of_moves() == 9)
-    {
-        return random_best_10th_move();
-    }
-    int move = engine_move(42, true);
-    return move;
-}
-
 int EngineAPI::engine_move_easy()
 {
     if (game_state.get_number_of_moves() < 8)
@@ -708,7 +681,18 @@ int EngineAPI::engine_move_medium()
 
 int EngineAPI::engine_move_hard()
 {
-    return engine_move_hard_random_best_opening();
-//    return engine_move(42, true);
+    if (game_state.get_number_of_moves() < 8)
+    {
+        return random_best_opening_move();
+    }
+
+    if(can_find_best_moves_from_opening_book() and game_state.get_number_of_moves() >= 8)
+    {
+        std::vector<int> moves = get_best_moves_from_opening_book();
+        std::uniform_int_distribution<> uid(0, moves.size() - 1);
+        return moves[uid(random_generator)];
+    }
+
+    return engine_move(42, true);
 }
 }
