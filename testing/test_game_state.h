@@ -59,12 +59,25 @@ public:
     For example if the first value is true, it means that the move is not
     losing.*/
 
+    int open_four_in_a_row_count(int player) const;
+    /* Return the number of unoccupied places on the board that give player
+    a four in a row. player is 0 for the player making the first move and 1
+    for the other player.*/
+
     bool board_full() const;
 
     int get_number_of_moves() const;
 
+    int position_value_40_ply();
+    /* There must be no four in a row in the game state and possibility for the
+    player in turn to make a four in a row.*/
+
     uint64_t get_key() const;
-    // Return a unique key that corresponds to the current game state.
+    /* Return a unique key that corresponds to the current game state.*/
+
+    uint64_t get_mirror_key() const;
+    /* Return a unique key that corresponds to the mirrored version of the
+    current game state.*/
 
 private:
     /* The places where disks are positioned on the board is stored in bitboards
@@ -90,14 +103,21 @@ private:
 
     uint64_t bitboard[2]; // bitboard[0] is for the player that makes the first move.
                           // bitboard[1] is for the player that makes the second move.
-    int player_in_turn;  // 0 if it's the beginner player in turn and else 1.
+    int player_in_turn;  // 0 if it's the beginning player in turn and else 1.
     int column_height[7];
     int number_of_moves;
     uint64_t history[42]; // Bitboards from earlier moves.
     const uint64_t one = 1;
-    uint64_t next_move[7];
+    const uint64_t board_mask = 0b0111111011111101111110111111011111101111110111111;
     uint64_t next_moves;
     uint64_t next_moves_history[42];
+
+    int player_in_turn_() const;
+    /* Return 0 if it's the beginning player in turn and else 1.*/
+
+    uint64_t next_move(int column) const;
+    /* Return a bitboard with a 1 at the position of the next move that can
+    be made at the given column and 0:s at all other positions.*/
 
     bool four_in_a_row(uint64_t bitboard) const;
     /* Return true iff there is a four in a row of 1:s on the bitboard.*/

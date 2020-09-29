@@ -2,6 +2,7 @@
 #define TEST_ENGINE_API_H
 
 #include <array>
+#include <vector>
 #include <random>
 #include <unordered_map>
 #include <string>
@@ -50,20 +51,25 @@ public:
 private:
     TestEngine::GameState game_state;
     int difficulty_level_;
-    const int max_number_of_moves_in_opening_book = 9;
+    const int max_ply_for_values_in_opening_book = 8;
     std::mt19937 random_generator;
     std::unordered_map<uint64_t, uint_fast16_t> transposition_table;
-    std::unordered_map<uint64_t, short int> opening_book;
+    std::unordered_map<uint64_t, std::string> opening_book_values;
+    std::unordered_map<uint64_t, std::string> opening_book_moves;
 
-    void load_opening_book(std::string file_name);
+    void load_opening_book(std::string file_name, bool values);
+
+    bool can_find_best_moves_from_opening_book() const;
+
+    std::vector<int> get_best_moves_from_opening_book();
 
     int position_heuristic(int move) const;
 
     int position_heuristic_2(int move) const;
 
-    int open_four_in_a_row_count(int player) const;
+    int left_right_balance() const;
 
-    int open_four_in_a_row_heuristic(int move);
+    int adjacent_filled_position_count(int column) const;
 
     std::array<int,7> move_order();
 
@@ -71,22 +77,19 @@ private:
 
     std::array<int,7> move_order_open_four_in_a_row();
 
-    short int negamax(const short int depth, short int alpha, short int beta,
-                      const bool use_opening_book);
+    int negamax(const int depth, int alpha, int beta, const bool use_opening_book);
 
-    std::array<int,2> root_negamax(const short int depth,
-                  std::array<int,7> move_order, short int alpha, short int beta,
+    std::array<int,2> root_negamax(const int depth,
+                  std::array<int,7> move_order, int alpha, int beta,
                   const bool use_opening_book);
 
-    std::array<int,2> iterative_deepening(const short int depth,
-                  std::array<int,7> move_order_, short int alpha, short int beta,
+    std::array<int,2> iterative_deepening(const int depth,
+                  std::array<int,7> move_order_, int alpha, int beta,
                   const bool use_opening_book);
 
-    int engine_move(const int short depth, const bool use_opening_book);
+    int engine_move(const int depth, const bool use_opening_book);
 
     int random_move();
-
-    int random_win_not_lose_move();
 
     int random_best_opening_move();
 
