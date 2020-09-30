@@ -80,6 +80,10 @@ void EngineAPI::load_opening_book(std::string file_name, bool values)
 
 bool EngineAPI::can_find_best_moves_from_opening_book() const
 {
+    if(game_state.can_win_this_move())
+    {
+        return false;
+    }
     if(game_state.get_number_of_moves() < 8)
     {
         return true;
