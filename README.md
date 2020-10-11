@@ -7,6 +7,9 @@ iterative deepening, move sorting based on heuristics, and an opening book.
 To compile the program run make. To install it run sudo make install.
 Then four_in_a_row_command_line to run it. To uninstall it run sudo make uninstall.
 
+You can also run make test, to compile the test program. It need to have the
+ordinary program installed, in order to have access to the opening book.
+
 The opening book consists of the following files:
 
 opening_book_3_ply_values
