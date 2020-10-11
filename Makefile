@@ -10,12 +10,7 @@ four_in_a_row_command_line: $(game_objects)
 install:
 	cp four_in_a_row_command_line /usr/local/bin
 	mkdir /usr/local/share/four_in_a_row_opening_book
-	cp opening_book_3_ply_values /usr/local/share/four_in_a_row_opening_book
-	cp opening_book_6_ply_values /usr/local/share/four_in_a_row_opening_book
-	cp opening_book_8_ply_values /usr/local/share/four_in_a_row_opening_book
-	cp opening_book_8_ply_best_moves /usr/local/share/four_in_a_row_opening_book
-	cp opening_book_9_ply_best_moves /usr/local/share/four_in_a_row_opening_book
-	cp opening_book_10_ply_best_moves /usr/local/share/four_in_a_row_opening_book
+	cp opening_book/opening_book* /usr/local/share/four_in_a_row_opening_book
 
 uninstall:
 	rm /usr/local/bin/four_in_a_row_command_line
