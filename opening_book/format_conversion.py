@@ -52,7 +52,3 @@ if __name__ == "__main__":
     file_to_read.close()
     file_to_write.close()
 
-
-
-
-
