@@ -910,15 +910,15 @@ int main()
     test_engine.set_difficulty_level(3);
 
 //    Engine::EngineAPI engine;
-//    engine.set_difficulty_level(3);
+//    engine.set_difficulty_level(2);
 //    TestEngine::EngineAPI test_engine;
-//    test_engine.set_difficulty_level(3);
+//    test_engine.set_difficulty_level(2);
 
 //    benchmark(engine);
 //    benchmark_position_values(engine);
 //    benchmark_position_values_no_opening_book(engine);
     engine_vs_engine(engine, test_engine, 10, true);
-//    engine_vs_engine(engine, test_engine, 100, false);
+//    engine_vs_engine(engine, test_engine, 1000, false);
 
     return 0;
 }
