@@ -7,6 +7,20 @@ test_objects=test.o game_state.o engine_API.o test_game_state.o \
 four_in_a_row_command_line: $(game_objects)
 	g++ $(FLAGS) $(game_objects) -o four_in_a_row_command_line
 
+install:
+	cp four_in_a_row_command_line /usr/local/bin
+	mkdir /usr/local/share/four_in_a_row_opening_book
+	cp opening_book_3_ply_values /usr/local/share/four_in_a_row_opening_book
+	cp opening_book_6_ply_values /usr/local/share/four_in_a_row_opening_book
+	cp opening_book_8_ply_values /usr/local/share/four_in_a_row_opening_book
+	cp opening_book_8_ply_best_moves /usr/local/share/four_in_a_row_opening_book
+	cp opening_book_9_ply_best_moves /usr/local/share/four_in_a_row_opening_book
+	cp opening_book_10_ply_best_moves /usr/local/share/four_in_a_row_opening_book
+
+uninstall:
+	rm /usr/local/bin/four_in_a_row_command_line
+	rm -R /usr/local/share/four_in_a_row_opening_book
+
 test: $(test_objects)
 	g++  $(FLAGS) $(test_objects) -o test
 

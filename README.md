@@ -4,7 +4,8 @@ compute moves to full depth and can make perfect moves.
 I uses bitboards, negamax, alpha beta pruning, transposition table,
 iterative deepening, move sorting based on heuristics, and an opening book.
 
-To compile the program run make. Then type ./four_in_a_row_command_line to run it.
+To compile the program run make. To install it run sudo make install.
+Then four_in_a_row_command_line to run it. To uninstall it run sudo make uninstall.
 
 The opening book consists of the following files:
 
