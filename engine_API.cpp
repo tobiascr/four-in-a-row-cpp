@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <fstream>
+#include <iostream>
 #include "engine_API.h"
 #include "game_state.h"
 
@@ -40,6 +41,11 @@ void EngineAPI::load_opening_book(std::string file_name, bool values)
     std::ifstream file_to_read(file_name);
     std::string line, move, c;
     uint64_t key;
+
+    if(not file_to_read.is_open())
+    {
+        std::cerr << "Can't open " << file_name << std::endl;
+    }
 
     while (std::getline(file_to_read, line))
     {
