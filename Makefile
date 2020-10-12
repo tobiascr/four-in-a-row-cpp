@@ -9,7 +9,7 @@ four_in_a_row_command_line: $(game_objects)
 
 install:
 	cp four_in_a_row_command_line /usr/local/bin
-	mkdir /usr/local/share/four_in_a_row_opening_book
+	mkdir -p /usr/local/share/four_in_a_row_opening_book
 	cp opening_book/opening_book* /usr/local/share/four_in_a_row_opening_book
 
 uninstall:
