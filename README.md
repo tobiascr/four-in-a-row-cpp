@@ -18,7 +18,7 @@ Then type
 
 to run it. To uninstall, run
 
-    sudo make uninstall.
+    sudo make uninstall
 
 You can also run
 
