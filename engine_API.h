@@ -57,7 +57,9 @@ private:
     std::unordered_map<uint64_t, std::string> opening_book_values;
     std::unordered_map<uint64_t, std::string> opening_book_moves;
 
-    void load_opening_book(std::string file_name, bool values);
+    void load_opening_book();
+
+    void load_opening_book_file(std::string file_name, bool values);
 
     bool can_find_best_moves_from_opening_book() const;
 

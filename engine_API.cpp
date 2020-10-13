@@ -13,12 +13,7 @@ EngineAPI::EngineAPI()
     std::random_device rd;
     random_generator.seed(rd());
     difficulty_level_ = 2;
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_3_ply_values", true);
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_6_ply_values", true);
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_8_ply_values", true);
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_8_ply_best_moves", false);
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_9_ply_best_moves", false);
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_10_ply_best_moves", false);
+    load_opening_book();
 }
 
 EngineAPI::EngineAPI(unsigned int seed)
@@ -26,15 +21,20 @@ EngineAPI::EngineAPI(unsigned int seed)
     // Initialize the random number generator.
     random_generator.seed(seed);
     difficulty_level_ = 2;
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_3_ply_values", true);
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_6_ply_values", true);
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_8_ply_values", true);
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_8_ply_best_moves", false);
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_9_ply_best_moves", false);
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_10_ply_best_moves", false);
+    load_opening_book();
 }
 
-void EngineAPI::load_opening_book(std::string file_name, bool values)
+void EngineAPI::load_opening_book()
+{
+    load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_3_ply_values", true);
+    load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_6_ply_values", true);
+    load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_8_ply_values", true);
+    load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_8_ply_best_moves", false);
+    load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_9_ply_best_moves", false);
+    load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_10_ply_best_moves", false);
+}
+
+void EngineAPI::load_opening_book_file(std::string file_name, bool values)
 /* values should be set to true if the file contains values and false if it contains
    moves.*/
 {

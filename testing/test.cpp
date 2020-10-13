@@ -910,9 +910,9 @@ int main()
     test_engine.set_difficulty_level(3);
 
 //    Engine::EngineAPI engine;
-//    engine.set_difficulty_level(2);
+//    engine.set_difficulty_level(3);
 //    TestEngine::EngineAPI test_engine;
-//    test_engine.set_difficulty_level(2);
+//    test_engine.set_difficulty_level(3);
 
 //    benchmark(engine);
 //    benchmark_position_values(engine);
