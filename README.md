@@ -9,7 +9,7 @@ iterative deepening, move sorting based on heuristics, and an opening book.
 ### Installation on Linux
 
 Download the repository as a zip-file. Uncompress it and go to
-it's folder in the terminal.
+its folder in the terminal.
 
 To compile the program run
 
