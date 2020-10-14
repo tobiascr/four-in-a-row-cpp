@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <string>
 #include "game_state.h"
+#include "opening_book.h"
 
 namespace Engine
 {
@@ -50,16 +51,13 @@ public:
 
 private:
     Engine::GameState game_state;
+    Engine::OpeningBook opening_book;
     int difficulty_level_;
     const int max_ply_for_values_in_opening_book = 8;
     std::mt19937 random_generator;
     std::unordered_map<uint64_t, uint_fast16_t> transposition_table;
     std::unordered_map<uint64_t, std::string> opening_book_values;
     std::unordered_map<uint64_t, std::string> opening_book_moves;
-
-    void load_opening_book();
-
-    void load_opening_book_file(std::string file_name, bool values);
 
     bool can_find_best_moves_from_opening_book() const;
 

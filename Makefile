@@ -1,7 +1,7 @@
 FLAGS=-O3
 
-game_objects=four_in_a_row_command_line.o game_state.o engine_API.o
-test_objects=test.o game_state.o engine_API.o test_game_state.o \
+game_objects=four_in_a_row_command_line.o opening_book.o game_state.o engine_API.o
+test_objects=test.o opening_book.o game_state.o engine_API.o test_game_state.o \
              test_engine_API.o
 
 four_in_a_row_command_line: $(game_objects)
@@ -20,7 +20,10 @@ test: $(test_objects)
 	g++  $(FLAGS) $(test_objects) -o test
 
 four_in_a_row_command_line.o: four_in_a_row_command_line.cpp
-	g++ -c $(FLAGS) -c four_in_a_row_command_line.cpp
+	g++ -c $(FLAGS) four_in_a_row_command_line.cpp
+
+opening_book.o: opening_book.cpp
+	g++ -c $(FLAGS) opening_book.cpp
 
 game_state.o: game_state.cpp
 	g++ -c $(FLAGS) game_state.cpp

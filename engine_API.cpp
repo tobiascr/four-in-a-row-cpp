@@ -2,7 +2,6 @@
 #include <fstream>
 #include <iostream>
 #include "engine_API.h"
-#include "game_state.h"
 
 namespace Engine
 {
@@ -13,7 +12,6 @@ EngineAPI::EngineAPI()
     std::random_device rd;
     random_generator.seed(rd());
     difficulty_level_ = 2;
-    load_opening_book();
 }
 
 EngineAPI::EngineAPI(unsigned int seed)
@@ -21,67 +19,6 @@ EngineAPI::EngineAPI(unsigned int seed)
     // Initialize the random number generator.
     random_generator.seed(seed);
     difficulty_level_ = 2;
-    load_opening_book();
-}
-
-void EngineAPI::load_opening_book()
-{
-    load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_3_ply_values", true);
-    load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_6_ply_values", true);
-    load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_8_ply_values", true);
-    load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_8_ply_best_moves", false);
-    load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_9_ply_best_moves", false);
-    load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_10_ply_best_moves", false);
-}
-
-void EngineAPI::load_opening_book_file(std::string file_name, bool values)
-/* values should be set to true if the file contains values and false if it contains
-   moves.*/
-{
-    std::ifstream file_to_read(file_name);
-    std::string line, move, c;
-    uint64_t key;
-
-    if(not file_to_read.is_open())
-    {
-        std::cerr << "Can't open " << file_name << std::endl;
-    }
-
-    while (std::getline(file_to_read, line))
-    {
-        // Load position.
-        game_state.reset();
-        int space_index;
-        for (int n=0; n<line.length(); n++)
-        {
-            if (line[n] == ' ')
-            {
-                space_index = n;
-                break;
-            }
-            move = line[n];
-            game_state.make_move(std::stoi(move));
-        }
-
-        // Find value.
-        std::string value_string = "";
-        for (int n=space_index+1; n<line.length(); n++)
-        {
-            c = line[n];
-            value_string.append(c);
-        }
-        key = game_state.get_key();
-        if(values)
-        {
-            opening_book_values[key] = value_string;
-        }
-        else
-        {
-            opening_book_moves[key] = value_string;
-        }
-    }
-    file_to_read.close();
-    game_state.reset();
 }
 
 bool EngineAPI::can_find_best_moves_from_opening_book() const
@@ -94,8 +31,8 @@ bool EngineAPI::can_find_best_moves_from_opening_book() const
     {
         return true;
     }
-    return (opening_book_moves.count(game_state.get_key()) == 1) or
-           (opening_book_moves.count(game_state.get_mirror_key()) == 1);
+    return (opening_book.opening_book_moves.count(game_state.get_key()) == 1) or
+           (opening_book.opening_book_moves.count(game_state.get_mirror_key()) == 1);
 }
 
 std::vector<int> EngineAPI::get_best_moves_from_opening_book() // const
@@ -106,16 +43,16 @@ std::vector<int> EngineAPI::get_best_moves_from_opening_book() // const
     std::vector<int> best_moves;
     uint64_t key = game_state.get_key();
 
-    if (opening_book_moves.count(key) == 1)
+    if (opening_book.opening_book_moves.count(key) == 1)
     {
-        book_string = opening_book_moves[key];
+        book_string = opening_book.opening_book_moves[key];
     }
     else
     {
         key = game_state.get_mirror_key();
-        if (opening_book_moves.count(key) == 1)
+        if (opening_book.opening_book_moves.count(key) == 1)
         {
-           book_string = opening_book_moves[key];
+           book_string = opening_book.opening_book_moves[key];
         }
     }
 
@@ -354,17 +291,17 @@ in a row.*/
             std::string book_string;
             key = game_state.get_key();
 
-            if (opening_book_values.count(key) == 1)
+            if (opening_book.opening_book_values.count(key) == 1)
             {
-                book_string = opening_book_values[key];
+                book_string = opening_book.opening_book_values[key];
                 return std::stoi(book_string);
             }
             else
             {
                 key = game_state.get_mirror_key();
-                if (opening_book_values.count(key) == 1)
+                if (opening_book.opening_book_values.count(key) == 1)
                 {
-                    book_string = opening_book_values[key];
+                    book_string = opening_book.opening_book_values[key];
                     return std::stoi(book_string);
                 }
             }
