@@ -15,7 +15,7 @@
 
    Compilation and linking:
    g++ -O3 -c make_transposition_list_from_sequence_list.cpp
-   g++ -o make_transposition_list_from_sequence_list make_transposition_list_from_sequence_list.o ../engine_API.o ../game_state.o
+   g++ -o make_transposition_list_from_sequence_list make_transposition_list_from_sequence_list.o ../game_state.o
 */
 
 void load_position(Engine::GameState& game_state, std::string move_string)
@@ -73,7 +73,7 @@ int main()
         uint64_t mirror_key = game_state.get_mirror_key();
 
         // If the transposition or it's mirrored version is not already in the file.
-        if (transpositions.count(key) == 0 or transpositions.count(mirror_key) == 0)
+        if (transpositions.count(key) == 0 and transpositions.count(mirror_key) == 0)
         {
             transpositions[key] = true;
             file_to_write << move_sequence_string << std::endl;
