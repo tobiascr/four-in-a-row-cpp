@@ -11,7 +11,7 @@
 
    Compilation and linking:
    g++ -O3 -c make_best_move_tables.cpp
-   g++ -o make_best_move_tables make_best_move_tables.o ../engine_API.o ../game_state.o
+   g++ -o make_best_move_tables make_best_move_tables.o ../engine_API.o ../game_state.o ../opening_book.o
 */
 
 void load_position(Engine::EngineAPI& engine, std::string move_string)
@@ -90,8 +90,8 @@ int main()
         load_position(engine, transposition_move_string);
 //        t0 = std::chrono::steady_clock::now();
         int value = engine.position_value_full_depth();
-        if (value != 33)
-        {
+//        if (value != 33)
+//        {
 //        t1 = std::chrono::steady_clock::now();
 //        move_time = t1 - t0;
         file_to_write << transposition_move_string // << " " << std::to_string(value)
@@ -100,7 +100,7 @@ int main()
         file_to_write << std::endl;
         count++;
         std::cout << count << " transpositions computed" << std::endl;
-        }
+//        }
     }
     file_to_read.close();
     file_to_write.close();

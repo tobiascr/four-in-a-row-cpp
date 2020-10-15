@@ -46,6 +46,16 @@ std::vector<int> EngineAPI::get_best_moves_from_opening_book() // const
     if (opening_book.opening_book_moves.count(key) == 1)
     {
         book_string = opening_book.opening_book_moves[key];
+        for(char move : book_string)
+        {
+            if (move == '0') best_moves.push_back(0);
+            if (move == '1') best_moves.push_back(1);
+            if (move == '2') best_moves.push_back(2);
+            if (move == '3') best_moves.push_back(3);
+            if (move == '4') best_moves.push_back(4);
+            if (move == '5') best_moves.push_back(5);
+            if (move == '6') best_moves.push_back(6);
+        }
     }
     else
     {
@@ -53,18 +63,17 @@ std::vector<int> EngineAPI::get_best_moves_from_opening_book() // const
         if (opening_book.opening_book_moves.count(key) == 1)
         {
            book_string = opening_book.opening_book_moves[key];
+            for(char move : book_string)
+            {
+                if (move == '0') best_moves.push_back(6);
+                if (move == '1') best_moves.push_back(5);
+                if (move == '2') best_moves.push_back(4);
+                if (move == '3') best_moves.push_back(3);
+                if (move == '4') best_moves.push_back(2);
+                if (move == '5') best_moves.push_back(1);
+                if (move == '6') best_moves.push_back(0);
+            }
         }
-    }
-
-    for(char move : book_string)
-    {
-        if (move == '0') best_moves.push_back(0);
-        if (move == '1') best_moves.push_back(1);
-        if (move == '2') best_moves.push_back(2);
-        if (move == '3') best_moves.push_back(3);
-        if (move == '4') best_moves.push_back(4);
-        if (move == '5') best_moves.push_back(5);
-        if (move == '6') best_moves.push_back(6);
     }
 
     return best_moves;

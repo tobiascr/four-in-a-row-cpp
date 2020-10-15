@@ -808,8 +808,9 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
 
 void benchmark(Engine::EngineAPI& engine)
 {
-    test_position(engine, "256555226", 6);
-    test_position(engine, "333345550", 3); //1 and 2 are as good.
+    test_position(engine, "443555541", 2);
+//    test_position(engine, "256555226", 6); // slow
+    test_position(engine, "333345550", 3); // 1 and 2 are as good.
     test_position(engine, "333333010", 0);
     test_position(engine, "334233650026", 5);
     test_position(engine, "01234560660", 3);
@@ -857,7 +858,7 @@ void benchmark_position_values_no_opening_book(Engine::EngineAPI& engine)
 //    test_position_value(engine, "3", -2, false); // The program crashes with this.
 //    test_position_value(engine, "00343", -4, false);
 //    test_position_value(engine, "3563", -3, false);
-}
+} 
 
 void opening_test()
 {
@@ -914,10 +915,10 @@ int main()
 //    TestEngine::EngineAPI test_engine;
 //    test_engine.set_difficulty_level(3);
 
-//    benchmark(engine);
+    benchmark(engine);
 //    benchmark_position_values(engine);
 //    benchmark_position_values_no_opening_book(engine);
-    engine_vs_engine(engine, test_engine, 10, false);
+//    engine_vs_engine(engine, test_engine, 10, false);
 //    engine_vs_engine(engine, test_engine, 1000, false);
 
     return 0;

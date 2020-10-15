@@ -12,6 +12,9 @@ OpeningBook::OpeningBook()
     load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_8_ply_best_moves", false);
     load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_9_ply_best_moves", false);
     load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_10_ply_best_moves", false);
+//    load_opening_book_file("opening_book/tr_list_pl_1_any_pl_2_best_11_ply_-2_0_1_best_moves", false);
+//    load_opening_book_file("opening_book/tr_list_pl_1_any_pl_2_best_11_ply_3_best_moves", false);
+//    load_opening_book_file("opening_book_12_move", true);
 }
 
 void OpeningBook::load_opening_book_file(std::string file_name, bool values)
