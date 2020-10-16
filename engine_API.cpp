@@ -587,6 +587,11 @@ int EngineAPI::random_best_opening_move()
 This function is indented to be used for ply levels that are completely
 covered by the opening book.*/
 {
+    if(game_state.can_win_this_move())
+    {
+        return engine_move(42, true);
+    }
+
     std::array<int,7> moves = {0, 1, 2, 3, 4, 5, 6};
     shuffle(moves.begin(), moves.end(), random_generator);
     int value, best_move;

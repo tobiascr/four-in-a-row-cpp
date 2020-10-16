@@ -808,6 +808,7 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
 
 void benchmark(Engine::EngineAPI& engine)
 {
+    test_position(engine, "351524", 0);
     test_position(engine, "443555541", 2);
 //    test_position(engine, "256555226", 6); // slow
     test_position(engine, "333345550", 3); // 1 and 2 are as good.
@@ -848,17 +849,62 @@ void benchmark_position_values(Engine::EngineAPI& engine)
 
 void benchmark_position_values_no_opening_book(Engine::EngineAPI& engine)
 {
+// Random transpositions from tr_list_pl_1_any_pl_2_best_11_ply_3_best_moves
+//      test_position_value(engine, "01004144141", 3, false);
+//      test_position_value(engine, "01451144211", 3, false);
+//      test_position_value(engine, "01544424051", 3, false);
+//      test_position_value(engine, "12114224315", 3, false);
+//      test_position_value(engine, "12225156444", 3, false);
+//      test_position_value(engine, "12225645016", 3, false);
+//      test_position_value(engine, "22142244602", 3, false);
+//      test_position_value(engine, "23333255415", 3, false);
+//      test_position_value(engine, "33333601663", 3, false);
+//      test_position_value(engine, "33333621312", 3, false);
+
+// Random transpositions from tr_list_pl_1_best_pl_2_any_12_ply_2_4_6_best_moves
+// Values are not accurate. It's just to test speed.
+//      test_position_value(engine, "311063313551", 0, false);
+//      test_position_value(engine, "311063355331", 0, false);
+//      test_position_value(engine, "311213643344", 0, false);
+//      test_position_value(engine, "325336553133", 0, false);
+//      test_position_value(engine, "325564442154", 0, false);
+//      test_position_value(engine, "333332562162", 0, false);
+//      test_position_value(engine, "333332562522", 0, false);
+//      test_position_value(engine, "311333545655", 0, false);
+//      test_position_value(engine, "311433340036", 0, false);
+//      test_position_value(engine, "311013330052", 0, false);
+//      test_position_value(engine, "311013333365", 0, false);
+//      test_position_value(engine, "311013333113", 0, false);
+
+//      test_position_value(engine, "2210433330663", 0, false);
+//      test_position_value(engine, "3333306566254", 0, false);
+//      test_position_value(engine, "3333305444065", 0, false);
+//      test_position_value(engine, "3333304564511", 0, false);
+//      test_position_value(engine, "1222210112004", 1, false);
+//      test_position_value(engine, "1222210112654", 1, false);
+//      test_position_value(engine, "2210223433335", 1, false);
+//      test_position_value(engine, "3333332154410", 1, false);
+
+      test_position_value(engine, "3333302111131254", 0, false);
+      test_position_value(engine, "3333311113100546", 0, false);
+      test_position_value(engine, "3333311113166664", 0, false);
+      test_position_value(engine, "3333311113166664", 0, false);
+      test_position_value(engine, "3333311113144455", 0, false);
+      test_position_value(engine, "3333311113140406", 0, false);
+      test_position_value(engine, "3333311113121522", 0, false);
+      test_position_value(engine, "3333311113114566", 0, false);
+
 //    test_position_value(engine, "3366455", 0, false);
 //    test_position_value(engine, "336645", 0, false);
-    test_position_value(engine, "334232", -5, false);
+//    test_position_value(engine, "334232", -5, false);
 //    test_position_value(engine, "3342", -3, false);
-    test_position_value(engine, "3342000", 7, false);
+//    test_position_value(engine, "3342000", 7, false);
 //    test_position_value(engine, "333", -2, false);
 //    test_position_value(engine, "33", 2, false);
 //    test_position_value(engine, "3", -2, false); // The program crashes with this.
 //    test_position_value(engine, "00343", -4, false);
 //    test_position_value(engine, "3563", -3, false);
-} 
+}
 
 void opening_test()
 {
@@ -908,17 +954,17 @@ int main()
     Engine::EngineAPI engine(91635);
     engine.set_difficulty_level(3);
     TestEngine::EngineAPI test_engine(35790);
-    test_engine.set_difficulty_level(2);
+    test_engine.set_difficulty_level(3);
 
 //    Engine::EngineAPI engine;
 //    engine.set_difficulty_level(3);
 //    TestEngine::EngineAPI test_engine;
-//    test_engine.set_difficulty_level(2);
+//    test_engine.set_difficulty_level(4);
 
 //    benchmark(engine);
 //    benchmark_position_values(engine);
 //    benchmark_position_values_no_opening_book(engine);
-    engine_vs_engine(engine, test_engine, 100, false);
+    engine_vs_engine(engine, test_engine, 10, false);
 //    engine_vs_engine(engine, test_engine, 1000, false);
 
     return 0;
