@@ -21,3 +21,6 @@ in turn made all their moves in the best way and the opponent made any legal mov
 with exceptions for transpositions with a four in a row, and transpositions in which the
 player in turn can make a four in a row. A best move is defined as any move that lead to
 a position with a maximum value.
+
+For some best_move files only transpositions with certain values are stored. The
+values are specified in the file name.
