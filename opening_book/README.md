@@ -1,4 +1,4 @@
-This folder contains an opening book. It consists of .value and .best_moves files.
+This folder contains an opening book. It consists of .values and .best_moves files.
 
 They are textfiles where each row consists of one string describing a transposition
 followed by either a value for the position or a string of best moves.
