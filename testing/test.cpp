@@ -558,6 +558,14 @@ void test_engine_API()
         std::cout << engine.engine_move() << std::endl;
     }
     std::cout << std::endl;
+
+    std::cout << "Test 33333 moves"<< std::endl;
+    engine.set_difficulty_level(3);
+    for(int i; i<100; i++)
+    {
+        load_position(engine, "33333");
+        std::cout << engine.engine_move() << std::endl;
+    }
 }
 
 void test_transposition_table()
@@ -951,15 +959,15 @@ int main()
 //    test_engine_API();
 //    opening_test();
 
-    Engine::EngineAPI engine(91635);
-    engine.set_difficulty_level(3);
-    TestEngine::EngineAPI test_engine(35790);
-    test_engine.set_difficulty_level(3);
-
-//    Engine::EngineAPI engine;
+//    Engine::EngineAPI engine(91635);
 //    engine.set_difficulty_level(3);
-//    TestEngine::EngineAPI test_engine;
-//    test_engine.set_difficulty_level(4);
+//    TestEngine::EngineAPI test_engine(35790);
+//    test_engine.set_difficulty_level(3);
+
+    Engine::EngineAPI engine;
+    engine.set_difficulty_level(3);
+    TestEngine::EngineAPI test_engine;
+    test_engine.set_difficulty_level(3);
 
 //    benchmark(engine);
 //    benchmark_position_values(engine);

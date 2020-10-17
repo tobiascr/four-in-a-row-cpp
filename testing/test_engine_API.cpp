@@ -12,12 +12,21 @@ EngineAPI::EngineAPI()
     std::random_device rd;
     random_generator.seed(rd());
     difficulty_level_ = 2;
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_3_ply_values", true);
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_6_ply_values", true);
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_8_ply_values", true);
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_8_ply_best_moves", false);
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_9_ply_best_moves", false);
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_10_ply_best_moves", false);
+    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_3_ply.values", true);
+    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_6_ply.values", true);
+    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_8_ply.values", true);
+    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_8_ply.best_moves", false);
+    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_9_ply.best_moves", false);
+    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_10_ply.best_moves", false);
+//    load_opening_book("opening_book/tr_list_pl_1_any_pl_2_best_11_ply_-2_0_1_best_moves", false);
+//    load_opening_book("opening_book/tr_list_pl_1_any_pl_2_best_11_ply_3_best_moves", false);
+//    load_opening_book("opening_book/tr_list_pl_1_best_pl_2_any_12_ply_2_4_6_best_moves", false);
+//    load_opening_book("opening_book/tr_list_pl_1_any_pl_2_best_13_ply_-2_best_moves", false);
+//    load_opening_book("opening_book/tr_list_pl_1_any_pl_2_best_13_ply_0_best_moves", false);
+//    load_opening_book("opening_book/tr_list_pl_1_any_pl_2_best_13_ply_1_best_moves", false);
+//    load_opening_book("opening_book/best_move_transpositions_14_ply_best_moves", false);
+//    load_opening_book("opening_book/best_move_transpositions_15_ply_best_moves", false);
+//    load_opening_book("opening_book/best_move_transpositions_16_ply_best_moves", false);
 }
 
 EngineAPI::EngineAPI(unsigned int seed)
@@ -25,12 +34,21 @@ EngineAPI::EngineAPI(unsigned int seed)
     // Initialize the random number generator.
     random_generator.seed(seed);
     difficulty_level_ = 2;
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_3_ply_values", true);
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_6_ply_values", true);
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_8_ply_values", true);
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_8_ply_best_moves", false);
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_9_ply_best_moves", false);
-    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_10_ply_best_moves", false);
+    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_3_ply.values", true);
+    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_6_ply.values", true);
+    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_8_ply.values", true);
+    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_8_ply.best_moves", false);
+    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_9_ply.best_moves", false);
+    load_opening_book("/usr/local/share/four_in_a_row_opening_book/opening_book_10_ply.best_moves", false);
+//    load_opening_book("opening_book/tr_list_pl_1_any_pl_2_best_11_ply_-2_0_1_best_moves", false);
+//    load_opening_book("opening_book/tr_list_pl_1_any_pl_2_best_11_ply_3_best_moves", false);
+//    load_opening_book("opening_book/tr_list_pl_1_best_pl_2_any_12_ply_2_4_6_best_moves", false);
+//    load_opening_book("opening_book/tr_list_pl_1_any_pl_2_best_13_ply_-2_best_moves", false);
+//    load_opening_book("opening_book/tr_list_pl_1_any_pl_2_best_13_ply_0_best_moves", false);
+//    load_opening_book("opening_book/tr_list_pl_1_any_pl_2_best_13_ply_1_best_moves", false);
+//    load_opening_book("opening_book/best_move_transpositions_14_ply_best_moves", false);
+//    load_opening_book("opening_book/best_move_transpositions_15_ply_best_moves", false);
+//    load_opening_book("opening_book/best_move_transpositions_16_ply_best_moves", false);
 }
 
 void EngineAPI::load_opening_book(std::string file_name, bool values)
@@ -640,6 +658,11 @@ int EngineAPI::random_best_opening_move()
 This function is indented to be used for ply levels that are completely
 covered by the opening book.*/
 {
+    if(game_state.can_win_this_move())
+    {
+        return engine_move(42, true);
+    }
+
     std::array<int,7> moves = {0, 1, 2, 3, 4, 5, 6};
     shuffle(moves.begin(), moves.end(), random_generator);
     int value, best_move;
@@ -682,7 +705,24 @@ int EngineAPI::engine_move_easy()
 
 int EngineAPI::engine_move_medium()
 {
-    int depth = game_state.get_number_of_moves() + 10;
+    if(game_state.get_number_of_moves() < 2)
+    {
+        return random_move();
+    }
+
+    if(game_state.get_number_of_moves() < 8)
+    {
+        return random_best_opening_move();
+    }
+
+    if(can_find_best_moves_from_opening_book() and game_state.get_number_of_moves() >= 8)
+    {
+        std::vector<int> moves = get_best_moves_from_opening_book();
+        std::uniform_int_distribution<> uid(0, moves.size() - 1);
+        return moves[uid(random_generator)];
+    }
+
+    int depth = game_state.get_number_of_moves() + 20; //10
     if (depth > 42) {depth = 42;}
     return engine_move(depth, true);
 }

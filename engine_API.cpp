@@ -641,6 +641,18 @@ int EngineAPI::engine_move_medium()
 
 int EngineAPI::engine_move_hard()
 {
+    // The transpositions 33331 and 33335 are easy to to play well against even
+    // for a weak opponent and are therefore avoided.
+    if (game_state.get_number_of_moves() == 5)
+    {
+        if(game_state.get_number_of_disks_in_column(3) == 5)
+        {
+            std::vector<int> moves = {0, 2, 3, 4, 6};
+            std::uniform_int_distribution<> uid(0, 4);
+            return moves[uid(random_generator)];
+        }
+    }
+
     if (game_state.get_number_of_moves() < 8)
     {
         return random_best_opening_move();
