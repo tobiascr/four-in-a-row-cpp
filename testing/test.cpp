@@ -852,7 +852,8 @@ void benchmark_position_values(Engine::EngineAPI& engine)
     test_position_value(engine, "3343", 36);
     test_position_value(engine, "33423365002", 0);
     test_position_value(engine, "05216116610", 5);
-    test_position_value(engine, "166553001163", -5);
+    test_position_value(engine, "166553001163", -5); 
+    test_position_value(engine, "333330211113655", -2);
 }
 
 void benchmark_position_values_no_opening_book(Engine::EngineAPI& engine)
@@ -970,9 +971,9 @@ int main()
     test_engine.set_difficulty_level(2);
 
 //    benchmark(engine);
-//    benchmark_position_values(engine);
+    benchmark_position_values(engine);
 //    benchmark_position_values_no_opening_book(engine);
-    engine_vs_engine(engine, test_engine, 100, false);
+//    engine_vs_engine(engine, test_engine, 100, false);
 //    engine_vs_engine(engine, test_engine, 1000, false);
 
     return 0;
