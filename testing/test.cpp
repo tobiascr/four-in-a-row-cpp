@@ -894,14 +894,14 @@ void benchmark_position_values_no_opening_book(Engine::EngineAPI& engine)
 //      test_position_value(engine, "2210223433335", 1, false);
 //      test_position_value(engine, "3333332154410", 1, false);
 
-      test_position_value(engine, "3333302111131254", 0, false);
-      test_position_value(engine, "3333311113100546", 0, false);
-      test_position_value(engine, "3333311113166664", 0, false);
-      test_position_value(engine, "3333311113166664", 0, false);
-      test_position_value(engine, "3333311113144455", 0, false);
-      test_position_value(engine, "3333311113140406", 0, false);
-      test_position_value(engine, "3333311113121522", 0, false);
-      test_position_value(engine, "3333311113114566", 0, false);
+//      test_position_value(engine, "3333302111131254", 0, false);
+//      test_position_value(engine, "3333311113100546", 0, false);
+//      test_position_value(engine, "3333311113166664", 0, false);
+//      test_position_value(engine, "3333311113166664", 0, false);
+//      test_position_value(engine, "3333311113144455", 0, false);
+//      test_position_value(engine, "3333311113140406", 0, false);
+//      test_position_value(engine, "3333311113121522", 0, false);
+//      test_position_value(engine, "3333311113114566", 0, false);
 
 //    test_position_value(engine, "3366455", 0, false);
 //    test_position_value(engine, "336645", 0, false);
@@ -960,20 +960,20 @@ int main()
 //    test_engine_API();
 //    opening_test();
 
-//    Engine::EngineAPI engine(91635);
-//    engine.set_difficulty_level(3);
-//    TestEngine::EngineAPI test_engine(35790);
-//    test_engine.set_difficulty_level(3);
-
-    Engine::EngineAPI engine;
+    Engine::EngineAPI engine(91635);
     engine.set_difficulty_level(3);
-    TestEngine::EngineAPI test_engine;
+    TestEngine::EngineAPI test_engine(35790);
     test_engine.set_difficulty_level(2);
 
+//    Engine::EngineAPI engine;
+//    engine.set_difficulty_level(3);
+//    TestEngine::EngineAPI test_engine;
+//    test_engine.set_difficulty_level(2);
+
 //    benchmark(engine);
-    benchmark_position_values(engine);
+//    benchmark_position_values(engine);
 //    benchmark_position_values_no_opening_book(engine);
-//    engine_vs_engine(engine, test_engine, 100, false);
+    engine_vs_engine(engine, test_engine, 20, false);
 //    engine_vs_engine(engine, test_engine, 1000, false);
 
     return 0;

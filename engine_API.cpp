@@ -21,64 +21,6 @@ EngineAPI::EngineAPI(unsigned int seed)
     difficulty_level_ = 2;
 }
 
-bool EngineAPI::can_find_best_moves_from_opening_book() const
-{
-    if(game_state.can_win_this_move())
-    {
-        return false;
-    }
-    if(game_state.get_number_of_moves() < 8)
-    {
-        return true;
-    }
-    return (opening_book.opening_book_moves.count(game_state.get_key()) == 1) or
-           (opening_book.opening_book_moves.count(game_state.get_mirror_key()) == 1);
-}
-
-std::vector<int> EngineAPI::get_best_moves_from_opening_book() // const
-/* Return a vector with moves found in the opening book. If no moves can be
-   found from the book, an empty vector is returned.*/
-{
-    std::string book_string = "";
-    std::vector<int> best_moves;
-    uint64_t key = game_state.get_key();
-
-    if (opening_book.opening_book_moves.count(key) == 1)
-    {
-        book_string = opening_book.opening_book_moves[key];
-        for(char move : book_string)
-        {
-            if (move == '0') best_moves.push_back(0);
-            if (move == '1') best_moves.push_back(1);
-            if (move == '2') best_moves.push_back(2);
-            if (move == '3') best_moves.push_back(3);
-            if (move == '4') best_moves.push_back(4);
-            if (move == '5') best_moves.push_back(5);
-            if (move == '6') best_moves.push_back(6);
-        }
-    }
-    else
-    {
-        key = game_state.get_mirror_key();
-        if (opening_book.opening_book_moves.count(key) == 1)
-        {
-           book_string = opening_book.opening_book_moves[key];
-            for(char move : book_string)
-            {
-                if (move == '0') best_moves.push_back(6);
-                if (move == '1') best_moves.push_back(5);
-                if (move == '2') best_moves.push_back(4);
-                if (move == '3') best_moves.push_back(3);
-                if (move == '4') best_moves.push_back(2);
-                if (move == '5') best_moves.push_back(1);
-                if (move == '6') best_moves.push_back(0);
-            }
-        }
-    }
-
-    return best_moves;
-}
-
 void EngineAPI::set_difficulty_level(int difficulty_level)
 {
     difficulty_level_ = difficulty_level;
@@ -279,8 +221,7 @@ std::array<int,7> EngineAPI::move_order_open_four_in_a_row()
     return moves;
 }
 
-int EngineAPI::negamax(const int depth, int alpha, int beta,
-                             const bool use_opening_book)
+int EngineAPI::negamax(const int depth, int alpha, int beta)
 /* Compute a value of game_state. Return a positive integer for a winning
 game_state for the player in turn, 0 for a draw or unknown outcome and a
 negative integer for a loss. A win at move 42 give the value 1, a win at move 41
@@ -292,30 +233,6 @@ in a row.*/
 {
     uint64_t key;
     int original_alpha = alpha;
-
-    if (use_opening_book)
-    {
-        if (game_state.get_number_of_moves() <= max_ply_for_values_in_opening_book)
-        {
-            std::string book_string;
-            key = game_state.get_key();
-
-            if (opening_book.opening_book_values.count(key) == 1)
-            {
-                book_string = opening_book.opening_book_values[key];
-                return std::stoi(book_string);
-            }
-            else
-            {
-                key = game_state.get_mirror_key();
-                if (opening_book.opening_book_values.count(key) == 1)
-                {
-                    book_string = opening_book.opening_book_values[key];
-                    return std::stoi(book_string);
-                }
-            }
-        }
-    }
 
     const bool use_transposition_table = (game_state.get_number_of_moves() < depth - 6);
 
@@ -377,7 +294,7 @@ in a row.*/
         if (non_losing_moves[move])
         {
             game_state.make_move(move);
-            int value = -negamax(depth, -beta, -alpha, use_opening_book);
+            int value = -negamax(depth, -beta, -alpha);
             game_state.undo_move(move);
             if (value >= beta) // Fail hard beta-cutoff.
             {
@@ -409,8 +326,7 @@ in a row.*/
 }
 
 std::array<int,2> EngineAPI::root_negamax(const int depth,
-                  std::array<int,7> move_order, int alpha, int beta,
-                  const bool use_opening_book)
+                  std::array<int,7> move_order, int alpha, int beta)
 /* Return a move (0 to 6) and a value for the current game state computed
 with the negamax algorithm. Depth is counted as the move number at which
 the search is stopped. This function can only be used on if the
@@ -437,7 +353,7 @@ in a row.*/
             }
             else
             {
-                new_value = -negamax(depth, -beta, -alpha, use_opening_book);
+                new_value = -negamax(depth, -beta, -alpha);
             }
             game_state.undo_move(move);
             if (new_value >= beta) // Fail hard beta-cutoff.
@@ -455,14 +371,12 @@ in a row.*/
 }
 
 std::array<int,2> EngineAPI::iterative_deepening(const int depth,
-                  std::array<int,7> move_order_, int alpha, int beta,
-                  const bool use_opening_book)
+                  std::array<int,7> move_order_, int alpha, int beta)
 {
     int d = game_state.get_number_of_moves() + 3; // 3
     while (d < depth)
     {
-        std::array<int,2> values = root_negamax(d, move_order_, alpha, beta,
-                                                use_opening_book);
+        std::array<int,2> values = root_negamax(d, move_order_, alpha, beta);
         if(values[1] > 0)
         {
             return values;
@@ -476,33 +390,34 @@ std::array<int,2> EngineAPI::iterative_deepening(const int depth,
         }
         d = d + 4; //4
     }
-    return root_negamax(depth, move_order_, alpha, beta, use_opening_book);
+    return root_negamax(depth, move_order_, alpha, beta);
 }
 
 int EngineAPI::position_value_full_depth(const bool use_opening_book)
 {
     transposition_table.clear();
+
     if(game_state.can_win_this_move())
     {
         return 42 - game_state.get_number_of_moves();
     }
+
     if(use_opening_book)
     {
-        if (game_state.get_number_of_moves() <= max_ply_for_values_in_opening_book)
+        if(opening_book.can_get_value(game_state))
         {
-            return negamax(max_ply_for_values_in_opening_book + 2, -1000, 1000, true);
+            return opening_book.get_value(game_state);
         }
     }
 
     int alpha = -1000, beta = 1000, depth = 42;
 
     std::array<int,7> moves = move_order(3);
-    std::array<int,2> values = iterative_deepening(depth, moves, alpha, beta,
-                                                   use_opening_book);
+    std::array<int,2> values = iterative_deepening(depth, moves, alpha, beta);
     return values[1];
 }
 
-int EngineAPI::engine_move(const int depth, const bool use_opening_book)
+int EngineAPI::engine_move(const int depth)
 /* Return an integer from 0 to 6 that represents a best move made by the engine
 at the given depth level. Depth is counted as the move number at which the search
 is stopped. For example, depth=42 give a maximum depth search.*/
@@ -545,24 +460,14 @@ is stopped. For example, depth=42 give a maximum depth search.*/
         }
     }
 
-    if(use_opening_book)
-    {
-        if (game_state.get_number_of_moves() < max_ply_for_values_in_opening_book)
-        {
-            std::array<int,2> values = iterative_deepening(
-                  max_ply_for_values_in_opening_book + 2, moves, alpha, beta, true);
-            return values[0];
-        }
-    }
-
     std::array<int,2> values;
     if(depth == 42)
     {
-        values = iterative_deepening(depth, moves, alpha, beta, use_opening_book);
+        values = iterative_deepening(depth, moves, alpha, beta);
     }
     else
     {
-        values = root_negamax(depth, moves, alpha, beta, use_opening_book);
+        values = root_negamax(depth, moves, alpha, beta);
     }
 
     return values[0];
@@ -582,42 +487,6 @@ int EngineAPI::random_move()
     return 0;
 }
 
-int EngineAPI::random_best_opening_move()
-/* Return a randomly chosen move with the highest possible position value.
-This function is indented to be used for ply levels that are completely
-covered by the opening book.*/
-{
-    if(game_state.can_win_this_move())
-    {
-        return engine_move(42, true);
-    }
-
-    std::array<int,7> moves = {0, 1, 2, 3, 4, 5, 6};
-    shuffle(moves.begin(), moves.end(), random_generator);
-    int value, best_move;
-    int best_value = -1000;
-
-    for(int move : moves)
-    {
-        if(game_state.column_not_full(move))
-        {
-            if(not game_state.four_in_a_row())
-            {
-                game_state.make_move(move);
-                value = -position_value_full_depth();
-                if(value > best_value)
-                {
-                    best_value = value;
-                    best_move = move;
-                }
-                game_state.undo_move(move);
-            }
-        }
-    }
-
-    return best_move;
-}
-
 int EngineAPI::engine_move_random()
 {
     return random_move();
@@ -627,16 +496,16 @@ int EngineAPI::engine_move_easy()
 {
     if (game_state.get_number_of_moves() < 8)
     {
-        return engine_move(game_state.get_number_of_moves() + 4, false);
+        return engine_move(game_state.get_number_of_moves() + 4);
     }
-    return engine_move(game_state.get_number_of_moves() + 2, false);
+    return engine_move(game_state.get_number_of_moves() + 2);
 }
 
 int EngineAPI::engine_move_medium()
 {
     int depth = game_state.get_number_of_moves() + 10;
     if (depth > 42) {depth = 42;}
-    return engine_move(depth, true);
+    return engine_move(depth);
 }
 
 int EngineAPI::engine_move_hard()
@@ -653,18 +522,13 @@ int EngineAPI::engine_move_hard()
         }
     }
 
-    if (game_state.get_number_of_moves() < 8)
+    std::vector<int> best_moves = opening_book.get_best_moves(game_state);
+    if(not best_moves.empty())
     {
-        return random_best_opening_move();
+        std::uniform_int_distribution<> uid(0, best_moves.size() - 1);
+        return best_moves[uid(random_generator)];
     }
 
-    if(can_find_best_moves_from_opening_book() and game_state.get_number_of_moves() >= 8)
-    {
-        std::vector<int> moves = get_best_moves_from_opening_book();
-        std::uniform_int_distribution<> uid(0, moves.size() - 1);
-        return moves[uid(random_generator)];
-    }
-
-    return engine_move(42, true);
+    return engine_move(42);
 }
 }

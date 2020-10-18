@@ -73,4 +73,139 @@ void OpeningBook::load_opening_book_file(std::string file_name, bool values)
     file_to_read.close();
     game_state.reset();
 }
+
+std::vector<int> OpeningBook::get_best_moves(Engine::GameState& game_state)
+{
+    std::string book_string = "";
+    std::vector<int> best_moves;
+    uint64_t key = game_state.get_key();
+
+    if (opening_book_moves.count(key) == 1)
+    {
+        book_string = opening_book_moves[key];
+        for(char move : book_string)
+        {
+            if (move == '0') best_moves.push_back(0);
+            if (move == '1') best_moves.push_back(1);
+            if (move == '2') best_moves.push_back(2);
+            if (move == '3') best_moves.push_back(3);
+            if (move == '4') best_moves.push_back(4);
+            if (move == '5') best_moves.push_back(5);
+            if (move == '6') best_moves.push_back(6);
+        }
+        return best_moves;
+    }
+
+    key = game_state.get_mirror_key();
+    if (opening_book_moves.count(key) == 1)
+    {
+        book_string = opening_book_moves[key];
+        for(char move : book_string)
+        {
+           if (move == '0') best_moves.push_back(6);
+           if (move == '1') best_moves.push_back(5);
+           if (move == '2') best_moves.push_back(4);
+           if (move == '3') best_moves.push_back(3);
+           if (move == '4') best_moves.push_back(2);
+           if (move == '5') best_moves.push_back(1);
+           if (move == '6') best_moves.push_back(0);
+        }
+        return best_moves;
+    }
+
+    if(game_state.get_number_of_moves() < max_ply_for_values_in_opening_book)
+    {
+        std::vector<int> values = {-1000, -1000, -1000, -1000, -1000, -1000, -1000};
+        int best_value = -1000;
+
+        for (int move=0; move<=6; move++)
+        {
+            if (game_state.column_not_full(move))
+            {
+                game_state.make_move(move);
+                int value = -negamax(game_state, max_ply_for_values_in_opening_book + 1);
+                game_state.undo_move(move);
+                values[move] = value;
+                if(value > best_value)
+                {
+                    best_value = value;
+                }
+            }
+        }
+
+        for (int move=0; move<=6; move++)
+        {
+            if(values[move] == best_value)
+            {
+                best_moves.push_back(move);
+            }
+        }
+    }
+
+    return best_moves;
+}
+
+int OpeningBook::can_get_value(Engine::GameState& game_state) const
+{
+    return game_state.get_number_of_moves() < max_ply_for_values_in_opening_book;
+}
+
+int OpeningBook::get_value(Engine::GameState& game_state)
+{
+    return negamax(game_state, max_ply_for_values_in_opening_book + 1);
+}
+
+int OpeningBook::negamax(Engine::GameState& game_state, const int depth)
+/* Compute a value of game_state. Return a positive integer for a winning
+game_state for the player in turn, 0 for a draw or unknown outcome and a
+negative integer for a loss. A win at move 42 gives the value 1, a win at move 41
+gives the value 2 etc, and vice versa for losses.
+Depth is counted as the move number at which the search is stopped. For example,
+depth=42 give a maximum depth search.*/
+{
+    if(game_state.four_in_a_row())
+    {
+        return game_state.get_number_of_moves() - 43;
+    }
+
+    if(game_state.get_number_of_moves() == depth)
+    {
+        return 0;
+    }
+
+    std::string book_string;
+    uint64_t key = game_state.get_key();
+
+    if (opening_book_values.count(key) == 1)
+    {
+        book_string = opening_book_values[key];
+        return std::stoi(book_string);
+    }
+    else
+    {
+       key = game_state.get_mirror_key();
+       if (opening_book_values.count(key) == 1)
+       {
+          book_string = opening_book_values[key];
+          return std::stoi(book_string);
+       }
+    }
+
+    int best_value = -1000;
+    for (int move=0; move<=6; move++)
+    {
+        if (game_state.column_not_full(move))
+        {
+            game_state.make_move(move);
+            int value = -negamax(game_state, depth);
+            game_state.undo_move(move);
+            if(value > best_value)
+            {
+                best_value = value;
+            }
+        }
+    }
+
+    return best_value;
+}
 }

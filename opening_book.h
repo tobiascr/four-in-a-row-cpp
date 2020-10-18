@@ -6,6 +6,7 @@
 #include <vector>
 #include <unordered_map>
 #include <string>
+#include "game_state.h"
 
 namespace Engine
 {
@@ -15,17 +16,25 @@ class OpeningBook
 public:
     OpeningBook();
 
-/*    bool can_find_best_moves_from_opening_book() const;*/
+    std::vector<int> get_best_moves(Engine::GameState& game_state);
+    /* Return a vector with moves found in the opening book. If no moves can be
+    found from the book, an empty vector is returned.*/
 
-/*    std::vector<int> get_best_moves();*/
+    int can_get_value(Engine::GameState& game_state) const;
 
-    std::unordered_map<uint64_t, std::string> opening_book_values;
-    std::unordered_map<uint64_t, std::string> opening_book_moves;
+    int get_value(Engine::GameState& game_state);
+    /* Return a positive integer for a winning game_state for the player in turn,
+    0 for a draw or unknown outcome and a negative integer for a loss. A win at move 42
+    gives the value 1, a win at move 41 gives the value 2 etc, and vice versa for losses.*/
 
 private:
     void load_opening_book_file(std::string file_name, bool values);
 
+    int negamax(Engine::GameState& game_state, const int depth);
+
     const int max_ply_for_values_in_opening_book = 8;
+    std::unordered_map<uint64_t, std::string> opening_book_moves;
+    std::unordered_map<uint64_t, std::string> opening_book_values;
 };
 }
 
