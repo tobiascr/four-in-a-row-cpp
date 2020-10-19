@@ -1,3 +1,4 @@
+#include <iostream>
 #include "opening_book.h"
 #include "game_state.h"
 
@@ -123,7 +124,7 @@ std::vector<int> OpeningBook::get_best_moves(Engine::GameState& game_state)
             if (game_state.column_not_full(move))
             {
                 game_state.make_move(move);
-                int value = -negamax(game_state, max_ply_for_values_in_opening_book + 1);
+                int value = -negamax(game_state);
                 game_state.undo_move(move);
                 values[move] = value;
                 if(value > best_value)
@@ -152,10 +153,10 @@ int OpeningBook::can_get_value(Engine::GameState& game_state) const
 
 int OpeningBook::get_value(Engine::GameState& game_state)
 {
-    return negamax(game_state, max_ply_for_values_in_opening_book + 1);
+    return negamax(game_state);
 }
 
-int OpeningBook::negamax(Engine::GameState& game_state, const int depth)
+int OpeningBook::negamax(Engine::GameState& game_state)
 /* Compute a value of game_state. Return a positive integer for a winning
 game_state for the player in turn, 0 for a draw or unknown outcome and a
 negative integer for a loss. A win at move 42 gives the value 1, a win at move 41
@@ -168,7 +169,12 @@ depth=42 give a maximum depth search.*/
         return game_state.get_number_of_moves() - 43;
     }
 
-    if(game_state.get_number_of_moves() == depth)
+    if(game_state.can_win_this_move())
+    {
+        return 42 - game_state.get_number_of_moves();
+    }
+
+    if(game_state.get_number_of_moves() == max_ply_for_values_in_opening_book + 1)
     {
         return 0;
     }
@@ -197,7 +203,7 @@ depth=42 give a maximum depth search.*/
         if (game_state.column_not_full(move))
         {
             game_state.make_move(move);
-            int value = -negamax(game_state, depth);
+            int value = -negamax(game_state);
             game_state.undo_move(move);
             if(value > best_value)
             {

@@ -973,7 +973,7 @@ int main()
 //    benchmark(engine);
 //    benchmark_position_values(engine);
 //    benchmark_position_values_no_opening_book(engine);
-    engine_vs_engine(engine, test_engine, 20, false);
+    engine_vs_engine(engine, test_engine, 10, true);
 //    engine_vs_engine(engine, test_engine, 1000, false);
 
     return 0;

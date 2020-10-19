@@ -30,7 +30,7 @@ public:
 private:
     void load_opening_book_file(std::string file_name, bool values);
 
-    int negamax(Engine::GameState& game_state, const int depth);
+    int negamax(Engine::GameState& game_state);
 
     const int max_ply_for_values_in_opening_book = 8;
     std::unordered_map<uint64_t, std::string> opening_book_moves;

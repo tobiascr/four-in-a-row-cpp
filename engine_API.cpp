@@ -510,7 +510,7 @@ int EngineAPI::engine_move_medium()
 
 int EngineAPI::engine_move_hard()
 {
-    // The transpositions 33331 and 33335 are easy to to play well against even
+    // The transpositions 333331 and 333335 are easy to to play well against even
     // for a weak opponent and are therefore avoided.
     if (game_state.get_number_of_moves() == 5)
     {
