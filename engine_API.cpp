@@ -377,16 +377,9 @@ std::array<int,2> EngineAPI::iterative_deepening(const int depth,
     while (d < depth)
     {
         std::array<int,2> values = root_negamax(d, move_order_, alpha, beta);
-        if(values[1] > 0)
-        {
-            return values;
-        }
         if(values[1] != 0)
         {
-            if (values[1] > alpha)
-            {
-                alpha == values[1];
-            }
+            return values;
         }
         d = d + 4; //4
     }
