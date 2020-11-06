@@ -227,16 +227,14 @@ game_state for the player in turn, 0 for a draw or unknown outcome and a
 negative integer for a loss. A win at move 42 give the value 1, a win at move 41
 give a the value 2 etc, and vice versa for losses.
 Depth is counted as the move number at which the search is stopped. For example,
-depth=42 give a maximum depth search. This function can only be used on if the
-game state have no four in a row and the player in turn can't make a four
+depth=42 give a maximum depth search. This function can only be used if the
+game state has no four in a row and the player in turn can't make a four
 in a row.*/
 {
     uint64_t key;
     int original_alpha = alpha;
 
     const bool use_transposition_table = (game_state.get_number_of_moves() < depth - 6);
-
-//    const bool use_transposition_table = (game_state.get_number_of_moves() < 31);
 
     if (use_transposition_table)
     {
@@ -329,8 +327,8 @@ std::array<int,2> EngineAPI::root_negamax(const int depth,
                   std::array<int,7> move_order, int alpha, int beta)
 /* Return a move (0 to 6) and a value for the current game state computed
 with the negamax algorithm. Depth is counted as the move number at which
-the search is stopped. This function can only be used on if the
-game state have no four in a row and the player in turn can't make a four
+the search is stopped. This function can only be used if the
+game state has no four in a row and the player in turn can't make a four
 in a row.*/
 {
     int new_value, move, best_move;
@@ -370,10 +368,116 @@ in a row.*/
     return {best_move, alpha};
 }
 
+int EngineAPI::iterative_deepening_full_depth_value()
+/* Return a value for the current game state. It's best to not use for boards that are
+almost full, to avoid problematic edge cases. This function can only be used if the
+game state has no four in a row and the player in turn can't make a four
+in a row.*/
+{
+    int best_move;
+    const int alpha = -1;
+    const int beta = 1;
+    bool beginning_player_in_turn = game_state.get_number_of_moves() % 2 == 0;
+    int d = game_state.get_number_of_moves() + 2;
+    int value = negamax(d, alpha, beta);
+    if(value < 0)
+    {
+        return d - 43;
+    }
+
+    // Increase d to it's closest larger even number.
+    d += 2 - d % 2;
+
+    while (d <= 42)
+    {
+        value = negamax(d, alpha, beta);
+
+        // If win.
+        if(value > 0)
+        {
+            if(beginning_player_in_turn)
+            {
+                return 44 - d;
+            }
+            else
+            {
+                return 43 - d;
+            }
+        }
+
+        // If loss.
+        if(value < 0)
+        {
+            if(beginning_player_in_turn)
+            {
+                return d - 43;
+            }
+            else
+            {
+                return d - 44;
+            }
+        }
+
+        // Only every second ply level can be a win and every second a loss.
+        d += 2;
+    }
+    // If draw.
+    return 0;
+}
+
+int EngineAPI::iterative_deepening_full_depth_move(std::array<int,7> move_order_)
+/* Return a move (0 to 6). It's best to not use for boards that are
+almost full, to avoid problematic edge cases. This function can only be used if the
+game state has no four in a row and the player in turn can't make a four
+in a row.*/
+{
+    int value, best_move;
+    const int alpha = -1;
+    const int beta = 1;
+    int d = game_state.get_number_of_moves() + 2;
+    std::array<int,2> values = root_negamax(d, move_order_, alpha, beta);
+    best_move = values[0];
+    value = values[1];
+
+    // If win or loss
+    if(value != 0)
+    {
+        return {best_move};
+    }
+
+    // Increase d to it's closest larger even number.
+    d += 2 - d % 2;
+
+    while (d <= 42)
+    {
+        values = root_negamax(d, move_order_, alpha, beta);
+        value = values[1];
+
+        // If win
+        if(value > 0)
+        {
+            return {values[0]};
+        }
+
+        // If loss
+        if(value < 0)
+        {
+            return {best_move};
+        }
+
+        best_move = values[0];
+
+        // Only every second ply level can be a win and every second a loss.
+        d += 2;
+    }
+    // If draw.
+    return best_move;
+}
+
 std::array<int,2> EngineAPI::iterative_deepening(const int depth,
                   std::array<int,7> move_order_, int alpha, int beta)
 {
-    int d = game_state.get_number_of_moves() + 3; // 3
+    int d = game_state.get_number_of_moves() + 3;
     while (d < depth)
     {
         std::array<int,2> values = root_negamax(d, move_order_, alpha, beta);
@@ -390,6 +494,16 @@ int EngineAPI::position_value_full_depth(const bool use_opening_book)
 {
     transposition_table.clear();
 
+    if(game_state.four_in_a_row())
+    {
+        return game_state.get_number_of_moves() - 43;
+    }
+
+    if(game_state.board_full())
+    {
+        return 0;
+    }
+
     if(game_state.can_win_this_move())
     {
         return 42 - game_state.get_number_of_moves();
@@ -405,9 +519,14 @@ int EngineAPI::position_value_full_depth(const bool use_opening_book)
 
     int alpha = -1000, beta = 1000, depth = 42;
 
-    std::array<int,7> moves = move_order(3);
-    std::array<int,2> values = iterative_deepening(depth, moves, alpha, beta);
-    return values[1];
+    // This is a way of taking care of possible edge case problems with
+    // iterative deepening.
+    if(game_state.get_number_of_moves() > 36)
+    {
+        return negamax(depth, alpha, beta);
+    }
+
+    return iterative_deepening_full_depth_value();
 }
 
 int EngineAPI::engine_move(const int depth)
@@ -427,7 +546,7 @@ is stopped. For example, depth=42 give a maximum depth search.*/
 
     /* Clearing the transposition table between moves makes the total move time a
     little slower. But the maximum move is not likely to be affected, since it's
-    typically the first move. Clearing table makes it easier to use.*/
+    typically the first move. Clearing the table makes it easier to use.*/
     transposition_table.clear();
 
     // Look for a move that makes a four in a row.
@@ -454,9 +573,9 @@ is stopped. For example, depth=42 give a maximum depth search.*/
     }
 
     std::array<int,2> values;
-    if(depth == 42)
+    if(depth == 42 and game_state.get_number_of_moves() < 37)
     {
-        values = iterative_deepening(depth, moves, alpha, beta);
+        return iterative_deepening_full_depth_move(moves);
     }
     else
     {

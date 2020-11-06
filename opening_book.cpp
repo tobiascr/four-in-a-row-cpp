@@ -72,7 +72,6 @@ void OpeningBook::load_opening_book_file(std::string file_name, bool values)
         }
     }
     file_to_read.close();
-    game_state.reset();
 }
 
 std::vector<int> OpeningBook::get_best_moves(Engine::GameState& game_state)
@@ -148,7 +147,7 @@ std::vector<int> OpeningBook::get_best_moves(Engine::GameState& game_state)
 
 int OpeningBook::can_get_value(Engine::GameState& game_state) const
 {
-    return game_state.get_number_of_moves() < max_ply_for_values_in_opening_book;
+    return game_state.get_number_of_moves() <= max_ply_for_values_in_opening_book;
 }
 
 int OpeningBook::get_value(Engine::GameState& game_state)

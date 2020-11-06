@@ -13,8 +13,8 @@
    the value 2 etc, and similarly for losses but with negative values.
 
    Compilation and linking:
-   g++ -O3 -c compute_opening_transpositions.cpp
-   g++ -o compute_opening_transpositions compute_opening_transpositions.o ../engine_API.o ../game_state.o ../opening_book.o
+   g++ -O3 -c make_value_tables.cpp
+   g++ -o make_value_tables  make_value_tables.o ../engine_API.o ../game_state.o ../opening_book.o
 */
 
 void load_position(Engine::EngineAPI& engine, std::string move_string)

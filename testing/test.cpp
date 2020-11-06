@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <chrono>
+#include <vector>
 #include "../game_state.h"
 #include "../engine_API.h"
 #include "test_engine_API.h"
@@ -821,7 +822,7 @@ void benchmark(Engine::EngineAPI& engine)
 //    test_position(engine, "256555226", 6); // slow
     test_position(engine, "333345550", 3); // 1 and 2 are as good.
     test_position(engine, "333333010", 0);
-    test_position(engine, "334233650026", 5);
+    test_position(engine, "334233650026", 5); // A draw
     test_position(engine, "01234560660", 3);
     test_position(engine, "00000055551", 2);
     test_position(engine, "2222223456", 3);
@@ -859,49 +860,49 @@ void benchmark_position_values(Engine::EngineAPI& engine)
 void benchmark_position_values_no_opening_book(Engine::EngineAPI& engine)
 {
 // Random transpositions from tr_list_pl_1_any_pl_2_best_11_ply_3_best_moves
-//      test_position_value(engine, "01004144141", 3, false);
-//      test_position_value(engine, "01451144211", 3, false);
-//      test_position_value(engine, "01544424051", 3, false);
-//      test_position_value(engine, "12114224315", 3, false);
-//      test_position_value(engine, "12225156444", 3, false);
-//      test_position_value(engine, "12225645016", 3, false);
-//      test_position_value(engine, "22142244602", 3, false);
-//      test_position_value(engine, "23333255415", 3, false);
-//      test_position_value(engine, "33333601663", 3, false);
-//      test_position_value(engine, "33333621312", 3, false);
+      test_position_value(engine, "01004144141", 3, false);
+      test_position_value(engine, "01451144211", 3, false);
+      test_position_value(engine, "01544424051", 3, false);
+      test_position_value(engine, "12114224315", 3, false);
+      test_position_value(engine, "12225156444", 3, false);
+      test_position_value(engine, "12225645016", 3, false);
+      test_position_value(engine, "22142244602", 3, false);
+      test_position_value(engine, "23333255415", 3, false);
+      test_position_value(engine, "33333601663", 3, false);
+      test_position_value(engine, "33333621312", 3, false);
 
 // Random transpositions from tr_list_pl_1_best_pl_2_any_12_ply_2_4_6_best_moves
 // Values are not accurate. It's just to test speed.
-//      test_position_value(engine, "311063313551", 0, false);
-//      test_position_value(engine, "311063355331", 0, false);
-//      test_position_value(engine, "311213643344", 0, false);
-//      test_position_value(engine, "325336553133", 0, false);
-//      test_position_value(engine, "325564442154", 0, false);
-//      test_position_value(engine, "333332562162", 0, false);
-//      test_position_value(engine, "333332562522", 0, false);
-//      test_position_value(engine, "311333545655", 0, false);
-//      test_position_value(engine, "311433340036", 0, false);
-//      test_position_value(engine, "311013330052", 0, false);
-//      test_position_value(engine, "311013333365", 0, false);
-//      test_position_value(engine, "311013333113", 0, false);
+      test_position_value(engine, "311063313551", 0, false);
+      test_position_value(engine, "311063355331", 0, false);
+      test_position_value(engine, "311213643344", 0, false);
+      test_position_value(engine, "325336553133", 0, false);
+      test_position_value(engine, "325564442154", 0, false);
+      test_position_value(engine, "333332562162", 0, false);
+      test_position_value(engine, "333332562522", 0, false);
+      test_position_value(engine, "311333545655", 0, false);
+      test_position_value(engine, "311433340036", 0, false);
+      test_position_value(engine, "311013330052", 0, false);
+      test_position_value(engine, "311013333365", 0, false);
+      test_position_value(engine, "311013333113", 0, false);
 
-//      test_position_value(engine, "2210433330663", 0, false);
-//      test_position_value(engine, "3333306566254", 0, false);
-//      test_position_value(engine, "3333305444065", 0, false);
-//      test_position_value(engine, "3333304564511", 0, false);
-//      test_position_value(engine, "1222210112004", 1, false);
-//      test_position_value(engine, "1222210112654", 1, false);
-//      test_position_value(engine, "2210223433335", 1, false);
-//      test_position_value(engine, "3333332154410", 1, false);
+      test_position_value(engine, "2210433330663", 0, false);
+      test_position_value(engine, "3333306566254", 0, false);
+      test_position_value(engine, "3333305444065", 0, false);
+      test_position_value(engine, "3333304564511", 0, false);
+      test_position_value(engine, "1222210112004", 1, false);
+      test_position_value(engine, "1222210112654", 1, false);
+      test_position_value(engine, "2210223433335", 1, false);
+      test_position_value(engine, "3333332154410", 1, false);
 
-//      test_position_value(engine, "3333302111131254", 0, false);
-//      test_position_value(engine, "3333311113100546", 0, false);
-//      test_position_value(engine, "3333311113166664", 0, false);
-//      test_position_value(engine, "3333311113166664", 0, false);
-//      test_position_value(engine, "3333311113144455", 0, false);
-//      test_position_value(engine, "3333311113140406", 0, false);
-//      test_position_value(engine, "3333311113121522", 0, false);
-//      test_position_value(engine, "3333311113114566", 0, false);
+      test_position_value(engine, "3333302111131254", 0, false);
+      test_position_value(engine, "3333311113100546", 0, false);
+      test_position_value(engine, "3333311113166664", 0, false);
+      test_position_value(engine, "3333311113166664", 0, false);
+      test_position_value(engine, "3333311113144455", 0, false);
+      test_position_value(engine, "3333311113140406", 0, false);
+      test_position_value(engine, "3333311113121522", 0, false);
+      test_position_value(engine, "3333311113114566", 0, false);
 
 //    test_position_value(engine, "3366455", 0, false);
 //    test_position_value(engine, "336645", 0, false);
@@ -910,7 +911,7 @@ void benchmark_position_values_no_opening_book(Engine::EngineAPI& engine)
 //    test_position_value(engine, "3342000", 7, false);
 //    test_position_value(engine, "333", -2, false);
 //    test_position_value(engine, "33", 2, false);
-//    test_position_value(engine, "3", -2, false); // The program crashes with this.
+////    test_position_value(engine, "3", -2, false); // The program crashes with this.
 //    test_position_value(engine, "00343", -4, false);
 //    test_position_value(engine, "3563", -3, false);
 }
@@ -952,6 +953,201 @@ void opening_test()
     }
 }
 
+void test_from_file_values(std::string file_name, bool detailed_output = false)
+/* Test the engine by comparing it's output from moves in a text file. The file should have one line
+per transpositon. Each line should first have a transposition described as a move string followed
+by a space and then a value.*/
+{
+    std::ifstream file_to_read(file_name);
+    std::string line, move, c;
+    uint64_t key;
+    Engine::EngineAPI engine;
+
+    if(not file_to_read.is_open())
+    {
+        std::cerr << "Can't open " << file_name << std::endl;
+        return;
+    }
+
+    std::cout << "Testing " << file_name << std::endl;
+    if(detailed_output)
+    {
+        std::cout << std::endl << "********************************************************" << std::endl;
+    }
+
+    while (std::getline(file_to_read, line))
+    {
+        // Load position.
+        engine.new_game();
+        int space_index;
+        std::string move_string = "";
+        for (int n=0; n<line.length(); n++)
+        {
+            if (line[n] == ' ')
+            {
+                space_index = n;
+                break;
+            }
+            move = line[n];
+            engine.make_move(std::stoi(move));
+            move_string.append(move);
+        }
+
+        // Find value.
+        std::string value_string = "";
+        for (int n=space_index+1; n<line.length(); n++)
+        {
+            c = line[n];
+            value_string.append(c);
+        }
+
+        if(detailed_output)
+        {
+            print_board(engine);
+            std::cout << "Position: " <<  move_string << std::endl;
+        }
+
+        int expected_value = std::stoi(value_string);
+        std::chrono::steady_clock::time_point t0;
+        std::chrono::steady_clock::time_point t1;
+        std::chrono::steady_clock::duration move_time;
+        t0 = std::chrono::steady_clock::now();
+        bool use_opening_book = true;
+        int value = engine.position_value_full_depth(use_opening_book);
+        t1 = std::chrono::steady_clock::now();
+        move_time = t1 - t0;
+
+        if(detailed_output or value != expected_value)
+        {
+            std::cout << "Value: " << value;
+            std::cout << ", Expected value: " <<  expected_value;
+            std::cout << ", Time: "
+                      << std::chrono::duration_cast<std::chrono::milliseconds>(move_time).count()
+                      << " ms" << std::endl;
+            if (value == expected_value)
+            {
+                std::cout << "Test successful!" << std::endl;
+                std::cout << std::endl << "********************************************************" << std::endl;
+            }
+            else
+            {
+                std::cout << "Test failed!" << std::endl << std::endl;
+                std::cout << "The testing was interrupted." << std::endl << std::endl;
+                return;
+            }
+        }
+    }
+    if(detailed_output)
+    {
+        std::cout << std::endl;
+    }
+    std::cout << "All tests were successful!" << std::endl << std::endl;
+    file_to_read.close();
+}
+
+void test_from_file_best_moves(std::string file_name, bool detailed_output = false)
+/* Test the engine by comparing it's output from moves in a text file. The file should have one line
+per transpositon. Each line should first have a transposition described as a move string followed
+by a space and then a string with best moves.*/
+{
+    std::ifstream file_to_read(file_name);
+    std::string line, move, c;
+    uint64_t key;
+    Engine::EngineAPI engine;
+    engine.set_difficulty_level(3);
+
+    if(not file_to_read.is_open())
+    {
+        std::cerr << "Can't open " << file_name << std::endl;
+        return;
+    }
+
+    std::cout << "Testing " << file_name << std::endl;
+    if(detailed_output)
+    {
+        std::cout << std::endl << "********************************************************" << std::endl;
+    }
+
+    while (std::getline(file_to_read, line))
+    {
+        // Load position.
+        engine.new_game();
+        int space_index;
+        std::string move_string = "";
+        for (int n=0; n<line.length(); n++)
+        {
+            if (line[n] == ' ')
+            {
+                space_index = n;
+                break;
+            }
+            move = line[n];
+            engine.make_move(std::stoi(move));
+            move_string.append(move);
+        }
+
+        // Find moves.
+        std::string best_move_string = "";
+        std::vector<int> best_moves;
+        for (int n=space_index+1; n<line.length(); n++)
+        {
+            move = line[n];
+            best_move_string.append(move);
+            best_moves.push_back(std::stoi(move));
+        }
+
+        if(detailed_output)
+        {
+            print_board(engine);
+            std::cout << "Position: " <<  move_string << std::endl;
+        }
+
+        std::chrono::steady_clock::time_point t0;
+        std::chrono::steady_clock::time_point t1;
+        std::chrono::steady_clock::duration move_time;
+        t0 = std::chrono::steady_clock::now();
+        bool use_opening_book = true;
+        int engine_move = engine.engine_move();
+        t1 = std::chrono::steady_clock::now();
+        move_time = t1 - t0;
+
+        bool found_move = false;
+        for(int move : best_moves)
+        {
+            if(engine_move == move)
+            {
+                found_move = true;
+            }
+        }
+
+        if(detailed_output or not found_move)
+        {
+            std::cout << "Move: " << engine_move;
+            std::cout << ", Expected moves: " <<  best_move_string;
+            std::cout << ", Time: "
+                      << std::chrono::duration_cast<std::chrono::milliseconds>(move_time).count()
+                      << " ms" << std::endl;
+            if (found_move)
+            {
+                std::cout << "Test successful!" << std::endl;
+                std::cout << std::endl << "********************************************************" << std::endl;
+            }
+            else
+            {
+                std::cout << "Test failed!" << std::endl << std::endl;
+                std::cout << "The testing was interrupted." << std::endl << std::endl;
+                return;
+            }
+        }
+    }
+    if(detailed_output)
+    {
+        std::cout << std::endl;
+    }
+    std::cout << "All tests were successful!" << std::endl << std::endl;
+    file_to_read.close();
+}
+
 int main()
 {
     std::srand(time(NULL)); // Initialize the random number generator.
@@ -960,21 +1156,26 @@ int main()
 //    test_engine_API();
 //    opening_test();
 
-    Engine::EngineAPI engine(91635);
-    engine.set_difficulty_level(3);
-    TestEngine::EngineAPI test_engine(35790);
-    test_engine.set_difficulty_level(2);
-
-//    Engine::EngineAPI engine;
+//    Engine::EngineAPI engine(5461635);
 //    engine.set_difficulty_level(3);
-//    TestEngine::EngineAPI test_engine;
-//    test_engine.set_difficulty_level(2);
+//    TestEngine::EngineAPI test_engine(35790);
+//    test_engine.set_difficulty_level(3);
 
-//    benchmark(engine);
-//    benchmark_position_values(engine);
+    Engine::EngineAPI engine;
+    engine.set_difficulty_level(3);
+    TestEngine::EngineAPI test_engine;
+    test_engine.set_difficulty_level(3);
+
+//    test_from_file_values("./testing/test_transpositions/large.values", true);
+//    test_from_file_values("./testing/test_transpositions/small.values", true);
+//    test_from_file_values("./testing/test_transpositions/medium.values", true);
+//    test_from_file_best_moves("./testing/test_transpositions/large.best_moves", true);
+    test_from_file_best_moves("./testing/test_transpositions/small.best_moves", true);
+//    test_from_file_best_moves("./testing/test_transpositions/medium.best_moves", true);
+
 //    benchmark_position_values_no_opening_book(engine);
-    engine_vs_engine(engine, test_engine, 20, false);
-//    engine_vs_engine(engine, test_engine, 1000, false);
+//    engine_vs_engine(engine, test_engine, 100, false);
+    engine_vs_engine(engine, test_engine, 500, false);
 
     return 0;
 }

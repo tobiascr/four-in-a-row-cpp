@@ -77,6 +77,10 @@ private:
     std::array<int,2> root_negamax(const int depth,
                   std::array<int,7> move_order, int alpha, int beta);
 
+    int iterative_deepening_full_depth_value();
+
+    int iterative_deepening_full_depth_move(std::array<int,7> move_order_);
+
     std::array<int,2> iterative_deepening(const int depth,
                   std::array<int,7> move_order_, int alpha, int beta);
 
