@@ -795,7 +795,7 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
         }
         if (display_move_times) {std::cout << std::endl;}
         engine_begin = not engine_begin;
-    }
+    }std::chrono::steady_clock::duration::zero();
     if (not display_move_times) {std::cout << std::endl;}
     std::cout << "Number of games: " << number_of_games << std::endl;
     std::cout << "Engine wins: " << engine_wins << std::endl;
@@ -859,51 +859,6 @@ void benchmark_position_values(Engine::EngineAPI& engine)
 
 void benchmark_position_values_no_opening_book(Engine::EngineAPI& engine)
 {
-// Random transpositions from tr_list_pl_1_any_pl_2_best_11_ply_3_best_moves
-      test_position_value(engine, "01004144141", 3, false);
-      test_position_value(engine, "01451144211", 3, false);
-      test_position_value(engine, "01544424051", 3, false);
-      test_position_value(engine, "12114224315", 3, false);
-      test_position_value(engine, "12225156444", 3, false);
-      test_position_value(engine, "12225645016", 3, false);
-      test_position_value(engine, "22142244602", 3, false);
-      test_position_value(engine, "23333255415", 3, false);
-      test_position_value(engine, "33333601663", 3, false);
-      test_position_value(engine, "33333621312", 3, false);
-
-// Random transpositions from tr_list_pl_1_best_pl_2_any_12_ply_2_4_6_best_moves
-// Values are not accurate. It's just to test speed.
-      test_position_value(engine, "311063313551", 0, false);
-      test_position_value(engine, "311063355331", 0, false);
-      test_position_value(engine, "311213643344", 0, false);
-      test_position_value(engine, "325336553133", 0, false);
-      test_position_value(engine, "325564442154", 0, false);
-      test_position_value(engine, "333332562162", 0, false);
-      test_position_value(engine, "333332562522", 0, false);
-      test_position_value(engine, "311333545655", 0, false);
-      test_position_value(engine, "311433340036", 0, false);
-      test_position_value(engine, "311013330052", 0, false);
-      test_position_value(engine, "311013333365", 0, false);
-      test_position_value(engine, "311013333113", 0, false);
-
-      test_position_value(engine, "2210433330663", 0, false);
-      test_position_value(engine, "3333306566254", 0, false);
-      test_position_value(engine, "3333305444065", 0, false);
-      test_position_value(engine, "3333304564511", 0, false);
-      test_position_value(engine, "1222210112004", 1, false);
-      test_position_value(engine, "1222210112654", 1, false);
-      test_position_value(engine, "2210223433335", 1, false);
-      test_position_value(engine, "3333332154410", 1, false);
-
-      test_position_value(engine, "3333302111131254", 0, false);
-      test_position_value(engine, "3333311113100546", 0, false);
-      test_position_value(engine, "3333311113166664", 0, false);
-      test_position_value(engine, "3333311113166664", 0, false);
-      test_position_value(engine, "3333311113144455", 0, false);
-      test_position_value(engine, "3333311113140406", 0, false);
-      test_position_value(engine, "3333311113121522", 0, false);
-      test_position_value(engine, "3333311113114566", 0, false);
-
 //    test_position_value(engine, "3366455", 0, false);
 //    test_position_value(engine, "336645", 0, false);
 //    test_position_value(engine, "334232", -5, false);
@@ -962,6 +917,11 @@ by a space and then a value.*/
     std::string line, move, c;
     uint64_t key;
     Engine::EngineAPI engine;
+    std::chrono::steady_clock::time_point t0;
+    std::chrono::steady_clock::time_point t1;
+    std::chrono::steady_clock::duration move_time;
+    std::chrono::steady_clock::duration total_time =
+                 std::chrono::steady_clock::duration::zero();
 
     if(not file_to_read.is_open())
     {
@@ -1008,14 +968,12 @@ by a space and then a value.*/
         }
 
         int expected_value = std::stoi(value_string);
-        std::chrono::steady_clock::time_point t0;
-        std::chrono::steady_clock::time_point t1;
-        std::chrono::steady_clock::duration move_time;
         t0 = std::chrono::steady_clock::now();
         bool use_opening_book = true;
         int value = engine.position_value_full_depth(use_opening_book);
         t1 = std::chrono::steady_clock::now();
         move_time = t1 - t0;
+        total_time += move_time;
 
         if(detailed_output or value != expected_value)
         {
@@ -1042,6 +1000,9 @@ by a space and then a value.*/
         std::cout << std::endl;
     }
     std::cout << "All tests were successful!" << std::endl << std::endl;
+    std::cout << "Total time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(total_time).count()
+              << " ms" << std::endl << std::endl;
     file_to_read.close();
 }
 
@@ -1055,6 +1016,11 @@ by a space and then a string with best moves.*/
     uint64_t key;
     Engine::EngineAPI engine;
     engine.set_difficulty_level(3);
+    std::chrono::steady_clock::time_point t0;
+    std::chrono::steady_clock::time_point t1;
+    std::chrono::steady_clock::duration move_time;
+    std::chrono::steady_clock::duration total_time =
+                 std::chrono::steady_clock::duration::zero();
 
     if(not file_to_read.is_open())
     {
@@ -1102,14 +1068,12 @@ by a space and then a string with best moves.*/
             std::cout << "Position: " <<  move_string << std::endl;
         }
 
-        std::chrono::steady_clock::time_point t0;
-        std::chrono::steady_clock::time_point t1;
-        std::chrono::steady_clock::duration move_time;
         t0 = std::chrono::steady_clock::now();
         bool use_opening_book = true;
         int engine_move = engine.engine_move();
         t1 = std::chrono::steady_clock::now();
         move_time = t1 - t0;
+        total_time += move_time;
 
         bool found_move = false;
         for(int move : best_moves)
@@ -1145,6 +1109,9 @@ by a space and then a string with best moves.*/
         std::cout << std::endl;
     }
     std::cout << "All tests were successful!" << std::endl << std::endl;
+    std::cout << "Total time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(total_time).count()
+              << " ms" << std::endl << std::endl;
     file_to_read.close();
 }
 
@@ -1156,26 +1123,28 @@ int main()
 //    test_engine_API();
 //    opening_test();
 
-//    Engine::EngineAPI engine(5461635);
-//    engine.set_difficulty_level(3);
-//    TestEngine::EngineAPI test_engine(35790);
-//    test_engine.set_difficulty_level(3);
+//    test_from_file_values("./testing/test_transpositions/large.values", true);
+//    test_from_file_values("./testing/test_transpositions/medium.values", true);
+//    test_from_file_values("./testing/test_transpositions/small.values", true);
+//    test_from_file_values("./testing/test_transpositions/speed_test.values", true);
 
-    Engine::EngineAPI engine;
+//    test_from_file_best_moves("./testing/test_transpositions/large.best_moves", true);
+//    test_from_file_best_moves("./testing/test_transpositions/medium.best_moves", true);
+//    test_from_file_best_moves("./testing/test_transpositions/small.best_moves", true);
+//   test_from_file_best_moves("./testing/test_transpositions/speed_test.best_moves", true);
+
+    Engine::EngineAPI engine(5461635);
     engine.set_difficulty_level(3);
-    TestEngine::EngineAPI test_engine;
+    TestEngine::EngineAPI test_engine(35790);
     test_engine.set_difficulty_level(3);
 
-//    test_from_file_values("./testing/test_transpositions/large.values", true);
-//    test_from_file_values("./testing/test_transpositions/small.values", true);
-//    test_from_file_values("./testing/test_transpositions/medium.values", true);
-//    test_from_file_best_moves("./testing/test_transpositions/large.best_moves", true);
-    test_from_file_best_moves("./testing/test_transpositions/small.best_moves", true);
-//    test_from_file_best_moves("./testing/test_transpositions/medium.best_moves", true);
+//    Engine::EngineAPI engine;
+//    engine.set_difficulty_level(3);
+//    TestEngine::EngineAPI test_engine;
+//    test_engine.set_difficulty_level(3);
 
-//    benchmark_position_values_no_opening_book(engine);
-//    engine_vs_engine(engine, test_engine, 100, false);
-    engine_vs_engine(engine, test_engine, 500, false);
+    engine_vs_engine(engine, test_engine, 100, false);
+//    engine_vs_engine(engine, test_engine, 500, false);
 
     return 0;
 }

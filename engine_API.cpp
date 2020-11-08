@@ -286,9 +286,8 @@ in a row.*/
         moves = move_order_open_four_in_a_row();
     }
 
-    for (int i=0; i<=6; i++)
+    for(int move : moves)
     {
-        int move = moves[i];
         if (non_losing_moves[move])
         {
             game_state.make_move(move);
@@ -316,6 +315,86 @@ in a row.*/
             if (alpha != 0)
             {
                 transposition_table[key] = (depth << 8) | ((alpha + 50) << 1);
+            }
+        }
+    }
+
+    return alpha;
+}
+
+int EngineAPI::negamax_2(const int depth, int alpha, int beta)
+/* Compute a value of game_state. Return a 1 for a winning
+game_state for the player in turn, 0 for a draw or unknown outcome and a -1 for a loss.
+Depth is counted as the move number at which the search is stopped. For example,
+depth=42 give a maximum depth search. This function can only be used if the
+game state has no four in a row and the player in turn can't make a four
+in a row.*/
+{
+    uint64_t key;
+    const bool use_transposition_table = (game_state.get_number_of_moves() < depth - 6);
+
+    if (use_transposition_table)
+    {
+        key = game_state.get_key();
+        if (transposition_table.count(key) == 1)
+        {
+            /* Transposition table data are stored in an unsigned integer.
+            The first 7 bits store
+            value + 50. 50 is added to guarantee that a positive integer is stored.
+            The next 6 bits store depth.*/
+            uint_fast16_t tt_entry = transposition_table[key];
+            int tt_value = ((tt_entry & 0b1111111)) - 50;
+            int tt_depth = (tt_entry & 0b1111110000000) >> 7;
+
+            if (tt_value > 0 or tt_depth >= depth)
+            {
+                return beta;
+            }
+        }
+    }
+
+    std::array<bool,7> non_losing_moves = game_state.get_non_losing_moves();
+    int c = 0;
+    for (int i=0; i<=6; i++)
+    {
+        if(non_losing_moves[i])
+        {
+            c++;
+            break;
+        }
+    }
+    if (c == 0) {return -1;}
+
+    if (game_state.get_number_of_moves() >= depth - 2)
+    {
+        return 0;
+    }
+
+    // Move order.
+    std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
+    if (game_state.get_number_of_moves() < depth - 12) // 12
+    {
+        moves = move_order_open_four_in_a_row();
+    }
+
+    for(int move : moves)
+    {
+        if (non_losing_moves[move])
+        {
+            game_state.make_move(move);
+            int value = -negamax(depth, -beta, -alpha);
+            game_state.undo_move(move);
+            if (value >= beta) // Fail hard beta-cutoff.
+            {
+                if (use_transposition_table)
+                {
+                    transposition_table[key] = (depth << 7) | (beta + 50);
+                }
+                return beta;
+            }
+            if (value > alpha)
+            {
+                alpha = value;
             }
         }
     }
