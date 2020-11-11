@@ -661,6 +661,7 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
     bool engine_begin = true;
     int result;
     int number_of_moves;
+    std::string move_sequence_string = "";
 
     bool engine_to_play = engine_begin;
     int move;
@@ -712,9 +713,8 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                 }
                 game_time_engine += move_time;
                 engine.make_move(move);
-//                print_board(engine);
-//                std::cout << "Move: " << move << std::endl;
                 test_engine.make_move(move);
+                move_sequence_string += std::to_string(move);
                 if (engine.four_in_a_row())
                 {
                     std::cout << "Engine win. Engine time: "
@@ -723,6 +723,10 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                     << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_test_engine).count()
                     << " ms" << std::endl;
                     std::cout << "Number or moves: " << number_of_moves << std::endl;
+                    if(engine_begin) {std::cout << "Engine made the first move. " << std::endl;}
+                    else {std::cout << "Test engine made the first move. " << std::endl;}
+                    std::cout << "Moves: " << move_sequence_string << std::endl;
+                    move_sequence_string = "";
                     engine_wins++;
                     total_time_engine += game_time_engine;
                     total_time_test_engine += game_time_test_engine;
@@ -736,6 +740,10 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                     << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_test_engine).count()
                     << " ms" << std::endl;
                     std::cout << "Number or moves: " << number_of_moves << std::endl;
+                    if(engine_begin) {std::cout << "Engine made the first move. " << std::endl;}
+                    else {std::cout << "Test engine made the first move. " << std::endl;}
+                    std::cout << "Moves: " << move_sequence_string << std::endl;
+                    move_sequence_string = "";
                     draws++;
                     total_time_engine += game_time_engine;
                     total_time_test_engine += game_time_test_engine;
@@ -761,9 +769,8 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                 }
                 game_time_test_engine += move_time;
                 engine.make_move(move);
-//                print_board(engine);
-//                std::cout << "Move: " << move << std::endl;
                 test_engine.make_move(move);
+                move_sequence_string += std::to_string(move);
                 if (engine.four_in_a_row())
                 {
                     std::cout << "Test engine win. Engine time: "
@@ -772,6 +779,10 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                     << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_test_engine).count()
                     << " ms" << std::endl;
                     std::cout << "Number or moves: " << number_of_moves << std::endl;
+                    if(engine_begin) {std::cout << "Engine made the first move. " << std::endl;}
+                    else {std::cout << "Test engine made the first move. " << std::endl;}
+                    std::cout << "Moves: " << move_sequence_string << std::endl;
+                    move_sequence_string = "";
                     test_engine_wins++;
                     total_time_engine += game_time_engine;
                     total_time_test_engine += game_time_test_engine;
@@ -785,6 +796,10 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
                     << std::chrono::duration_cast<std::chrono::milliseconds>(game_time_test_engine).count()
                     << " ms" << std::endl;
                     std::cout << "Number or moves: " << number_of_moves << std::endl;
+                    if(engine_begin) {std::cout << "Engine made the first move. " << std::endl;}
+                    else {std::cout << "Test engine made the first move. " << std::endl;}
+                    std::cout << "Moves: " << move_sequence_string << std::endl;
+                    move_sequence_string = "";
                     draws++;
                     total_time_engine += game_time_engine;
                     total_time_test_engine += game_time_test_engine;
@@ -1133,9 +1148,9 @@ int main()
 //    test_from_file_best_moves("./testing/test_transpositions/small.best_moves", true);
 //   test_from_file_best_moves("./testing/test_transpositions/speed_test.best_moves", true);
 
-    Engine::EngineAPI engine(5461635);
+    Engine::EngineAPI engine(91257346);
     engine.set_difficulty_level(3);
-    TestEngine::EngineAPI test_engine(35790);
+    TestEngine::EngineAPI test_engine(254854);
     test_engine.set_difficulty_level(3);
 
 //    Engine::EngineAPI engine;
@@ -1144,7 +1159,6 @@ int main()
 //    test_engine.set_difficulty_level(3);
 
     engine_vs_engine(engine, test_engine, 100, false);
-//    engine_vs_engine(engine, test_engine, 500, false);
 
     return 0;
 }

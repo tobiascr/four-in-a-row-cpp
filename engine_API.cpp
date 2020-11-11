@@ -234,7 +234,7 @@ in a row.*/
     uint64_t key;
     int original_alpha = alpha;
 
-    const bool use_transposition_table = (game_state.get_number_of_moves() < depth - 6);
+    bool use_transposition_table = game_state.get_number_of_moves() < depth - 5;
 
     if (use_transposition_table)
     {
@@ -242,22 +242,18 @@ in a row.*/
         if (transposition_table.count(key) == 1)
         {
             /* Transposition table data are stored in an unsigned integer.
-            The least significant bit is a store type. The next 7 bits store
-            value + 50. 50 is added to guarantee that a positive integer is stored.
-            The next 6 bits store depth.*/
+            The first 7 bits store value + 50. 50 is added to guarantee that a
+            positive integer is stored. The next 6 bits store depth.*/
             uint_fast16_t tt_entry = transposition_table[key];
-            int tt_type = tt_entry & 1;
-            int tt_value = ((tt_entry & 0b11111110) >> 1) - 50;
-            int tt_depth = (tt_entry & 0b11111100000000) >> 8;
+            int tt_value = (tt_entry & 0b1111111) - 50;
+            int tt_depth = (tt_entry & 0b1111110000000) >> 7;
 
-            if (tt_type == 0)
+            if(tt_value != 0 or tt_depth >= depth)
             {
-                return tt_value;
-            }
-
-            if (tt_value >= beta and (tt_value != 0 or tt_depth >= depth))
-            {
-                return beta;
+                if (tt_value >= beta)
+                {
+                   return beta;
+                }
             }
         }
     }
@@ -281,112 +277,22 @@ in a row.*/
 
     // Move order.
     std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
-    if (game_state.get_number_of_moves() < depth - 12) // 12
+    if (game_state.get_number_of_moves() < depth - 10)
     {
         moves = move_order_open_four_in_a_row();
     }
 
+    int value;
     for(int move : moves)
     {
         if (non_losing_moves[move])
         {
             game_state.make_move(move);
-            int value = -negamax(depth, -beta, -alpha);
+            value = -negamax(depth, -beta, -alpha);
             game_state.undo_move(move);
-            if (value >= beta) // Fail hard beta-cutoff.
+            if (value >= beta)
             {
-                if (use_transposition_table)
-                {
-                    transposition_table[key] = (depth << 8) | ((beta + 50) << 1) | 1;
-                }
-                return beta;
-            }
-            if (value > alpha)
-            {
-                alpha = value;
-            }
-        }
-    }
-
-    if (use_transposition_table)
-    {
-        if (alpha > original_alpha) // Exact values.
-        {
-            if (alpha != 0)
-            {
-                transposition_table[key] = (depth << 8) | ((alpha + 50) << 1);
-            }
-        }
-    }
-
-    return alpha;
-}
-
-int EngineAPI::negamax_2(const int depth, int alpha, int beta)
-/* Compute a value of game_state. Return a 1 for a winning
-game_state for the player in turn, 0 for a draw or unknown outcome and a -1 for a loss.
-Depth is counted as the move number at which the search is stopped. For example,
-depth=42 give a maximum depth search. This function can only be used if the
-game state has no four in a row and the player in turn can't make a four
-in a row.*/
-{
-    uint64_t key;
-    const bool use_transposition_table = (game_state.get_number_of_moves() < depth - 6);
-
-    if (use_transposition_table)
-    {
-        key = game_state.get_key();
-        if (transposition_table.count(key) == 1)
-        {
-            /* Transposition table data are stored in an unsigned integer.
-            The first 7 bits store
-            value + 50. 50 is added to guarantee that a positive integer is stored.
-            The next 6 bits store depth.*/
-            uint_fast16_t tt_entry = transposition_table[key];
-            int tt_value = ((tt_entry & 0b1111111)) - 50;
-            int tt_depth = (tt_entry & 0b1111110000000) >> 7;
-
-            if (tt_value > 0 or tt_depth >= depth)
-            {
-                return beta;
-            }
-        }
-    }
-
-    std::array<bool,7> non_losing_moves = game_state.get_non_losing_moves();
-    int c = 0;
-    for (int i=0; i<=6; i++)
-    {
-        if(non_losing_moves[i])
-        {
-            c++;
-            break;
-        }
-    }
-    if (c == 0) {return -1;}
-
-    if (game_state.get_number_of_moves() >= depth - 2)
-    {
-        return 0;
-    }
-
-    // Move order.
-    std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
-    if (game_state.get_number_of_moves() < depth - 12) // 12
-    {
-        moves = move_order_open_four_in_a_row();
-    }
-
-    for(int move : moves)
-    {
-        if (non_losing_moves[move])
-        {
-            game_state.make_move(move);
-            int value = -negamax(depth, -beta, -alpha);
-            game_state.undo_move(move);
-            if (value >= beta) // Fail hard beta-cutoff.
-            {
-                if (use_transposition_table)
+                if (use_transposition_table) // Lower bounds
                 {
                     transposition_table[key] = (depth << 7) | (beta + 50);
                 }
@@ -511,8 +417,8 @@ game state has no four in a row and the player in turn can't make a four
 in a row.*/
 {
     int value, best_move;
-    const int alpha = -1;
-    const int beta = 1;
+    int alpha = -1;
+    int beta = 1;
     int d = game_state.get_number_of_moves() + 2;
     std::array<int,2> values = root_negamax(d, move_order_, alpha, beta);
     best_move = values[0];
@@ -524,49 +430,46 @@ in a row.*/
         return {best_move};
     }
 
-    // Increase d to it's closest larger even number.
-    d += 2 - d % 2;
+    d += 1;
 
     while (d <= 42)
     {
-        values = root_negamax(d, move_order_, alpha, beta);
-        value = values[1];
-
-        // If win
-        if(value > 0)
+        // Every other ply level it's not possible to win and every other
+        // it's not possible to lose.
+        if((game_state.get_number_of_moves() + d) % 2)
         {
-            return {values[0]};
-        }
+            // Look for a win
+            alpha = 0;
+            beta = 1;
 
-        // If loss
-        if(value < 0)
+            values = root_negamax(d, move_order_, alpha, beta);
+            value = values[1];
+
+            if(value > 0)
+            {
+                return {values[0]};
+            }
+        }
+        else
         {
-            return {best_move};
+            // Look to avoid a loss
+            alpha = -1;
+            beta = 0;
+
+            values = root_negamax(d, move_order_, alpha, beta);
+            value = values[1];
+
+            if(value < 0)
+            {
+                return {best_move};
+            }
+
+            best_move = values[0];
         }
-
-        best_move = values[0];
-
-        // Only every second ply level can be a win and every second a loss.
-        d += 2;
+        d += 1;
     }
     // If draw.
     return best_move;
-}
-
-std::array<int,2> EngineAPI::iterative_deepening(const int depth,
-                  std::array<int,7> move_order_, int alpha, int beta)
-{
-    int d = game_state.get_number_of_moves() + 3;
-    while (d < depth)
-    {
-        std::array<int,2> values = root_negamax(d, move_order_, alpha, beta);
-        if(values[1] != 0)
-        {
-            return values;
-        }
-        d = d + 4; //4
-    }
-    return root_negamax(depth, move_order_, alpha, beta);
 }
 
 int EngineAPI::position_value_full_depth(const bool use_opening_book)
