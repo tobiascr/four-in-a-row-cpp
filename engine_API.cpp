@@ -434,7 +434,7 @@ in a row.*/
 
     while (d <= 42)
     {
-        // Every other ply level it's not possible to win and every other
+        // In every other ply level it's not possible to win and in every other
         // it's not possible to lose.
         if((game_state.get_number_of_moves() + d) % 2)
         {
