@@ -46,6 +46,10 @@ public:
     /* Return true iff the opponent can make a four in a row in column the next move
     if the player in turn makes a move to column.*/
 
+    bool own_threat_above(int column) const;
+    /* True iff a move to column make it possible for the opponent to block
+    a four in a row in the next move by making a move to the same column.*/
+
     bool is_blocking_move(int column) const;
     /* Return true iff making a move in column blocks the opponent from making a
     four in a row in the next move. The move must be legal.*/

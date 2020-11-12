@@ -68,9 +68,9 @@ private:
 
     std::array<int,7> move_order();
 
-    std::array<int,7> move_order(int first_move);
+    std::array<int,7> move_order_2();
 
-    std::array<int,7> move_order_open_four_in_a_row();
+    std::array<int,7> move_order(int first_move);
 
     int negamax(const int depth, int alpha, int beta);
 

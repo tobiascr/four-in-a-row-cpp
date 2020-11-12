@@ -165,6 +165,12 @@ bool GameState::opponent_four_in_a_row_above(int column) const
     return four_in_a_row_no_vertical(bitboard[1 - player_in_turn] | (next_move(column) << 1));
 }
 
+bool GameState::own_threat_above(int column) const
+{
+    if (column_height[column] >= 5) {return false;}
+    return four_in_a_row_no_vertical(bitboard[player_in_turn] | (next_move(column) << 1));
+}
+
 bool GameState::is_blocking_move(int column) const
 {
     return four_in_a_row(bitboard[1 - player_in_turn] | next_move(column));

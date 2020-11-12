@@ -162,6 +162,31 @@ int EngineAPI::adjacent_filled_position_count(int column) const
 }
 
 std::array<int,7> EngineAPI::move_order()
+{
+    std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
+    int values[7] = {1, 3, 5, 6, 4, 2, 0};
+    int player = game_state.get_number_of_moves() % 2;
+
+    for (int move=0; move<=6; move++)
+    {
+        if(game_state.column_not_full(move))
+        {
+            game_state.make_move(move);
+            values[move] = 10 * game_state.open_four_in_a_row_count(player);
+            game_state.undo_move(move);
+            if(game_state.own_threat_above(move))
+            {
+                values[move] = -10;
+            }
+        }
+    }
+
+    std::sort(moves.begin(), moves.end(),
+                     [&values](int i, int j){return values[i] > values[j];});
+    return moves;
+}
+
+std::array<int,7> EngineAPI::move_order_2()
 /* Return a move order for a root negamax search based on a heuristic evaluation
 of the current game state. There is some randomness included in the move ordering
 for moves that are estimated to be equally strong.*/
@@ -196,29 +221,6 @@ std::array<int,7> EngineAPI::move_order(int first_move)
         case 6: return {6, 3, 2, 4, 1, 5, 0};
     }
     return {3, 2, 4, 1, 5, 0, 6};
-}
-
-std::array<int,7> EngineAPI::move_order_open_four_in_a_row()
-{
-    std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
-
-    int values[7] = {0, 0, 0, 0, 0, 0, 0};
-    int player = game_state.get_number_of_moves() % 2;
-
-    for (int move=0; move<=6; move++)
-    {
-        if(game_state.column_not_full(move))
-        {
-            game_state.make_move(move);
-            values[move] = game_state.open_four_in_a_row_count(player);
-            game_state.undo_move(move);
-        }
-    }
-
-    std::stable_sort(moves.begin(), moves.end(),
-                     [&values](int i, int j){return values[i] > values[j];});
-
-    return moves;
 }
 
 int EngineAPI::negamax(const int depth, int alpha, int beta)
@@ -279,7 +281,7 @@ in a row.*/
     std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
     if (game_state.get_number_of_moves() < depth - 10)
     {
-        moves = move_order_open_four_in_a_row();
+        moves = move_order();
     }
 
     int value;
@@ -519,11 +521,11 @@ is stopped. For example, depth=42 give a maximum depth search.*/
     int alpha = -1000;
     int beta = 1000;
 
-    std::array<int,7> moves = move_order();
+    std::array<int,7> moves = move_order_2();
 
     if (depth == 42)
     {
-        moves = move_order_open_four_in_a_row();
+        moves = move_order();
     }
 
     /* Clearing the transposition table between moves makes the total move time a

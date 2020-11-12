@@ -430,6 +430,22 @@ void test_game_state()
     std::cout << std::endl;
     load_position(game_state, "55200");
     print_bitboard(game_state.get_key());
+
+    std::cout << std::endl;
+    std::cout << "Test own_threat_above" << std::endl;
+    std::cout << std::endl;
+    load_position(game_state, "11466");
+    print_board(game_state);
+    std::cout << game_state.own_threat_above(0) << std::endl;
+    load_position(game_state, "222343344");
+    print_board(game_state);
+    std::cout << game_state.own_threat_above(0) << std::endl;
+    std::cout << game_state.own_threat_above(1) << std::endl;
+    std::cout << game_state.own_threat_above(2) << std::endl;
+    std::cout << game_state.own_threat_above(3) << std::endl;
+    std::cout << game_state.own_threat_above(4) << std::endl;
+    std::cout << game_state.own_threat_above(5) << std::endl;
+    std::cout << game_state.own_threat_above(6) << std::endl;
 }
 
 void test_engine_API()
@@ -1148,17 +1164,17 @@ int main()
 //    test_from_file_best_moves("./testing/test_transpositions/small.best_moves", true);
 //   test_from_file_best_moves("./testing/test_transpositions/speed_test.best_moves", true);
 
-    Engine::EngineAPI engine(91257346);
+    Engine::EngineAPI engine(9126);
     engine.set_difficulty_level(3);
-    TestEngine::EngineAPI test_engine(254854);
-    test_engine.set_difficulty_level(3);
+    TestEngine::EngineAPI test_engine(2541154);
+    test_engine.set_difficulty_level(2);
 
 //    Engine::EngineAPI engine;
 //    engine.set_difficulty_level(3);
 //    TestEngine::EngineAPI test_engine;
 //    test_engine.set_difficulty_level(3);
 
-    engine_vs_engine(engine, test_engine, 100, false);
+    engine_vs_engine(engine, test_engine, 50, false);
 
     return 0;
 }
