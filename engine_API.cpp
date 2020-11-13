@@ -266,7 +266,7 @@ in a row.*/
     {
         if(non_losing_moves[i])
         {
-            c++;
+            c = 1;
             break;
         }
     }
@@ -284,13 +284,12 @@ in a row.*/
         moves = move_order();
     }
 
-    int value;
     for(int move : moves)
     {
         if (non_losing_moves[move])
         {
             game_state.make_move(move);
-            value = -negamax(depth, -beta, -alpha);
+            int value = -negamax(depth, -beta, -alpha);
             game_state.undo_move(move);
             if (value >= beta)
             {
