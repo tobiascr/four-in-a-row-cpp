@@ -58,6 +58,8 @@ private:
     std::unordered_map<uint64_t, std::string> opening_book_values;
     std::unordered_map<uint64_t, std::string> opening_book_moves;
 
+    uint64_t transposition_table_2[100000];
+
     int position_heuristic(int move) const;
 
     int position_heuristic_2(int move) const;

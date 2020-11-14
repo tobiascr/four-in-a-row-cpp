@@ -18,6 +18,7 @@ void GameState::reset()
     number_of_moves = 0;
     player_in_turn = 0;
     next_moves = 0b0000001000000100000010000001000000100000010000001;
+    zobrist_key = 0;
 }
 
 char GameState::get_value(int column, int row) const
@@ -52,11 +53,13 @@ void GameState::make_move(int column)
     column_height[column]++;
     number_of_moves++;
     player_in_turn = 1 - player_in_turn;
+    zobrist_key ^= random_numbers[column*6 + column_height[column] + 42 * player_in_turn - 1];
     next_moves ^= nm | (nm << 1);
 }
 
 void GameState::undo_move(int column)
 {
+    zobrist_key ^= random_numbers[column*6 + column_height[column] + 42 * player_in_turn - 1];
     column_height[column]--;
     number_of_moves--;
     player_in_turn = 1 - player_in_turn;
@@ -307,14 +310,14 @@ int GameState::position_value_40_ply()
     return 0;
 }
 
-uint64_t GameState::get_key() const
+uint64_t GameState::get_unique_key() const
 {
     return bitboard[0] | next_moves;
 }
 
-uint64_t GameState::get_mirror_key() const
+uint64_t GameState::get_unique_mirror_key() const
 {
-    uint64_t key = get_key();
+    uint64_t key = get_unique_key();
     uint64_t mirrored_key = 0;
     const int bitboard_height = 7;
     mirrored_key |= (key & 0b0000000000000000000000000000000000000000001111111)
@@ -331,5 +334,10 @@ uint64_t GameState::get_mirror_key() const
     mirrored_key |= (key & 0b1111111000000000000000000000000000000000000000000)
                     >> (bitboard_height * 6);
     return mirrored_key;
+}
+
+uint32_t GameState::get_zobrist_key() const
+{
+    return zobrist_key;
 }
 }

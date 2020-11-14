@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <fstream>
 #include <iostream>
 #include "engine_API.h"
 
@@ -234,27 +233,58 @@ game state has no four in a row and the player in turn can't make a four
 in a row.*/
 {
     uint64_t key;
+    uint64_t key_2;
     int original_alpha = alpha;
 
-    bool use_transposition_table = game_state.get_number_of_moves() < depth - 5;
+    bool use_transposition_table = game_state.get_number_of_moves() < depth - 2; // 2
 
     if (use_transposition_table)
     {
-        key = game_state.get_key();
-        if (transposition_table.count(key) == 1)
-        {
-            /* Transposition table data are stored in an unsigned integer.
-            The first 7 bits store value + 50. 50 is added to guarantee that a
-            positive integer is stored. The next 6 bits store depth.*/
-            uint_fast16_t tt_entry = transposition_table[key];
-            int tt_value = (tt_entry & 0b1111111) - 50;
-            int tt_depth = (tt_entry & 0b1111110000000) >> 7;
+        key = game_state.get_unique_key();
+        key_2 = game_state.get_zobrist_key() % 100000;
 
-            if(tt_value != 0 or tt_depth >= depth)
+        if (transposition_table_2[key_2])
+        {
+            uint_fast16_t tt_entry = transposition_table_2[key_2];
+            uint64_t tt_key = tt_entry  >> 15;
+            if(tt_key == key)
             {
-                if (tt_value >= beta)
+                /* Transposition table data are stored in an unsigned integer.
+                The first 7 bits store value + 50. 50 is added to guarantee that a
+                positive integer is stored. The next 6 bits store depth.
+                Bit 14 is one for lower bounds. Bit 15 is one for upper bounds.
+                The next 49 bits is used for storing a unique key for the transposition.*/
+
+                const int tt_value = (tt_entry & 0b1111111) - 50;
+                const int tt_depth = (tt_entry & 0b1111110000000) >> 7;
+                const bool lower_bound = tt_entry & 0b10000000000000;
+                const bool upper_bound = tt_entry & 0b100000000000000;
+
+                if(lower_bound)
                 {
-                   return beta;
+                    if(tt_value != 0 or tt_depth >= depth)
+                    {
+                        if (tt_value >= beta)
+                        {
+                           return beta;
+                        }
+                    }
+                }
+
+                if(upper_bound)
+                {
+                    if(tt_value != 0 or tt_depth >= depth)
+                    {
+                        if (tt_value < beta)
+                        {
+                           beta = tt_value;
+                        }
+                    }
+
+                    if(alpha >= beta)
+                    {
+                        return alpha;
+                    }
                 }
             }
         }
@@ -295,7 +325,8 @@ in a row.*/
             {
                 if (use_transposition_table) // Lower bounds
                 {
-                    transposition_table[key] = (depth << 7) | (beta + 50);
+                    transposition_table_2[key_2] = (key << 15) | 0b10000000000000 |
+                                         (depth << 7) | (beta + 50);
                 }
                 return beta;
             }
@@ -304,6 +335,12 @@ in a row.*/
                 alpha = value;
             }
         }
+    }
+
+    if (use_transposition_table) // Upper bounds
+    {
+        transposition_table_2[key_2] = (key << 15) | 0b100000000000000 |
+                         (depth << 7) | (alpha + 50);
     }
 
     return alpha;
@@ -530,7 +567,10 @@ is stopped. For example, depth=42 give a maximum depth search.*/
     /* Clearing the transposition table between moves makes the total move time a
     little slower. But the maximum move is not likely to be affected, since it's
     typically the first move. Clearing the table makes it easier to use.*/
-    transposition_table.clear();
+    for(int i=0; i<100000; i++)
+    {
+        transposition_table_2[i] = 0;
+    }
 
     // Look for a move that makes a four in a row.
     for (int n=0; n<=6; n++)

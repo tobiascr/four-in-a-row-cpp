@@ -409,27 +409,27 @@ void test_game_state()
     std::cout << "Test keys" << std::endl;
     std::cout << std::endl;
     load_position(game_state, "0045002523412413");
-    print_bitboard(game_state.get_key());
+    print_bitboard(game_state.get_unique_key());
     std::cout << std::endl;
-    print_bitboard(game_state.get_mirror_key());
+    print_bitboard(game_state.get_unique_mirror_key());
     std::cout << std::endl;
     load_position(game_state, "0013444");
-    print_bitboard(game_state.get_key());
+    print_bitboard(game_state.get_unique_key());
     std::cout << std::endl;
-    print_bitboard(game_state.get_mirror_key());
+    print_bitboard(game_state.get_unique_mirror_key());
     std::cout << std::endl;
     load_position(game_state, "3");
-    print_bitboard(game_state.get_key());
+    print_bitboard(game_state.get_unique_key());
     std::cout << std::endl;
-    print_bitboard(game_state.get_mirror_key());
+    print_bitboard(game_state.get_unique_mirror_key());
     std::cout << std::endl;
     load_position(game_state, "11466");
-    print_bitboard(game_state.get_key());
+    print_bitboard(game_state.get_unique_key());
     std::cout << std::endl;
-    print_bitboard(game_state.get_mirror_key());
+    print_bitboard(game_state.get_unique_mirror_key());
     std::cout << std::endl;
     load_position(game_state, "55200");
-    print_bitboard(game_state.get_key());
+    print_bitboard(game_state.get_unique_key());
 
     std::cout << std::endl;
     std::cout << "Test own_threat_above" << std::endl;
@@ -601,7 +601,7 @@ void test_transposition_table()
 //    GameState game_state;
 //    load_position(game_state, "01231234233");
 //    std::string key;
-//    key = game_state.get_key();
+//    key = game_state.get_unique_key();
 //    tt.set_lower_bound(key, 1000);
 //    std::cout << tt.lower_bound_available(key) << std::endl;
 //    std::cout << tt.get_lower_bound(key) << std::endl;
@@ -1164,17 +1164,17 @@ int main()
 //    test_from_file_best_moves("./testing/test_transpositions/small.best_moves", true);
 //   test_from_file_best_moves("./testing/test_transpositions/speed_test.best_moves", true);
 
-    Engine::EngineAPI engine(9126);
+    Engine::EngineAPI engine(912516);
     engine.set_difficulty_level(3);
-    TestEngine::EngineAPI test_engine(2541154);
-    test_engine.set_difficulty_level(2);
+    TestEngine::EngineAPI test_engine(25454334);
+    test_engine.set_difficulty_level(3);
 
 //    Engine::EngineAPI engine;
 //    engine.set_difficulty_level(3);
 //    TestEngine::EngineAPI test_engine;
 //    test_engine.set_difficulty_level(3);
 
-    engine_vs_engine(engine, test_engine, 50, false);
+    engine_vs_engine(engine, test_engine, 100, false);
 
     return 0;
 }

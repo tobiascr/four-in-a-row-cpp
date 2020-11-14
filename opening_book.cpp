@@ -61,7 +61,7 @@ void OpeningBook::load_opening_book_file(std::string file_name, bool values)
             c = line[n];
             value_string.append(c);
         }
-        key = game_state.get_key();
+        key = game_state.get_unique_key();
         if(values)
         {
             opening_book_values[key] = value_string;
@@ -78,7 +78,7 @@ std::vector<int> OpeningBook::get_best_moves(Engine::GameState& game_state)
 {
     std::string book_string = "";
     std::vector<int> best_moves;
-    uint64_t key = game_state.get_key();
+    uint64_t key = game_state.get_unique_key();
 
     if (opening_book_moves.count(key) == 1)
     {
@@ -96,7 +96,7 @@ std::vector<int> OpeningBook::get_best_moves(Engine::GameState& game_state)
         return best_moves;
     }
 
-    key = game_state.get_mirror_key();
+    key = game_state.get_unique_mirror_key();
     if (opening_book_moves.count(key) == 1)
     {
         book_string = opening_book_moves[key];
@@ -179,7 +179,7 @@ depth=42 give a maximum depth search.*/
     }
 
     std::string book_string;
-    uint64_t key = game_state.get_key();
+    uint64_t key = game_state.get_unique_key();
 
     if (opening_book_values.count(key) == 1)
     {
@@ -188,7 +188,7 @@ depth=42 give a maximum depth search.*/
     }
     else
     {
-       key = game_state.get_mirror_key();
+       key = game_state.get_unique_mirror_key();
        if (opening_book_values.count(key) == 1)
        {
           book_string = opening_book_values[key];

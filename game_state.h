@@ -76,12 +76,14 @@ public:
     /* There must be no four in a row in the game state and possibility for the
     player in turn to make a four in a row.*/
 
-    uint64_t get_key() const;
+    uint64_t get_unique_key() const;
     /* Return a unique key that corresponds to the current game state.*/
 
-    uint64_t get_mirror_key() const;
+    uint64_t get_unique_mirror_key() const;
     /* Return a unique key that corresponds to the mirrored version of the
     current game state.*/
+
+    uint32_t get_zobrist_key() const;
 
 private:
     /* The places where disks are positioned on the board is stored in bitboards
@@ -115,6 +117,24 @@ private:
     const uint64_t board_mask = 0b0111111011111101111110111111011111101111110111111;
     uint64_t next_moves;
     uint64_t next_moves_history[42];
+    uint32_t zobrist_key;
+
+    // Random numbers to use for Zobrist keys.
+    const uint64_t random_numbers[84] =
+    {233365778, 323053240, 3156326384, 1619824615, 1408550458, 1689030724,
+     3442979491, 2853287807, 1692922701, 658397745, 3303151175, 2104256279,
+     2415497163, 1051558874, 2588457125, 3376357842, 1888962657, 3794001249,
+     3638795069, 1730276612, 271029656, 2300141826, 2045462692, 2568370873,
+     1542508188, 912569306, 1798829996, 3718546274, 2376673007, 3983560801,
+     2935658018, 2819072703, 3549663376, 3692456834, 2157380482, 766607675,
+     2406353340, 2375700214, 1125740654, 246545968, 2834963847, 3677785623,
+     3293175401, 36674243, 3015487058, 1163011859, 50774060, 115476991,
+     2327330118, 3598651222, 1279581453, 1725363741, 2711757941, 689007059,
+     1650060212, 3726102468, 2800551579, 38614514, 2689893116, 2389681656,
+     1539207885, 1265000159, 3003002015, 2805336395, 3946759362, 3360101813,
+     3048028889, 2235030666, 1589179138, 2579351938, 1657401944, 2559535683,
+     1456382607, 1887196775, 3617756832, 3853077856, 438133448, 3682831322,
+     1070045159, 3263680127, 3465052477, 2566710711, 1037354185, 3639958555};
 
     int player_in_turn_() const;
     /* Return 0 if it's the beginning player in turn and else 1.*/
