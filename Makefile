@@ -1,8 +1,9 @@
 FLAGS=-O3
 
-game_objects=four_in_a_row_command_line.o opening_book.o game_state.o engine_API.o
+game_objects=four_in_a_row_command_line.o opening_book.o game_state.o engine_API.o \
+             transposition_table.o
 test_objects=test.o opening_book.o game_state.o engine_API.o test_game_state.o \
-             test_engine_API.o
+             test_engine_API.o transposition_table.o
 
 four_in_a_row_command_line: $(game_objects)
 	g++ $(FLAGS) $(game_objects) -o four_in_a_row_command_line
@@ -30,6 +31,9 @@ game_state.o: game_state.cpp
 
 engine_API.o: engine_API.cpp
 	g++ -c $(FLAGS) engine_API.cpp
+
+transposition_table.o: transposition_table.cpp
+	g++ -c $(FLAGS) transposition_table.cpp
 
 test.o: ./testing/test.cpp
 	g++ -c $(FLAGS) ./testing/test.cpp

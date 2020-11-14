@@ -27,7 +27,6 @@ void EngineAPI::set_difficulty_level(int difficulty_level)
 void EngineAPI::new_game()
 {
     game_state.reset();
-    transposition_table.clear();
 }
 
 bool EngineAPI::legal_move(int column)
@@ -231,57 +230,53 @@ depth=42 give a maximum depth search. This function can only be used if the
 game state has no four in a row and the player in turn can't make a four
 in a row.*/
 {
-    uint64_t key;
-    uint64_t key_2;
+    uint64_t unique_key;
+    uint64_t zobrist_key;
     int original_alpha = alpha;
 
     bool use_transposition_table = game_state.get_number_of_moves() < depth - 2; // 2
 
     if (use_transposition_table)
     {
-        key = game_state.get_unique_key();
-        key_2 = game_state.get_zobrist_key() % 100000;
-
-        if (transposition_table_2[key_2])
+        unique_key = game_state.get_unique_key();
+        zobrist_key = game_state.get_zobrist_key() % transposition_table.size;
+        const uint64_t tt_entry = transposition_table.values[zobrist_key];
+        const uint64_t tt_key = tt_entry  >> 15;
+        if(tt_key == unique_key)
         {
-            uint_fast16_t tt_entry = transposition_table_2[key_2];
-            uint64_t tt_key = tt_entry  >> 15;
-            if(tt_key == key)
+            /* Transposition table data are stored in an unsigned integer.
+            The first 7 bits store value + 50. 50 is added to guarantee that a
+            positive integer is stored. The next 6 bits store depth.
+            Bit 14 is one for lower bounds. Bit 15 is one for upper bounds.
+            The next 49 bits is used for storing a unique key for the transposition.*/
+
+            const int tt_value = (tt_entry & 0b1111111) - 50;
+            const int tt_depth = (tt_entry & 0b1111110000000) >> 7;
+            const bool lower_bound = tt_entry & 0b10000000000000;
+            const bool upper_bound = tt_entry & 0b100000000000000;
+
+            if(tt_depth <= depth and (tt_value != 0 or tt_depth == depth))
             {
-                /* Transposition table data are stored in an unsigned integer.
-                The first 7 bits store value + 50. 50 is added to guarantee that a
-                positive integer is stored. The next 6 bits store depth.
-                Bit 14 is one for lower bounds. Bit 15 is one for upper bounds.
-                The next 49 bits is used for storing a unique key for the transposition.*/
-
-                const int tt_value = (tt_entry & 0b1111111) - 50;
-                const int tt_depth = (tt_entry & 0b1111110000000) >> 7;
-                const bool lower_bound = tt_entry & 0b10000000000000;
-                const bool upper_bound = tt_entry & 0b100000000000000;
-
-                if((tt_value == 0 and tt_depth == depth) or (tt_value != 0 and tt_depth <= depth))
+                if(lower_bound)
                 {
-                    if(lower_bound)
+                    if (tt_value >= alpha)
                     {
-                        if (tt_value >= alpha)
-                        {
-                           alpha = tt_value;
-                        }
-                        if(alpha >= beta)
-                        {
-                           return beta;
-                        }
+                        alpha = tt_value;
                     }
-                    else if(upper_bound)
+                    if(alpha >= beta)
                     {
-                        if (tt_value < beta)
-                        {
-                            beta = tt_value;
-                        }
-                        if(alpha >= beta)
-                        {
-                            return alpha;
-                        }
+                        return beta;
+                    }
+                }
+                else if(upper_bound)
+                {
+                    if (tt_value < beta)
+                    {
+                        beta = tt_value;
+                    }
+                    if(alpha >= beta)
+                    {
+                        return alpha;
                     }
                 }
             }
@@ -323,8 +318,8 @@ in a row.*/
             {
                 if (use_transposition_table) // Lower bounds
                 {
-                    transposition_table_2[key_2] = (key << 15) | 0b10000000000000 |
-                                         (depth << 7) | (beta + 50);
+                    transposition_table.values[zobrist_key] = (unique_key << 15)
+                                    | 0b10000000000000 | (depth << 7) | (beta + 50);
                 }
                 return beta;
             }
@@ -337,7 +332,7 @@ in a row.*/
 
     if (use_transposition_table) // Upper bounds
     {
-        transposition_table_2[key_2] = (key << 15) | 0b100000000000000 |
+        transposition_table.values[zobrist_key] = (unique_key << 15) | 0b100000000000000 |
                          (depth << 7) | (alpha + 50);
     }
 
@@ -510,8 +505,6 @@ in a row.*/
 
 int EngineAPI::position_value_full_depth(const bool use_opening_book)
 {
-    transposition_table.clear();
-
     if(game_state.four_in_a_row())
     {
         return game_state.get_number_of_moves() - 43;

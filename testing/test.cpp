@@ -7,6 +7,7 @@
 #include "../game_state.h"
 #include "../engine_API.h"
 #include "test_engine_API.h"
+#include "../transposition_table.h"
 
 void load_position(Engine::GameState& game_state, std::string move_string)
 /* Load a position to the given game_state object. A position is described
@@ -587,28 +588,13 @@ void test_engine_API()
 
 void test_transposition_table()
 {
-//    using namespace Engine;
-//    TranspositionTable tt;
-//    tt.set_beta_cutuff_move("123", 1);
-//    std::cout << tt.beta_cutoff_move_available("123") << std::endl;
-//    std::cout << tt.beta_cutoff_move_available("1234") << std::endl;
-//    std::cout << tt.get_beta_cutoff_move("123") << std::endl;
-//    tt.set_lower_bound("111222", 20);
-//    std::cout << tt.lower_bound_available("111222") << std::endl;
-//    std::cout << tt.lower_bound_available("1234") << std::endl;
-//    std::cout << tt.get_lower_bound("111222") << std::endl;
+    using namespace Engine;
+    TranspositionTable tt;
 
-//    GameState game_state;
-//    load_position(game_state, "01231234233");
-//    std::string key;
-//    key = game_state.get_unique_key();
-//    tt.set_lower_bound(key, 1000);
-//    std::cout << tt.lower_bound_available(key) << std::endl;
-//    std::cout << tt.get_lower_bound(key) << std::endl;
-//    tt.reset();
-//    std::cout << tt.lower_bound_available("123") << std::endl;
-//    std::cout << tt.lower_bound_available("111222") << std::endl;
-//    std::cout << tt.lower_bound_available(key) << std::endl;
+    tt.values[1234] = 5;
+    tt.values[223] = 7;
+    std::cout << tt.values[1234] << " " << tt.values[223] << " " <<
+               tt.values[456] << std::endl;
 }
 
 void test_position(Engine::EngineAPI& engine, std::string move_string, int expected_move)
@@ -1153,6 +1139,7 @@ int main()
 //    test_game_state();
 //    test_engine_API();
 //    opening_test();
+//    test_transposition_table();
 
 //    test_from_file_values("./testing/test_transpositions/large.values", true);
 //    test_from_file_values("./testing/test_transpositions/medium.values", true);
@@ -1161,20 +1148,20 @@ int main()
 
 //    test_from_file_best_moves("./testing/test_transpositions/large.best_moves", true);
 //    test_from_file_best_moves("./testing/test_transpositions/medium.best_moves", true);
-    test_from_file_best_moves("./testing/test_transpositions/small.best_moves", true);
+//    test_from_file_best_moves("./testing/test_transpositions/small.best_moves", true);
 //   test_from_file_best_moves("./testing/test_transpositions/speed_test.best_moves", true);
 
     Engine::EngineAPI engine(912516);
     engine.set_difficulty_level(3);
-    TestEngine::EngineAPI test_engine(25454334);
-    test_engine.set_difficulty_level(2);
+    TestEngine::EngineAPI test_engine(253454334);
+    test_engine.set_difficulty_level(3);
 
 //    Engine::EngineAPI engine;
 //    engine.set_difficulty_level(3);
 //    TestEngine::EngineAPI test_engine;
 //    test_engine.set_difficulty_level(3);
 
-//    engine_vs_engine(engine, test_engine, 100, false);
+    engine_vs_engine(engine, test_engine, 100, false);
 
     return 0;
 }

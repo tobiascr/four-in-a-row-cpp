@@ -4,10 +4,10 @@
 #include <array>
 #include <vector>
 #include <random>
-#include <unordered_map>
 #include <string>
 #include "game_state.h"
 #include "opening_book.h"
+#include "transposition_table.h"
 
 namespace Engine
 {
@@ -52,13 +52,10 @@ public:
 private:
     Engine::GameState game_state;
     Engine::OpeningBook opening_book;
+    Engine::TranspositionTable transposition_table;
     int difficulty_level_;
     std::mt19937 random_generator;
-    std::unordered_map<uint64_t, uint_fast16_t> transposition_table;
-    std::unordered_map<uint64_t, std::string> opening_book_values;
-    std::unordered_map<uint64_t, std::string> opening_book_moves;
-
-    uint64_t transposition_table_2[100000];
+    uint64_t transposition_table_2[100000] = {0};
 
     int position_heuristic(int move) const;
 
