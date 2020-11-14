@@ -1161,20 +1161,20 @@ int main()
 
 //    test_from_file_best_moves("./testing/test_transpositions/large.best_moves", true);
 //    test_from_file_best_moves("./testing/test_transpositions/medium.best_moves", true);
-//    test_from_file_best_moves("./testing/test_transpositions/small.best_moves", true);
+    test_from_file_best_moves("./testing/test_transpositions/small.best_moves", true);
 //   test_from_file_best_moves("./testing/test_transpositions/speed_test.best_moves", true);
 
     Engine::EngineAPI engine(912516);
     engine.set_difficulty_level(3);
     TestEngine::EngineAPI test_engine(25454334);
-    test_engine.set_difficulty_level(3);
+    test_engine.set_difficulty_level(2);
 
 //    Engine::EngineAPI engine;
 //    engine.set_difficulty_level(3);
 //    TestEngine::EngineAPI test_engine;
 //    test_engine.set_difficulty_level(3);
 
-    engine_vs_engine(engine, test_engine, 100, false);
+//    engine_vs_engine(engine, test_engine, 100, false);
 
     return 0;
 }

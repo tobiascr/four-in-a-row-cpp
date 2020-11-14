@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <iostream>
 #include "engine_API.h"
 
 namespace Engine
@@ -260,30 +259,29 @@ in a row.*/
                 const bool lower_bound = tt_entry & 0b10000000000000;
                 const bool upper_bound = tt_entry & 0b100000000000000;
 
-                if(lower_bound)
+                if((tt_value == 0 and tt_depth == depth) or (tt_value != 0 and tt_depth <= depth))
                 {
-                    if(tt_value != 0 or tt_depth >= depth)
+                    if(lower_bound)
                     {
-                        if (tt_value >= beta)
+                        if (tt_value >= alpha)
+                        {
+                           alpha = tt_value;
+                        }
+                        if(alpha >= beta)
                         {
                            return beta;
                         }
                     }
-                }
-
-                if(upper_bound)
-                {
-                    if(tt_value != 0 or tt_depth >= depth)
+                    else if(upper_bound)
                     {
                         if (tt_value < beta)
                         {
-                           beta = tt_value;
+                            beta = tt_value;
                         }
-                    }
-
-                    if(alpha >= beta)
-                    {
-                        return alpha;
+                        if(alpha >= beta)
+                        {
+                            return alpha;
+                        }
                     }
                 }
             }
@@ -562,14 +560,6 @@ is stopped. For example, depth=42 give a maximum depth search.*/
     if (depth == 42)
     {
         moves = move_order();
-    }
-
-    /* Clearing the transposition table between moves makes the total move time a
-    little slower. But the maximum move is not likely to be affected, since it's
-    typically the first move. Clearing the table makes it easier to use.*/
-    for(int i=0; i<100000; i++)
-    {
-        transposition_table_2[i] = 0;
     }
 
     // Look for a move that makes a four in a row.
