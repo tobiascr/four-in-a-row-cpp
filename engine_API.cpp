@@ -164,16 +164,27 @@ std::array<int,7> EngineAPI::move_order()
     int values[7] = {1, 3, 5, 6, 4, 2, 0};
     int player = game_state.get_number_of_moves() % 2;
 
+//    if(game_state.get_number_of_moves() < 16)
+//        {
+//        for (int move=0; move<=6; move++)
+//        {
+//            if(game_state.column_not_full(move))
+//            {
+//                values[move] = game_state.possible_four_in_a_row_count(move);
+//            }
+//        }
+//    }
+
     for (int move=0; move<=6; move++)
     {
         if(game_state.column_not_full(move))
         {
             game_state.make_move(move);
-            values[move] = 10 * game_state.open_four_in_a_row_count(player);
+            values[move] = 100 * game_state.open_four_in_a_row_count(player);
             game_state.undo_move(move);
             if(game_state.own_threat_above(move))
             {
-                values[move] = -10;
+                values[move] = -100;
             }
         }
     }
@@ -201,6 +212,40 @@ for moves that are estimated to be equally strong.*/
     }
 
     std::stable_sort(moves.begin(), moves.end(),
+                     [&values](int i, int j){return values[i] > values[j];});
+    return moves;
+}
+
+std::array<int,7> EngineAPI::move_order_3()
+{
+    std::array<int,7> moves;
+    int values[7] = {0, 0, 0, 0, 0, 0, 0};
+    int player = game_state.get_number_of_moves() % 2;
+
+    for (int move=0; move<=6; move++)
+    {
+        if(game_state.column_not_full(move))
+        {
+            values[move] = game_state.possible_four_in_a_row_count(move);
+        }
+    }
+
+    for (int move=0; move<=6; move++)
+    {
+        if(game_state.column_not_full(move))
+        {
+            game_state.make_move(move);
+            values[move] = 100 * game_state.open_four_in_a_row_count(player);
+//            values[move] -= 100 * game_state.open_four_in_a_row_count(1 - player);
+            game_state.undo_move(move);
+            if(game_state.own_threat_above(move))
+            {
+                values[move] = -100;
+            }
+        }
+    }
+
+    std::sort(moves.begin(), moves.end(),
                      [&values](int i, int j){return values[i] > values[j];});
     return moves;
 }
@@ -552,7 +597,7 @@ is stopped. For example, depth=42 give a maximum depth search.*/
 
     if (depth == 42)
     {
-        moves = move_order();
+        moves = move_order_3();
     }
 
     // Look for a move that makes a four in a row.

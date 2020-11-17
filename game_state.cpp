@@ -67,11 +67,6 @@ void GameState::undo_move(int column)
     next_moves = next_moves_history[number_of_moves];
 }
 
-int GameState::player_in_turn_() const
-{
-    return number_of_moves % 2;
-}
-
 uint64_t GameState::next_move(int column) const
 {
     return one << (column * 7 + column_height[column]);
@@ -261,6 +256,46 @@ int GameState::open_four_in_a_row_count(int player) const
     std::bitset<64> winning_positions = get_winning_positions_bitboard(bitboard[player])
                                  & board_mask & (~(bitboard[0] | bitboard[1]));
     return winning_positions.count();
+}
+
+int GameState::possible_four_in_a_row_count()
+{
+    uint64_t opponent_bitboard = bitboard[1 - player_in_turn];
+    int number_of_possible_four_in_a_rows = 0;
+    for(uint64_t four_in_a_row_bitboard : four_in_a_row_bitboards)
+    {
+        if((four_in_a_row_bitboard & opponent_bitboard) == 0)
+        {
+           number_of_possible_four_in_a_rows++;
+        };
+    }
+    return number_of_possible_four_in_a_rows;
+}
+
+int GameState::possible_four_in_a_row_count(int column)
+{
+//    uint64_t opponent_bitboard = bitboard[1 - player_in_turn];
+//    int number_of_possible_four_in_a_rows = 0;
+//    for(uint64_t four_in_a_row_bitboard : four_in_a_row_bitboards)
+//    {
+//        if(four_in_a_row_bitboard & next_move(column))
+//        {
+//            if((four_in_a_row_bitboard & opponent_bitboard) == 0)
+//            {
+////                if(four_in_a_row_bitboard & bitboard[player_in_turn])
+////                {
+////                    number_of_possible_four_in_a_rows += 2;
+////                };
+//                number_of_possible_four_in_a_rows++;
+//            };
+//        }
+//    }
+//    return number_of_possible_four_in_a_rows;
+
+    make_move(column);
+    int new_count = possible_four_in_a_row_count();
+    undo_move(column);
+    return new_count - possible_four_in_a_row_count();
 }
 
 bool GameState::board_full() const
