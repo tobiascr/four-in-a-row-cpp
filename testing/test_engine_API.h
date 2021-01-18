@@ -93,8 +93,6 @@ private:
 
     int random_best_opening_move();
 
-    int engine_move_random();
-
     int engine_move_easy();
 
     int engine_move_medium();

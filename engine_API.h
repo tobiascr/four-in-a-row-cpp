@@ -61,15 +61,13 @@ private:
 
     int position_heuristic_2(int move) const;
 
-    int left_right_balance() const;
-
-    int adjacent_filled_position_count(int column) const;
+    int random_game_heuristic();
 
     std::array<int,7> move_order();
 
     std::array<int,7> move_order_2();
 
-    std::array<int,7> move_order_3();
+    std::array<int,7> move_order_random_games();
 
     std::array<int,7> move_order(int first_move);
 
@@ -85,8 +83,6 @@ private:
     int engine_move(const int depth);
 
     int random_move();
-
-    int engine_move_random();
 
     int engine_move_easy();
 

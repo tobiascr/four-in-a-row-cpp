@@ -57,6 +57,9 @@ public:
     uint64_t get_opponent_winning_positions_bitboard() const;
     /* Can also include already occupied positions and positions outside the board.*/
 
+    uint64_t get_winning_positions_bitboard_non_vertical(uint64_t bitboard) const;
+    /* Can also include already occupied positions and positions outside the board.*/
+
     std::array<bool,7> get_non_losing_moves();
     /*Return a list of values that tells if that the player in turn can make
     a move such that the opponent can't make a four in a row the next move.
@@ -68,19 +71,9 @@ public:
     a four in a row. player is 0 for the player making the first move and 1
     for the other player.*/
 
-    int possible_four_in_a_row_count();
-
-    int possible_four_in_a_row_count(int column);
-    /* Given that the player in turn makes a move to column, return a value based
-    on the number of four in a rows that can be made later in the game by the same player.*/
-
     bool board_full() const;
 
     int get_number_of_moves() const;
-
-    int position_value_40_ply();
-    /* There must be no four in a row in the game state and possibility for the
-    player in turn to make a four in a row.*/
 
     uint64_t get_unique_key() const;
     /* Return a unique key that corresponds to the current game state.*/
@@ -90,6 +83,16 @@ public:
     current game state.*/
 
     uint32_t get_zobrist_key() const;
+
+    int possible_four_in_a_row_count(bool include_vertical=true);
+    /* Return the number of possible four in a rows that can at some stage be made to the
+    current game state by the player that made the last move that include at least one
+    of that players already present disks.*/
+
+    int open_four_in_a_row_count_2_missing(bool include_vertical=true);
+    /* Return the number of possible four in a rows that can at some stage be made to the
+    current game state by the player that made the last move that include exactly two
+    of that players already present disks.*/
 
 private:
     /* The places where disks are positioned on the board is stored in bitboards

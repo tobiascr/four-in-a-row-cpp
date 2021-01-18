@@ -689,11 +689,6 @@ covered by the opening book.*/
     return best_move;
 }
 
-int EngineAPI::engine_move_random()
-{
-    return random_move();
-}
-
 int EngineAPI::engine_move_easy()
 {
     if (game_state.get_number_of_moves() < 8)
@@ -722,18 +717,13 @@ int EngineAPI::engine_move_medium()
         return moves[uid(random_generator)];
     }
 
-    int depth = game_state.get_number_of_moves() + 20; //10
+    int depth = game_state.get_number_of_moves() + 5;
     if (depth > 42) {depth = 42;}
     return engine_move(depth, true);
 }
 
 int EngineAPI::engine_move_hard()
 {
-//    if (game_state.get_number_of_moves() == 0)
-//    {
-//        return 2;
-//    }
-
     if (game_state.get_number_of_moves() < 8)
     {
         return random_best_opening_move();

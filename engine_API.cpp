@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <stack>
 #include "engine_API.h"
 
 namespace Engine
@@ -101,61 +102,42 @@ Central positions are given higher values. If the move is not legal, the value i
     return values[row][move];
 }
 
-int EngineAPI::left_right_balance() const
+int EngineAPI::random_game_heuristic()
+/* Give a heuristic evaluation of the current game state based on playing many
+random games and count how many is won by the player in turn.*/
 {
-    return game_state.get_number_of_disks_in_column(0) +
-           game_state.get_number_of_disks_in_column(1) +
-           game_state.get_number_of_disks_in_column(2) -
-           game_state.get_number_of_disks_in_column(4) -
-           game_state.get_number_of_disks_in_column(5) -
-           game_state.get_number_of_disks_in_column(6);
-}
-
-int EngineAPI::adjacent_filled_position_count(int column) const
-{
-    int number_of_filled_positions = 0;
-    int h = game_state.get_number_of_disks_in_column(column);
-
-    if(h > 0)
+    int number_of_won_games = 0;
+    for(int i = 0; i<500; i++)
     {
-        number_of_filled_positions = 1;
-    }
+        int number_of_moves = 0;
+        std::stack<int> move_history;
 
-    if(column > 0)
-    {
-        int n = game_state.get_number_of_disks_in_column(column - 1);
-        if(n == h - 1)
+        // Play a game.
+        while(not game_state.board_full())
         {
-            number_of_filled_positions += 1;
+            int move = random_move();
+            game_state.make_move(move);
+            move_history.push(move);
+            number_of_moves++;
+            if(game_state.four_in_a_row())
+            {
+                if(number_of_moves % 2)
+                {
+                    number_of_won_games++;
+                }
+                break;
+            }
         }
-        if(n == h)
+
+        // Undo the moves in the game.
+        while(not move_history.empty())
         {
-            number_of_filled_positions += 2;
-        }
-        if(n > h)
-        {
-            number_of_filled_positions += 3;
+            game_state.undo_move(move_history.top());
+            move_history.pop();
         }
     }
 
-    if(column < 6)
-    {
-        int n = game_state.get_number_of_disks_in_column(column + 1);
-        if(n == h - 1)
-        {
-            number_of_filled_positions += 1;
-        }
-        if(n == h)
-        {
-            number_of_filled_positions += 2;
-        }
-        if(n > h)
-        {
-            number_of_filled_positions += 3;
-        }
-    }
-
-    return number_of_filled_positions;
+    return number_of_won_games;
 }
 
 std::array<int,7> EngineAPI::move_order()
@@ -164,23 +146,12 @@ std::array<int,7> EngineAPI::move_order()
     int values[7] = {1, 3, 5, 6, 4, 2, 0};
     int player = game_state.get_number_of_moves() % 2;
 
-//    if(game_state.get_number_of_moves() < 16)
-//        {
-//        for (int move=0; move<=6; move++)
-//        {
-//            if(game_state.column_not_full(move))
-//            {
-//                values[move] = game_state.possible_four_in_a_row_count(move);
-//            }
-//        }
-//    }
-
     for (int move=0; move<=6; move++)
     {
         if(game_state.column_not_full(move))
         {
             game_state.make_move(move);
-            values[move] = 100 * game_state.open_four_in_a_row_count(player);
+            values[move] += 100 * game_state.open_four_in_a_row_count(player);
             game_state.undo_move(move);
             if(game_state.own_threat_above(move))
             {
@@ -195,39 +166,55 @@ std::array<int,7> EngineAPI::move_order()
 }
 
 std::array<int,7> EngineAPI::move_order_2()
-/* Return a move order for a root negamax search based on a heuristic evaluation
-of the current game state. There is some randomness included in the move ordering
-for moves that are estimated to be equally strong.*/
 {
+    const bool include_vertical = false;
     std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
-    int values[7];
-
-    // Adding randomness to the move order.
-    shuffle(moves.begin(), moves.end(), random_generator);
-
-    for (int n=0; n<=6; n++)
-    {
-          values[n] = position_heuristic_2(n);
-//          values[n] = adjacent_filled_position_count(n);
-    }
-
-    std::stable_sort(moves.begin(), moves.end(),
-                     [&values](int i, int j){return values[i] > values[j];});
-    return moves;
-}
-
-std::array<int,7> EngineAPI::move_order_3()
-{
-    std::array<int,7> moves;
-    int values[7] = {0, 0, 0, 0, 0, 0, 0};
+    int values[7] = {1, 3, 5, 6, 4, 2, 0};
     int player = game_state.get_number_of_moves() % 2;
 
     for (int move=0; move<=6; move++)
     {
         if(game_state.column_not_full(move))
         {
-            values[move] = game_state.possible_four_in_a_row_count(move);
+            game_state.make_move(move);
+            values[move] += 1000 * game_state.open_four_in_a_row_count(player) +
+                            10 * game_state.open_four_in_a_row_count_2_missing(include_vertical);
+            game_state.undo_move(move);
+            if(game_state.own_threat_above(move))
+            {
+                values[move] = -1000;
+            }
         }
+    }
+
+    std::sort(moves.begin(), moves.end(),
+                     [&values](int i, int j){return values[i] > values[j];});
+    return moves;
+}
+
+std::array<int,7> EngineAPI::move_order_random_games()
+/* A move order based on the random game heuristic.*/
+{
+    std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
+    int values[7] = {1, 3, 5, 6, 4, 2, 0};
+    int player = game_state.get_number_of_moves() % 2;
+
+    int best_move;
+    int best_value = -1000;
+    for (int move=1; move<=5; move++)
+    {
+        if(game_state.column_not_full(move))
+        {
+            game_state.make_move(move);
+            int value= -random_game_heuristic();
+            game_state.undo_move(move);
+            if(value > best_value);
+            best_move = move;
+        }
+    }
+    if(best_value > -1000)
+    {
+        values[best_move] = 50;
     }
 
     for (int move=0; move<=6; move++)
@@ -235,8 +222,8 @@ std::array<int,7> EngineAPI::move_order_3()
         if(game_state.column_not_full(move))
         {
             game_state.make_move(move);
-            values[move] = 100 * game_state.open_four_in_a_row_count(player);
-//            values[move] -= 100 * game_state.open_four_in_a_row_count(1 - player);
+            values[move] += 100 * game_state.open_four_in_a_row_count(player)
+                            + game_state.possible_four_in_a_row_count();
             game_state.undo_move(move);
             if(game_state.own_threat_above(move))
             {
@@ -268,8 +255,9 @@ std::array<int,7> EngineAPI::move_order(int first_move)
 int EngineAPI::negamax(const int depth, int alpha, int beta)
 /* Compute a value of game_state. Return a positive integer for a winning
 game_state for the player in turn, 0 for a draw or unknown outcome and a
-negative integer for a loss. A win at move 42 give the value 1, a win at move 41
-give a the value 2 etc, and vice versa for losses.
+negative integer for a loss. A win at move 42 give the value 100, a win at move 41
+give a the value 200 etc, and vice versa for losses. Heuristic values can be given
+in the range from -99 to 99.
 Depth is counted as the move number at which the search is stopped. For example,
 depth=42 give a maximum depth search. This function can only be used if the
 game state has no four in a row and the player in turn can't make a four
@@ -304,7 +292,7 @@ in a row.*/
             {
                 if(lower_bound)
                 {
-                    if (tt_value >= alpha)
+                    if (tt_value > alpha)
                     {
                         alpha = tt_value;
                     }
@@ -342,14 +330,16 @@ in a row.*/
 
     if (game_state.get_number_of_moves() >= depth - 2)
     {
-        return 0;
+        {
+            return 0;
+        }
     }
 
     // Move order.
     std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
-    if (game_state.get_number_of_moves() < depth - 10)
+    if (game_state.get_number_of_moves() < depth - 12)
     {
-        moves = move_order();
+            moves = move_order();
     }
 
     for(int move : moves)
@@ -506,7 +496,10 @@ in a row.*/
         return {best_move};
     }
 
-    d += 1;
+    d += 1;    if(game_state.can_win_this_move())
+    {
+        return 42 - game_state.get_number_of_moves();
+    }
 
     while (d <= 42)
     {
@@ -593,12 +586,7 @@ is stopped. For example, depth=42 give a maximum depth search.*/
     int alpha = -1000;
     int beta = 1000;
 
-    std::array<int,7> moves = move_order_2();
-
-    if (depth == 42)
-    {
-        moves = move_order_3();
-    }
+    std::array<int,7> moves = move_order();
 
     // Look for a move that makes a four in a row.
     for (int n=0; n<=6; n++)
@@ -650,11 +638,6 @@ int EngineAPI::random_move()
     return 0;
 }
 
-int EngineAPI::engine_move_random()
-{
-    return random_move();
-}
-
 int EngineAPI::engine_move_easy()
 {
     if (game_state.get_number_of_moves() < 8)
@@ -666,6 +649,35 @@ int EngineAPI::engine_move_easy()
 
 int EngineAPI::engine_move_medium()
 {
+    if (game_state.get_number_of_moves() == 5)
+    {
+        if(game_state.get_number_of_disks_in_column(3) == 5)
+        {
+            std::vector<int> moves = {0, 2, 3, 4, 6};
+            std::uniform_int_distribution<> uid(0, 4);
+            return moves[uid(random_generator)];
+        }
+    }
+
+    if (game_state.get_number_of_moves() == 1)
+    {
+        if(game_state.get_number_of_disks_in_column(0) == 1)
+        {
+            return 3;
+        }
+        if(game_state.get_number_of_disks_in_column(6) == 1)
+        {
+            return 3;
+        }
+    }
+
+    std::vector<int> best_moves = opening_book.get_best_moves(game_state);
+    if(not best_moves.empty())
+    {
+        std::uniform_int_distribution<> uid(0, best_moves.size() - 1);
+        return best_moves[uid(random_generator)];
+    }
+
     int depth = game_state.get_number_of_moves() + 10;
     if (depth > 42) {depth = 42;}
     return engine_move(depth);
@@ -682,6 +694,20 @@ int EngineAPI::engine_move_hard()
             std::vector<int> moves = {0, 2, 3, 4, 6};
             std::uniform_int_distribution<> uid(0, 4);
             return moves[uid(random_generator)];
+        }
+    }
+
+    // 03 and 63 gives rise faster to compute transpositions later in the game
+    // and it looks to be better for a weak engine than 01 and 65.
+    if (game_state.get_number_of_moves() == 1)
+    {
+        if(game_state.get_number_of_disks_in_column(0) == 1)
+        {
+            return 3;
+        }
+        if(game_state.get_number_of_disks_in_column(6) == 1)
+        {
+            return 3;
         }
     }
 

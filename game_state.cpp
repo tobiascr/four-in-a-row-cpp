@@ -208,6 +208,32 @@ uint64_t GameState::get_winning_positions_bitboard(uint64_t bitboard) const
     return winning_positions;
 }
 
+uint64_t GameState::get_winning_positions_bitboard_non_vertical(uint64_t bitboard) const
+/* Can also include already occupied positions and positions outside the board.*/
+{
+    uint64_t winning_positions = 0;
+
+    // Horizontal direction
+    winning_positions |= (bitboard & (bitboard << 7) & (bitboard << 14)) << 7; // ooox
+    winning_positions |= (bitboard & (bitboard << 7) & (bitboard << 14)) >> 21; // xooo
+    winning_positions |= ((bitboard & (bitboard << 21)) & (bitboard << 14)) >> 7; // ooxo
+    winning_positions |= ((bitboard & (bitboard << 21)) & (bitboard << 7)) >> 14; // oxoo
+
+    // Diagonal direction 1
+    winning_positions |= (bitboard & (bitboard << 6) & (bitboard << 12)) << 6; // ooox
+    winning_positions |= (bitboard & (bitboard << 6) & (bitboard << 12)) >> 18; // xooo
+    winning_positions |= ((bitboard & (bitboard << 18)) & (bitboard << 12)) >> 6; // ooxo
+    winning_positions |= ((bitboard & (bitboard << 18)) & (bitboard << 6)) >> 12; // oxoo
+
+    // Diagonal direction 2
+    winning_positions |= (bitboard & (bitboard << 8) & (bitboard << 16)) << 8; // ooox
+    winning_positions |= (bitboard & (bitboard << 8) & (bitboard << 16)) >> 24; // xooo
+    winning_positions |= ((bitboard & (bitboard << 24)) & (bitboard << 16)) >> 8; // ooxo
+    winning_positions |= ((bitboard & (bitboard << 24)) & (bitboard << 8)) >> 16; // oxoo
+
+    return winning_positions;
+}
+
 std::array<bool,7> GameState::get_non_losing_moves()
 {
     const uint64_t opponent_winning_positions =
@@ -253,49 +279,9 @@ std::array<bool,7> GameState::get_non_losing_moves()
 
 int GameState::open_four_in_a_row_count(int player) const
 {
-    std::bitset<64> winning_positions = get_winning_positions_bitboard(bitboard[player])
-                                 & board_mask & (~(bitboard[0] | bitboard[1]));
+    std::bitset<64> winning_positions = get_winning_positions_bitboard_non_vertical
+                         (bitboard[player]) & board_mask & (~(bitboard[0] | bitboard[1]));
     return winning_positions.count();
-}
-
-int GameState::possible_four_in_a_row_count()
-{
-    uint64_t opponent_bitboard = bitboard[1 - player_in_turn];
-    int number_of_possible_four_in_a_rows = 0;
-    for(uint64_t four_in_a_row_bitboard : four_in_a_row_bitboards)
-    {
-        if((four_in_a_row_bitboard & opponent_bitboard) == 0)
-        {
-           number_of_possible_four_in_a_rows++;
-        };
-    }
-    return number_of_possible_four_in_a_rows;
-}
-
-int GameState::possible_four_in_a_row_count(int column)
-{
-//    uint64_t opponent_bitboard = bitboard[1 - player_in_turn];
-//    int number_of_possible_four_in_a_rows = 0;
-//    for(uint64_t four_in_a_row_bitboard : four_in_a_row_bitboards)
-//    {
-//        if(four_in_a_row_bitboard & next_move(column))
-//        {
-//            if((four_in_a_row_bitboard & opponent_bitboard) == 0)
-//            {
-////                if(four_in_a_row_bitboard & bitboard[player_in_turn])
-////                {
-////                    number_of_possible_four_in_a_rows += 2;
-////                };
-//                number_of_possible_four_in_a_rows++;
-//            };
-//        }
-//    }
-//    return number_of_possible_four_in_a_rows;
-
-    make_move(column);
-    int new_count = possible_four_in_a_row_count();
-    undo_move(column);
-    return new_count - possible_four_in_a_row_count();
 }
 
 bool GameState::board_full() const
@@ -306,43 +292,6 @@ bool GameState::board_full() const
 int GameState::get_number_of_moves() const
 {
     return number_of_moves;
-}
-
-int GameState::position_value_40_ply()
-{
-    int value = 0;
-    const uint64_t fifth_row = 0b0010000001000000100000010000001000000100000010000;
-
-    // If there is only one column that is not filled.
-    if (next_moves ^ fifth_row)
-    {
-        if (four_in_a_row_no_vertical(bitboard[1] | ((next_moves & board_mask) << 1)))
-        {
-            return -1;
-        }
-    }
-
-    // If there are two columns that are not filled.
-
-    // Testing both last moves at the same time.
-    if (not four_in_a_row(bitboard[1] | (next_moves & board_mask)))
-    {
-        return 0;
-    }
-
-    // To rule out false positives, test the last moves one at a time.
-    for (int col=0; col<=6; col++)
-    {
-        if (column_height[col] < 6)
-        {
-            if (four_in_a_row(bitboard[1] | next_move(col)))
-            {
-                return -1;
-            }
-        }
-    }
-
-    return 0;
 }
 
 uint64_t GameState::get_unique_key() const
@@ -375,4 +324,51 @@ uint32_t GameState::get_zobrist_key() const
 {
     return zobrist_key;
 }
+
+int GameState::possible_four_in_a_row_count(bool include_vertical)
+{
+    int number_of_possible_four_in_a_rows = 0;
+    int start_index = 0;
+    if(not include_vertical)
+    {
+        start_index = 21;
+    };
+
+    for(int i = start_index; i< 69; i++)
+    {
+        if((four_in_a_row_bitboards[i] & bitboard[player_in_turn]) == 0)
+        {
+            if(four_in_a_row_bitboards[i] & bitboard[1 - player_in_turn])
+            {
+                number_of_possible_four_in_a_rows++;
+            }
+        };
+    }
+    return number_of_possible_four_in_a_rows;
+}
+
+int GameState::open_four_in_a_row_count_2_missing(bool include_vertical)
+{
+    int n = 0;
+    int start_index = 0;
+    if(not include_vertical)
+    {
+        start_index = 21;
+    };
+
+    for(int i = start_index; i< 69; i++)
+    {
+        if((four_in_a_row_bitboards[i] & bitboard[player_in_turn]) == 0)
+        {
+            std::bitset<64> possible_open_four_in_a_row =
+                            four_in_a_row_bitboards[i] & bitboard[1 - player_in_turn];
+            if(possible_open_four_in_a_row.count() == 2)
+            {
+                n++;
+            }
+        };
+    }
+    return n;
+}
+
 }

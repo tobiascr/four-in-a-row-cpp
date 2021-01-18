@@ -450,28 +450,29 @@ void test_game_state()
 
     std::cout << std::endl;
     std::cout << "Test possible_four_in_a_row_count" << std::endl;
-    load_position(game_state, "222343344");
-    print_board(game_state);
-    std::cout << "Player_in_turn: " << 1 + game_state.get_number_of_moves() % 2<< std::endl;
     std::cout << std::endl;
-    for(int col=0; col<=6; col++)
-    {
-        if(game_state.column_not_full(col))
-        {
-            std::cout << col << " " << game_state.possible_four_in_a_row_count(col) << std::endl;
-        }
-    }
-    load_position(game_state, "333012451");
+    load_position(game_state, "33333000");
     print_board(game_state);
-    std::cout << "Player_in_turn: " << 1 + game_state.get_number_of_moves() % 2<< std::endl;
+    std::cout << game_state.possible_four_in_a_row_count(true) << std::endl;
+    std::cout << game_state.possible_four_in_a_row_count(false) << std::endl;
     std::cout << std::endl;
-    for(int col=0; col<=6; col++)
-    {
-        if(game_state.column_not_full(col))
-        {
-            std::cout << col << " " << game_state.possible_four_in_a_row_count(col) << std::endl;
-        }
-    }
+    load_position(game_state, "05423");
+    print_board(game_state);
+    std::cout << game_state.possible_four_in_a_row_count(true) << std::endl;
+    std::cout << game_state.possible_four_in_a_row_count(false) << std::endl;
+
+    std::cout << std::endl;
+    std::cout << "Test open_four_in_a_row_count_2_missing" << std::endl;
+    std::cout << std::endl;
+    load_position(game_state, "121");
+    print_board(game_state);
+    std::cout << game_state.open_four_in_a_row_count_2_missing(true) << std::endl;
+    std::cout << game_state.open_four_in_a_row_count_2_missing(false) << std::endl;
+    std::cout << std::endl;
+    load_position(game_state, "3323312465");
+    print_board(game_state);
+    std::cout << game_state.open_four_in_a_row_count_2_missing(true) << std::endl;
+    std::cout << game_state.open_four_in_a_row_count_2_missing(false) << std::endl;
 }
 
 void test_engine_API()
@@ -678,8 +679,11 @@ void test_position_value(Engine::EngineAPI& engine, std::string move_string,
 }
 
 void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_engine, int number_of_games,
-                bool display_move_times)
-// Let engine and test_engine play against each other.
+                bool display_move_times, std::string start_position = "", int first_move = 0)
+/* Let engine and test_engine play against each other. A start position can be given as
+a move string. If first_move = 0 engine and test_engine make the first move every second time.
+If first_move = 1, engine always make the first move. If first_move = 2, test_engine always
+make the first move*/
 {
     using namespace Engine;
     int engine_wins = 0;
@@ -710,6 +714,16 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
 
     for (int n=1; n<=number_of_games; n++)
     {
+        if(first_move == 1)
+        {
+            engine_begin = true;
+        }
+
+        if(first_move == 2)
+        {
+            engine_begin = false;
+        }
+
         engine.new_game();
         test_engine.new_game();
         engine_to_play = engine_begin;
@@ -717,6 +731,46 @@ void engine_vs_engine(Engine::EngineAPI& engine, TestEngine::EngineAPI& test_eng
         game_time_engine = std::chrono::steady_clock::duration::zero();
         game_time_test_engine = std::chrono::steady_clock::duration::zero();
         std::cout << std::endl << "Game " << n << ":" << std::endl;
+
+        // Load the start position
+        for (char c : start_position)
+        {
+            if (c == '0')
+            {
+                engine.make_move(0);
+                test_engine.make_move(0);
+            }
+            if (c == '1')
+            {
+                engine.make_move(1);
+                test_engine.make_move(1);
+            }
+            if (c == '2')
+            {
+                engine.make_move(2);
+                test_engine.make_move(2);
+            }
+            if (c == '3')
+            {
+                engine.make_move(3);
+                test_engine.make_move(3);
+            }
+            if (c == '4')
+            {
+                engine.make_move(4);
+                test_engine.make_move(4);
+            }
+            if (c == '5')
+            {
+                engine.make_move(5);
+                test_engine.make_move(5);
+            }
+            if (c == '6')
+            {
+                engine.make_move(6);
+                test_engine.make_move(6);
+            }
+        }
 
         while (true)
         {
@@ -1161,7 +1215,7 @@ int main()
 {
     std::srand(time(NULL)); // Initialize the random number generator.
 
-//    test_game_state();
+    test_game_state();
 //    test_engine_API();
 //    opening_test();
 //    test_transposition_table();
@@ -1175,121 +1229,23 @@ int main()
 //    test_from_file_best_moves("./testing/test_transpositions/medium.best_moves", true);
 //    test_from_file_best_moves("./testing/test_transpositions/small.best_moves", true);
 //   test_from_file_best_moves("./testing/test_transpositions/speed_test.best_moves", true);
+//   test_from_file_best_moves("./testing/test_transpositions/time_test_201119.best_moves", true);
 
-//    Engine::EngineAPI engine(125116);
+
+//    Engine::EngineAPI engine(125416);
 //    engine.set_difficulty_level(3);
-//    TestEngine::EngineAPI test_engine(2554334);
-//    test_engine.set_difficulty_level(3);
+//    TestEngine::EngineAPI test_engine(255434);
+//    test_engine.set_difficulty_level(2);
 
     Engine::EngineAPI engine;
     engine.set_difficulty_level(3);
     TestEngine::EngineAPI test_engine;
     test_engine.set_difficulty_level(2);
 
-    engine_vs_engine(engine, test_engine, 400, false);
-
-
-
-
-
-
-
-
-
-
-
-
-//    const uint64_t four_in_a_row_bitboards[] = {
-//    //Vertical:
-
-//    0b0000000000000000000000000000000000000000000000000000000000001111,
-//    0b0000000000000000000000000000000000000000000000000000000000011110,
-//    0b0000000000000000000000000000000000000000000000000000000000111100,
-//    0b0000000000000000000000000000000000000000000000000000011110000000,
-//    0b0000000000000000000000000000000000000000000000000000111100000000,
-//    0b0000000000000000000000000000000000000000000000000001111000000000,
-//    0b0000000000000000000000000000000000000000000000111100000000000000,
-//    0b0000000000000000000000000000000000000000000001111000000000000000,
-//    0b0000000000000000000000000000000000000000000011110000000000000000,
-//    0b0000000000000000000000000000000000000001111000000000000000000000,
-//    0b0000000000000000000000000000000000000011110000000000000000000000,
-//    0b0000000000000000000000000000000000000111100000000000000000000000,
-//    0b0000000000000000000000000000000011110000000000000000000000000000,
-//    0b0000000000000000000000000000000111100000000000000000000000000000,
-//    0b0000000000000000000000000000001111000000000000000000000000000000,
-//    0b00000000000000000000000000111100000000000000000000000000000000000,
-//    0b0000000000000000000000001111000000000000000000000000000000000000,
-//    0b0000000000000000000000011110000000000000000000000000000000000000,
-//    0b0000000000000000001111000000000000000000000000000000000000000000,
-//    0b0000000000000000011110000000000000000000000000000000000000000000,
-//    0b0000000000000000111100000000000000000000000000000000000000000000,
-
-//    //Horizontal:
-//    0b000000000000000000000000000000000000000001000000100000010000001,
-//    0b000000000000000000000000000000000000000010000001000000100000010,
-//    0b000000000000000000000000000000000000000100000010000001000000100,
-//    0b000000000000000000000000000000000000001000000100000010000001000,
-//    0b000000000000000000000000000000000000010000001000000100000010000,
-//    0b000000000000000000000000000000000000100000010000001000000100000,
-//    0b000000000000000000000000000000000010000001000000100000010000000,
-//    0b000000000000000000000000000000000100000010000001000000100000000,
-//    0b000000000000000000000000000000001000000100000010000001000000000,
-//    0b000000000000000000000000000000010000001000000100000010000000000,
-//    0b000000000000000000000000000000100000010000001000000100000000000,
-//    0b000000000000000000000000000001000000100000010000001000000000000,
-//    0b000000000000000000000000000100000010000001000000100000000000000,
-//    0b000000000000000000000000001000000100000010000001000000000000000,
-//    0b000000000000000000000000010000001000000100000010000000000000000,
-//    0b000000000000000000000000100000010000001000000100000000000000000,
-//    0b000000000000000000000001000000100000010000001000000000000000000,
-//    0b000000000000000000000010000001000000100000010000000000000000000,
-//    0b000000000000000000001000000100000010000001000000000000000000000,
-//    0b000000000000000000010000001000000100000010000000000000000000000,
-//    0b000000000000000000100000010000001000000100000000000000000000000,
-//    0b000000000000000001000000100000010000001000000000000000000000000,
-//    0b000000000000000010000001000000100000010000000000000000000000000,
-//    0b000000000000000100000010000001000000100000000000000000000000000,
-
-//    //Diagonal 1:
-
-//    0b000000000000000000000000000000000000001000000010000000100000001,
-//    0b000000000000000000000000000000000000010000000100000001000000010,
-//    0b000000000000000000000000000000000000100000001000000010000000100,
-//    0b000000000000000000000000000000010000000100000001000000010000000,
-//    0b000000000000000000000000000000100000001000000010000000100000000,
-//    0b000000000000000000000000000001000000010000000100000001000000000,
-//    0b000000000000000000000000100000001000000010000000100000000000000,
-//    0b000000000000000000000001000000010000000100000001000000000000000,
-//    0b000000000000000000000010000000100000001000000010000000000000000,
-//    0b000000000000000001000000010000000100000001000000000000000000000,
-//    0b000000000000000010000000100000001000000010000000000000000000000,
-//    0b000000000000000100000001000000010000000100000000000000000000000,
-
-//    //Diagonal 2:
-
-//    0b000000000000000000000000000000000000000001000001000001000001000,
-//    0b000000000000000000000000000000000000000010000010000010000010000,
-//    0b000000000000000000000000000000000000000100000100000100000100000,
-//    0b000000000000000000000000000000000010000010000010000010000000000,
-//    0b000000000000000000000000000000000100000100000100000100000000000,
-//    0b000000000000000000000000000000001000001000001000001000000000000,
-//    0b000000000000000000000000000100000100000100000100000000000000000,
-//    0b000000000000000000000000001000001000001000001000000000000000000,
-//    0b000000000000000000000000010000010000010000010000000000000000000,
-//    0b000000000000000000001000001000001000001000000000000000000000000,
-//    0b000000000000000000010000010000010000010000000000000000000000000,
-//    0b000000000000000000100000100000100000100000000000000000000000000};
-
-
-//    for(uint64_t bitboard : four_in_a_row_bitboards)
-//    {
-//        print_bitboard(bitboard);
-//        std::cout << std::endl;
-//    }
-
-
-
-
+    bool display_move_times = false;
+    std::string start_position = "";
+    int number_of_games = 100;
+    engine_vs_engine(engine, test_engine, number_of_games, display_move_times, start_position, 2);
 
     return 0;
 }
