@@ -89,7 +89,7 @@ std::unordered_map<uint64_t, std::string> transposition_map(
                 game_state.undo_move(n);
                 continue;
             }
-            uint64_t key = game_state.get_key();
+            uint64_t key = game_state.get_unique_key();
             game_state.undo_move(n);
             std::string new_transposition = start_transposition + move[n];
 
@@ -98,7 +98,7 @@ std::unordered_map<uint64_t, std::string> transposition_map(
                 // Produce a mirrored move string.
                 std::string mirror = mirror_move_string(new_transposition);
                 load_position(mirrored_game_state, mirror);
-                uint64_t mirror_key = mirrored_game_state.get_key();
+                uint64_t mirror_key = mirrored_game_state.get_unique_key();
                 if(new_transposition_map.count(mirror_key) == 0)
                 {
                     new_transposition_map[key] = new_transposition;
@@ -131,16 +131,16 @@ int main()
     std::unordered_map<uint64_t, std::string> tr_1;
     game_state.reset();
     game_state.make_move(0);
-    tr_1[game_state.get_key()] = "0";
+    tr_1[game_state.get_unique_key()] = "0";
     game_state.reset();
     game_state.make_move(1);
-    tr_1[game_state.get_key()] = "1";
+    tr_1[game_state.get_unique_key()] = "1";
     game_state.reset();
     game_state.make_move(2);
-    tr_1[game_state.get_key()] = "2";
+    tr_1[game_state.get_unique_key()] = "2";
     game_state.reset();
     game_state.make_move(3);
-    tr_1[game_state.get_key()] = "3";
+    tr_1[game_state.get_unique_key()] = "3";
 
     // Produce more transposition lists with more moves.
     auto tr_2 = transposition_map(tr_1);

@@ -12,7 +12,7 @@
 
    Compilation and linking:
    g++ -O3 -c make_move_sequence_lists.cpp
-   g++ -o make_move_sequence_lists make_move_sequence_lists.o ../engine_API.o ../game_state.o
+   g++ -o make_move_sequence_lists make_move_sequence_lists.o ../engine_API.o ../game_state.o ../opening_book.o ../transposition_table.o
 */
 
 void load_position(Engine::EngineAPI& engine, std::string move_string)
@@ -78,6 +78,7 @@ std::string legal_moves(Engine::EngineAPI& engine, std::string transposition_mov
     {
         if(engine.get_value(col, 5) == '0') // If the column is not full.
         {
+            load_position(engine, transposition_move_string + moves[col]);
             if(not engine.four_in_a_row())
             {
                return_string += moves[col];
@@ -117,6 +118,20 @@ int main()
 //            file_to_write << move_sequence_string << move << std::endl;
 //            count++;
 //            std::cout << count << " sequences written" << std::endl;
+//        }
+
+//        // Add one best moves that does not give a four in a row.
+//        std::string moves = best_moves(engine, move_sequence_string);
+//        std::string move_order = "3241506";
+//        for(char move : move_order)
+//        {
+//            if(moves.find(move) != std::string::npos)
+//            {
+//                file_to_write << move_sequence_string << move << std::endl;
+//                count++;
+//                std::cout << count << " sequences written" << std::endl;
+//                break;
+//            }
 //        }
 
         // Add any move that does not give a four in a row.

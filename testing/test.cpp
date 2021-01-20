@@ -1215,7 +1215,7 @@ int main()
 {
     std::srand(time(NULL)); // Initialize the random number generator.
 
-    test_game_state();
+//    test_game_state();
 //    test_engine_API();
 //    opening_test();
 //    test_transposition_table();
@@ -1228,7 +1228,8 @@ int main()
 //    test_from_file_best_moves("./testing/test_transpositions/large.best_moves", true);
 //    test_from_file_best_moves("./testing/test_transpositions/medium.best_moves", true);
 //    test_from_file_best_moves("./testing/test_transpositions/small.best_moves", true);
-//   test_from_file_best_moves("./testing/test_transpositions/speed_test.best_moves", true);
+//    test_from_file_best_moves("./testing/test_transpositions/speed_test.best_moves", true);
+    test_from_file_best_moves("./testing/test_transpositions/speed_test_draws.best_moves", true);
 //   test_from_file_best_moves("./testing/test_transpositions/time_test_201119.best_moves", true);
 
 
@@ -1240,12 +1241,12 @@ int main()
     Engine::EngineAPI engine;
     engine.set_difficulty_level(3);
     TestEngine::EngineAPI test_engine;
-    test_engine.set_difficulty_level(2);
+    test_engine.set_difficulty_level(1);
 
     bool display_move_times = false;
-    std::string start_position = "";
-    int number_of_games = 100;
-    engine_vs_engine(engine, test_engine, number_of_games, display_move_times, start_position, 2);
+    std::string start_position = "1";
+    int number_of_games = 1000;
+//    engine_vs_engine(engine, test_engine, number_of_games, display_move_times, start_position, 1);
 
     return 0;
 }
