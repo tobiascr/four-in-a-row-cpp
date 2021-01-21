@@ -111,14 +111,14 @@ int main()
     {
         load_position(engine, move_sequence_string);
 
-//        // Add best moves that does not give a four in a row.
-//        std::string moves = best_moves(engine, move_sequence_string);
-//        for(char move : moves)
-//        {
-//            file_to_write << move_sequence_string << move << std::endl;
-//            count++;
-//            std::cout << count << " sequences written" << std::endl;
-//        }
+        // Add best moves that does not give a four in a row.
+        std::string moves = best_moves(engine, move_sequence_string);
+        for(char move : moves)
+        {
+            file_to_write << move_sequence_string << move << std::endl;
+            count++;
+            std::cout << count << " sequences written" << std::endl;
+        }
 
 //        // Add one best moves that does not give a four in a row.
 //        std::string moves = best_moves(engine, move_sequence_string);
@@ -134,14 +134,14 @@ int main()
 //            }
 //        }
 
-        // Add any move that does not give a four in a row.
-        std::string moves = legal_moves(engine, move_sequence_string);
-        for(char move : moves)
-        {
-            file_to_write << move_sequence_string << move << std::endl;
-            count++;
-            std::cout << count << " sequences written" << std::endl;
-        }
+//        // Add any move that does not give a four in a row.
+//        std::string moves = legal_moves(engine, move_sequence_string);
+//        for(char move : moves)
+//        {
+//            file_to_write << move_sequence_string << move << std::endl;
+//            count++;
+//            std::cout << count << " sequences written" << std::endl;
+//        }
     }
     file_to_read.close();
     file_to_write.close();
