@@ -496,10 +496,7 @@ in a row.*/
         return {best_move};
     }
 
-    d += 1;    if(game_state.can_win_this_move())
-    {
-        return 42 - game_state.get_number_of_moves();
-    }
+    d += 1;
 
     while (d <= 42)
     {
