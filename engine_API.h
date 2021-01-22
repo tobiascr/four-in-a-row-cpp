@@ -80,6 +80,8 @@ private:
 
     int iterative_deepening_full_depth_move(std::array<int,7> move_order_);
 
+    int iterative_deepening_full_depth_move_likely_win(std::array<int,7> move_order_);
+
     int engine_move(const int depth);
 
     int random_move();

@@ -534,6 +534,80 @@ in a row.*/
         }
         d += 1;
     }
+
+    // If draw.
+    return best_move;
+}
+
+int EngineAPI::iterative_deepening_full_depth_move_likely_win(std::array<int,7> move_order_)
+/* Return a move (0 to 6). It's best to not use for boards that are
+almost full, to avoid problematic edge cases. This function can only be used if the
+game state has no four in a row and the player in turn can't make a four
+in a row. This function is optimized to find a win fast. If there is no win, it might
+be slower than other algorithms.*/
+{
+    int value, best_move;
+    int alpha = -1;
+    int beta = 1;
+    int d = game_state.get_number_of_moves() + 2;
+    std::array<int,2> values = root_negamax(d, move_order_, alpha, beta);
+    best_move = values[0];
+    value = values[1];
+
+    // If win or loss
+    if(value != 0)
+    {
+        return {best_move};
+    }
+
+    d += 1;
+
+    while (d <= 42)
+    {
+        // In every other ply level it's not possible to win and in every other
+        // it's not possible to lose.
+        if((game_state.get_number_of_moves() + d) % 2)
+        {
+            // Look for a win
+            alpha = 0;
+            beta = 1;
+
+            values = root_negamax(d, move_order_, alpha, beta);
+            value = values[1];
+
+            if(value > 0)
+            {
+                return {values[0]};
+            }
+        }
+        d += 1;
+    }
+
+    d = game_state.get_number_of_moves() + 3;
+
+    while (d <= 42)
+    {
+        // In every other ply level it's not possible to win and in every other
+        // it's not possible to lose.
+        if((game_state.get_number_of_moves() + d) % 2 == 0)
+        {
+            // Look to avoid a loss
+            alpha = -1;
+            beta = 0;
+
+            values = root_negamax(d, move_order_, alpha, beta);
+            value = values[1];
+
+            if(value < 0)
+            {
+                return {best_move};
+            }
+
+            best_move = values[0];
+        }
+        d += 1;
+    }
+
     // If draw.
     return best_move;
 }
@@ -611,7 +685,14 @@ is stopped. For example, depth=42 give a maximum depth search.*/
     std::array<int,2> values;
     if(depth == 42 and game_state.get_number_of_moves() < 37)
     {
-        return iterative_deepening_full_depth_move(moves);
+        if(game_state.get_number_of_moves() % 2 == 0) // If the beginning player is in turn.
+        {
+            return iterative_deepening_full_depth_move_likely_win(moves);
+        }
+        else
+        {
+            return iterative_deepening_full_depth_move(moves);
+        }
     }
     else
     {
