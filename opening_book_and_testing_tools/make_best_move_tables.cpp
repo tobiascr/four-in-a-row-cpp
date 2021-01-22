@@ -11,7 +11,7 @@
 
    Compilation and linking:
    g++ -O3 -c make_best_move_tables.cpp
-   g++ -o make_best_move_tables make_best_move_tables.o ../engine_API.o ../game_state.o ../opening_book.o
+   g++ -o make_best_move_tables make_best_move_tables.o ../engine_API.o ../game_state.o ../opening_book.o ../transposition_table.o
 */
 
 void load_position(Engine::EngineAPI& engine, std::string move_string)

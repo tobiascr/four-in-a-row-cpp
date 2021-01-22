@@ -13,7 +13,7 @@ public:
 
     uint64_t* values;
 
-    const int size = 1000000;
+    const int size = 50000000;
 };
 }
 

@@ -267,7 +267,7 @@ in a row.*/
     uint64_t zobrist_key;
     int original_alpha = alpha;
 
-    bool use_transposition_table = game_state.get_number_of_moves() < depth - 2; // 2
+    bool use_transposition_table = game_state.get_number_of_moves() < depth - 4;
 
     if (use_transposition_table)
     {
