@@ -167,7 +167,6 @@ std::array<int,7> EngineAPI::move_order()
 
 std::array<int,7> EngineAPI::move_order_2()
 {
-    const bool include_vertical = false;
     std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
     int values[7] = {1, 3, 5, 6, 4, 2, 0};
     int player = game_state.get_number_of_moves() % 2;
@@ -177,53 +176,7 @@ std::array<int,7> EngineAPI::move_order_2()
         if(game_state.column_not_full(move))
         {
             game_state.make_move(move);
-            values[move] += 1000 * game_state.open_four_in_a_row_count(player) +
-                            10 * game_state.open_four_in_a_row_count_2_missing(include_vertical);
-            game_state.undo_move(move);
-            if(game_state.own_threat_above(move))
-            {
-                values[move] = -1000;
-            }
-        }
-    }
-
-    std::sort(moves.begin(), moves.end(),
-                     [&values](int i, int j){return values[i] > values[j];});
-    return moves;
-}
-
-std::array<int,7> EngineAPI::move_order_random_games()
-/* A move order based on the random game heuristic.*/
-{
-    std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
-    int values[7] = {1, 3, 5, 6, 4, 2, 0};
-    int player = game_state.get_number_of_moves() % 2;
-
-    int best_move;
-    int best_value = -1000;
-    for (int move=1; move<=5; move++)
-    {
-        if(game_state.column_not_full(move))
-        {
-            game_state.make_move(move);
-            int value= -random_game_heuristic();
-            game_state.undo_move(move);
-            if(value > best_value);
-            best_move = move;
-        }
-    }
-    if(best_value > -1000)
-    {
-        values[best_move] = 50;
-    }
-
-    for (int move=0; move<=6; move++)
-    {
-        if(game_state.column_not_full(move))
-        {
-            game_state.make_move(move);
-            values[move] += 100 * game_state.open_four_in_a_row_count(player)
-                            + game_state.possible_four_in_a_row_count();
+            values[move] += 100 * game_state.open_four_in_a_row_count_2(player);
             game_state.undo_move(move);
             if(game_state.own_threat_above(move))
             {
@@ -289,6 +242,7 @@ in a row.*/
             const bool upper_bound = tt_entry & 0b100000000000000;
 
             if(tt_depth <= depth and (tt_value != 0 or tt_depth == depth))
+//            if(tt_value != 0 or tt_depth == depth)
             {
                 if(lower_bound)
                 {
