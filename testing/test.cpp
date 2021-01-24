@@ -1233,15 +1233,9 @@ int main()
 //   test_from_file_best_moves("./testing/test_transpositions/time_test_201119.best_moves", true);
 
 
-    Engine::EngineAPI engine(455146);
-    engine.set_difficulty_level(3);
-    TestEngine::EngineAPI test_engine(542334);
-    test_engine.set_difficulty_level(2);
-
-//    Engine::EngineAPI engine;
-//    Engine::EngineAPI engine(4554146);
+//    Engine::EngineAPI engine(455146);
 //    engine.set_difficulty_level(3);
-//    TestEngine::EngineAPI test_engine(25542334);
+//    TestEngine::EngineAPI test_engine(542334);
 //    test_engine.set_difficulty_level(2);
 
     Engine::EngineAPI engine;
