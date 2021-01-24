@@ -71,6 +71,11 @@ public:
     a four in a row. player is 0 for the player making the first move and 1
     for the other player.*/
 
+    int open_four_in_a_row_count_2(int player) const;
+    /* Return the number of unoccupied places on the board that give player
+    a four in a row that is likely to be useful. Player is 0 for the player
+    making the first move and 1 for the other player.*/
+
     bool board_full() const;
 
     int get_number_of_moves() const;

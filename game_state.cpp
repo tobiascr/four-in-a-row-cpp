@@ -284,6 +284,32 @@ int GameState::open_four_in_a_row_count(int player) const
     return winning_positions.count();
 }
 
+int GameState::open_four_in_a_row_count_2(int player) const
+{
+    uint64_t row_0 = 0b1000000100000010000001000000100000010000001;
+    uint64_t row_1 = 0b10000001000000100000010000001000000100000010;
+    uint64_t row_2 = 0b100000010000001000000100000010000001000000100;
+    uint64_t row_3 = 0b1000000100000010000001000000100000010000001000;
+    uint64_t row_4 = 0b10000001000000100000010000001000000100000010000;
+    uint64_t row_5 = 0b100000010000001000000100000010000001000000100000;
+
+    std::bitset<64> winning_positions;
+    if(player == 0)
+    {
+        winning_positions = get_winning_positions_bitboard_non_vertical
+               (bitboard[player]) & board_mask & (~(bitboard[0] | bitboard[1] | next_moves))
+               & (row_0 | row_2 | row_4);
+    }
+    else
+    {
+        winning_positions = get_winning_positions_bitboard_non_vertical
+               (bitboard[player]) & board_mask & (~(bitboard[0] | bitboard[1] | next_moves))
+               & (row_1 | row_3 | row_5);
+    }
+
+    return winning_positions.count();
+}
+
 bool GameState::board_full() const
 {
     return number_of_moves == 42;
