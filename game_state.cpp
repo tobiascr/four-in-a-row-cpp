@@ -244,10 +244,7 @@ std::array<bool,7> GameState::get_non_losing_moves()
 
     if(blocking_moves)
     {
-        std::bitset<64> bl = blocking_moves;
-        int number_of_blocking_moves = bl.count();
-
-        if(number_of_blocking_moves > 1)
+        if(blocking_moves & (blocking_moves - 1)) // Test if more than 1 bit is set to 1.
         {
             return {false, false, false, false, false, false, false};
         }

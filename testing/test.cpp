@@ -1233,19 +1233,19 @@ int main()
 //   test_from_file_best_moves("./testing/test_transpositions/time_test_201119.best_moves", true);
 
 
-//    Engine::EngineAPI engine(455146);
-//    engine.set_difficulty_level(3);
-//    TestEngine::EngineAPI test_engine(542334);
-//    test_engine.set_difficulty_level(2);
-
-    Engine::EngineAPI engine;
+    Engine::EngineAPI engine(455146);
     engine.set_difficulty_level(3);
-    TestEngine::EngineAPI test_engine;
+    TestEngine::EngineAPI test_engine(542334);
     test_engine.set_difficulty_level(2);
+
+//    Engine::EngineAPI engine;
+//    engine.set_difficulty_level(3);
+//    TestEngine::EngineAPI test_engine;
+//    test_engine.set_difficulty_level(2);
 
     bool display_move_times = false;
     std::string start_position = "";
-    int number_of_games = 500;
+    int number_of_games = 100;
     engine_vs_engine(engine, test_engine, number_of_games, display_move_times, start_position, 0);
 
     return 0;

@@ -242,7 +242,6 @@ in a row.*/
             const bool upper_bound = tt_entry & 0b100000000000000;
 
             if(tt_depth <= depth and (tt_value != 0 or tt_depth == depth))
-//            if(tt_value != 0 or tt_depth == depth)
             {
                 if(lower_bound)
                 {
