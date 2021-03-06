@@ -67,6 +67,7 @@ int main()
 
     while (std::getline(file_to_read, transposition_move_string))
     {
+        engine.clear_transposition_table();
         load_position(engine, transposition_move_string);
         t0 = std::chrono::steady_clock::now();
         int best_move = engine.engine_move();

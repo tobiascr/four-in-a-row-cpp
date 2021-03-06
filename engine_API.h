@@ -26,6 +26,10 @@ public:
 
     void new_game();
 
+    void clear_transposition_table();
+    /* Normally the transposition table does not need to be cleared. But for some testing it
+    can be useful.*/
+
     bool legal_move(int column);
 
     int engine_move();

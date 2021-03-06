@@ -621,6 +621,9 @@ void test_transposition_table()
     tt.values[223] = 7;
     std::cout << tt.values[1234] << " " << tt.values[223] << " " <<
                tt.values[456] << std::endl;
+    tt.clear();
+    std::cout << tt.values[1234] << " " << tt.values[223] << " " <<
+               tt.values[456] << std::endl;
 }
 
 void test_position(Engine::EngineAPI& engine, std::string move_string, int expected_move)
@@ -962,7 +965,7 @@ void benchmark_position_values_no_opening_book(Engine::EngineAPI& engine)
 //    test_position_value(engine, "3342000", 7, false);
 //    test_position_value(engine, "333", -2, false);
 //    test_position_value(engine, "33", 2, false);
-////    test_position_value(engine, "3", -2, false); // The program crashes with this.
+    test_position_value(engine, "3", -2, false); // The program crashes with this.
 //    test_position_value(engine, "00343", -4, false);
 //    test_position_value(engine, "3563", -3, false);
 }
@@ -1233,20 +1236,22 @@ int main()
 //   test_from_file_best_moves("./testing/test_transpositions/time_test_201119.best_moves", true);
 
 
-//    Engine::EngineAPI engine(455146);
+//    Engine::EngineAPI engine(414146);
 //    engine.set_difficulty_level(3);
 //    TestEngine::EngineAPI test_engine(542334);
-//    test_engine.set_difficulty_level(2);
+//    test_engine.set_difficulty_level(1);
 
     Engine::EngineAPI engine;
     engine.set_difficulty_level(3);
     TestEngine::EngineAPI test_engine;
-    test_engine.set_difficulty_level(2);
+    test_engine.set_difficulty_level(4);
 
-    bool display_move_times = true;
+    bool display_move_times = false;
     std::string start_position = "";
-    int number_of_games = 100;
+    int number_of_games = 1000;
     engine_vs_engine(engine, test_engine, number_of_games, display_move_times, start_position, 0);
+
+//    benchmark_position_values_no_opening_book(engine);
 
     return 0;
 }

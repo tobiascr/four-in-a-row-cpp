@@ -13,9 +13,8 @@ OpeningBook::OpeningBook()
     load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_8_ply.best_moves", false);
     load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_9_ply.best_moves", false);
     load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_10_ply.best_moves", false);
-    load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_11_ply_value_-2_0_1.best_moves", false);
-    load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_11_ply_value_3.best_moves", false);
-    load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_12_ply_value_2_4_6.best_moves", false);
+    load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_11_ply.best_moves", false);
+    load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_12_ply.best_moves", false);
     load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_13_ply_value_0.best_moves", false);
     load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_13_ply_value_1.best_moves", false);
     load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_13_ply_value_-2.best_moves", false);

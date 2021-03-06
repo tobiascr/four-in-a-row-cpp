@@ -11,6 +11,9 @@ public:
 
     ~TranspositionTable();
 
+    void clear();
+    // Set every value in the table to zero.
+
     uint64_t* values;
 
     const int size = 50000000;

@@ -30,6 +30,11 @@ void EngineAPI::new_game()
     game_state.reset();
 }
 
+void EngineAPI::clear_transposition_table()
+{
+    transposition_table.clear();
+}
+
 bool EngineAPI::legal_move(int column)
 {
     return game_state.column_not_full(column);
@@ -638,14 +643,7 @@ is stopped. For example, depth=42 give a maximum depth search.*/
     std::array<int,2> values;
     if(depth == 42 and game_state.get_number_of_moves() < 37)
     {
-        if(game_state.get_number_of_moves() % 2 == 0) // If the beginning player is in turn.
-        {
-            return iterative_deepening_full_depth_move_likely_win(moves);
-        }
-        else
-        {
-            return iterative_deepening_full_depth_move(moves);
-        }
+        return iterative_deepening_full_depth_move_likely_win(moves);
     }
     else
     {
