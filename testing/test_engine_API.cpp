@@ -312,6 +312,18 @@ for moves that are estimated to be equally strong.*/
     return moves;
 }
 
+std::array<int,7> EngineAPI::move_order_random()
+/* Return a random move order.*/
+{
+    std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
+    int values[7];
+
+    // Adding randomness to the move order.
+    shuffle(moves.begin(), moves.end(), random_generator);
+
+    return moves;
+}
+
 std::array<int,7> EngineAPI::move_order(int first_move)
 {
     switch (first_move)
@@ -581,7 +593,7 @@ is stopped. For example, depth=42 give a maximum depth search.*/
     int alpha = -1000;
     int beta = 1000;
 
-    std::array<int,7> moves = move_order();
+    std::array<int,7> moves = move_order_random();
 
     if (depth == 42)
     {

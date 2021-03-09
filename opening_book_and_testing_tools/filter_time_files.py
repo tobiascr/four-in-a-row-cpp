@@ -13,7 +13,7 @@ if __name__ == "__main__":
         line_parts = line.split()
         move_sequence_string = line_parts[0]
         time = int(line_parts[-1])
-        if time > 100:
+        if time > 200:
             file_to_write.write(move_sequence_string + '\n')
 
     file_to_read.close()
