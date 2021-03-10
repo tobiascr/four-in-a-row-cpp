@@ -24,3 +24,5 @@ a position with a maximum value.
 
 For some .best_moves files only transpositions with certain values are stored. The
 values are specified in the file name.
+
+Some .best_moves files contains slow transpositions that are not included in other files.

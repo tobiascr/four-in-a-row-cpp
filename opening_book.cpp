@@ -18,8 +18,10 @@ OpeningBook::OpeningBook()
     load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_13_ply_value_0.best_moves", false);
     load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_13_ply_value_1.best_moves", false);
     load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_13_ply_value_-2.best_moves", false);
+    load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_13_ply_slow.best_moves", false);
     load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_14_ply_value_2.best_moves", false);
     load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_15_ply_value_-2.best_moves", false);
+    load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_15_ply_slow.best_moves", false);
     load_opening_book_file("/usr/local/share/four_in_a_row_opening_book/opening_book_16_ply_value_2.best_moves", false);
 }
 
