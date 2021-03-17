@@ -1247,7 +1247,7 @@ int main()
 
     bool display_move_times = false;
     std::string start_position = "";
-    int number_of_games = 100;
+    int number_of_games = 1000;
     engine_vs_engine(engine, test_engine, number_of_games, display_move_times, start_position, 0);
 
 //    benchmark_position_values_no_opening_book(engine);
