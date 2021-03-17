@@ -272,96 +272,96 @@ void test_game_state()
     std::cout << std::endl;
     std::cout << "Test get_opponent_winning_positions_bitboard()" << std::endl;
 
-    load_position(game_state, "33435");
-    std::cout << (game_state.get_number_of_moves() % 2) + 1 << " to play:"<< std::endl;
-    print_board(game_state);
-    print_bitboard(game_state.get_opponent_winning_positions_bitboard());
-    std::array<bool,7> non_losing_moves = game_state.get_non_losing_moves();
-    std::cout << "Non losing moves: ";
-    for(int i=0; i<=6; i++)
-    {
-        std::cout << non_losing_moves[i];
-    }
-    std::cout << std::endl;
-    std::cout << std::endl;
+//    load_position(game_state, "33435");
+//    std::cout << (game_state.get_number_of_moves() % 2) + 1 << " to play:"<< std::endl;
+//    print_board(game_state);
+//    print_bitboard(game_state.get_opponent_winning_positions_bitboard());
+//    std::array<bool,7> non_losing_moves = game_state.get_non_losing_moves();
+//    std::cout << "Non losing moves: ";
+//    for(int i=0; i<=6; i++)
+//    {
+//        std::cout << non_losing_moves[i];
+//    }
+//    std::cout << std::endl;
+//    std::cout << std::endl;
 
-    load_position(game_state, "01010");
-    std::cout << (game_state.get_number_of_moves() % 2) + 1 << " to play:"<< std::endl;
-    print_board(game_state);
-    print_bitboard(game_state.get_opponent_winning_positions_bitboard());
-    non_losing_moves = game_state.get_non_losing_moves();
-    std::cout << "Non losing moves: ";
-    for(int i=0; i<=6; i++)
-    {
-        std::cout << non_losing_moves[i];
-    }
-    std::cout << std::endl;
-    std::cout << std::endl;
+//    load_position(game_state, "01010");
+//    std::cout << (game_state.get_number_of_moves() % 2) + 1 << " to play:"<< std::endl;
+//    print_board(game_state);
+//    print_bitboard(game_state.get_opponent_winning_positions_bitboard());
+//    non_losing_moves = game_state.get_non_losing_moves();
+//    std::cout << "Non losing moves: ";
+//    for(int i=0; i<=6; i++)
+//    {
+//        std::cout << non_losing_moves[i];
+//    }
+//    std::cout << std::endl;
+//    std::cout << std::endl;
 
-    load_position(game_state, "23340445505");
-    std::cout << (game_state.get_number_of_moves() % 2) + 1 << " to play:"<< std::endl;
-    print_board(game_state);
-    print_bitboard(game_state.get_opponent_winning_positions_bitboard());
-    non_losing_moves = game_state.get_non_losing_moves();
-    std::cout << "Non losing moves: ";
-    for(int i=0; i<=6; i++)
-    {
-        std::cout << non_losing_moves[i];
-    }
-    std::cout << std::endl;
-    std::cout << std::endl;
+//    load_position(game_state, "23340445505");
+//    std::cout << (game_state.get_number_of_moves() % 2) + 1 << " to play:"<< std::endl;
+//    print_board(game_state);
+//    print_bitboard(game_state.get_opponent_winning_positions_bitboard());
+//    non_losing_moves = game_state.get_non_losing_moves();
+//    std::cout << "Non losing moves: ";
+//    for(int i=0; i<=6; i++)
+//    {
+//        std::cout << non_losing_moves[i];
+//    }
+//    std::cout << std::endl;
+//    std::cout << std::endl;
 
-    load_position(game_state, "233404455050");
-    std::cout << (game_state.get_number_of_moves() % 2) + 1 << " to play:"<< std::endl;
-    print_board(game_state);
-    print_bitboard(game_state.get_opponent_winning_positions_bitboard());
-    non_losing_moves = game_state.get_non_losing_moves();
-    std::cout << "Non losing moves: ";
-    for(int i=0; i<=6; i++)
-    {
-        std::cout << non_losing_moves[i];
-    }
-    std::cout << std::endl;
-    std::cout << std::endl;
+//    load_position(game_state, "233404455050");
+//    std::cout << (game_state.get_number_of_moves() % 2) + 1 << " to play:"<< std::endl;
+//    print_board(game_state);
+//    print_bitboard(game_state.get_opponent_winning_positions_bitboard());
+//    non_losing_moves = game_state.get_non_losing_moves();
+//    std::cout << "Non losing moves: ";
+//    for(int i=0; i<=6; i++)
+//    {
+//        std::cout << non_losing_moves[i];
+//    }
+//    std::cout << std::endl;
+//    std::cout << std::endl;
 
-    load_position(game_state, "0000101122");
-    std::cout << (game_state.get_number_of_moves() % 2) + 1 << " to play:"<< std::endl;
-    print_board(game_state);
-    print_bitboard(game_state.get_opponent_winning_positions_bitboard());
-    non_losing_moves = game_state.get_non_losing_moves();
-    std::cout << "Non losing moves: ";
-    for(int i=0; i<=6; i++)
-    {
-        std::cout << non_losing_moves[i];
-    }
-    std::cout << std::endl;
-    std::cout << std::endl;
+//    load_position(game_state, "0000101122");
+//    std::cout << (game_state.get_number_of_moves() % 2) + 1 << " to play:"<< std::endl;
+//    print_board(game_state);
+//    print_bitboard(game_state.get_opponent_winning_positions_bitboard());
+//    non_losing_moves = game_state.get_non_losing_moves();
+//    std::cout << "Non losing moves: ";
+//    for(int i=0; i<=6; i++)
+//    {
+//        std::cout << non_losing_moves[i];
+//    }
+//    std::cout << std::endl;
+//    std::cout << std::endl;
 
-    load_position(game_state, "0011333");
-    std::cout << (game_state.get_number_of_moves() % 2) + 1 << " to play:"<< std::endl;
-    print_board(game_state);
-    print_bitboard(game_state.get_opponent_winning_positions_bitboard());
-    non_losing_moves = game_state.get_non_losing_moves();
-    std::cout << "Non losing moves: ";
-    for(int i=0; i<=6; i++)
-    {
-        std::cout << non_losing_moves[i];
-    }
-    std::cout << std::endl;
-    std::cout << std::endl;
+//    load_position(game_state, "0011333");
+//    std::cout << (game_state.get_number_of_moves() % 2) + 1 << " to play:"<< std::endl;
+//    print_board(game_state);
+//    print_bitboard(game_state.get_opponent_winning_positions_bitboard());
+//    non_losing_moves = game_state.get_non_losing_moves();
+//    std::cout << "Non losing moves: ";
+//    for(int i=0; i<=6; i++)
+//    {
+//        std::cout << non_losing_moves[i];
+//    }
+//    std::cout << std::endl;
+//    std::cout << std::endl;
 
-    load_position(game_state, "2244550");
-    std::cout << (game_state.get_number_of_moves() % 2) + 1 << " to play:"<< std::endl;
-    print_board(game_state);
-    print_bitboard(game_state.get_opponent_winning_positions_bitboard());
-    non_losing_moves = game_state.get_non_losing_moves();
-    std::cout << "Non losing moves: ";
-    for(int i=0; i<=6; i++)
-    {
-        std::cout << non_losing_moves[i];
-    }
-    std::cout << std::endl;
-    std::cout << std::endl;
+//    load_position(game_state, "2244550");
+//    std::cout << (game_state.get_number_of_moves() % 2) + 1 << " to play:"<< std::endl;
+//    print_board(game_state);
+//    print_bitboard(game_state.get_opponent_winning_positions_bitboard());
+//    non_losing_moves = game_state.get_non_losing_moves();
+//    std::cout << "Non losing moves: ";
+//    for(int i=0; i<=6; i++)
+//    {
+//        std::cout << non_losing_moves[i];
+//    }
+//    std::cout << std::endl;
+//    std::cout << std::endl;
 
     std::cout << "Test open_four_in_a_row_count" << std::endl;
     load_position(game_state, "2244550");
@@ -1236,20 +1236,20 @@ int main()
 //   test_from_file_best_moves("./testing/test_transpositions/time_test_201119.best_moves", true);
 
 
-//    Engine::EngineAPI engine(414146);
-//    engine.set_difficulty_level(3);
-//    TestEngine::EngineAPI test_engine(542334);
-//    test_engine.set_difficulty_level(4);
-
-    Engine::EngineAPI engine;
+    Engine::EngineAPI engine(414146);
     engine.set_difficulty_level(3);
-    TestEngine::EngineAPI test_engine;
-    test_engine.set_difficulty_level(1);
+    TestEngine::EngineAPI test_engine(542334);
+    test_engine.set_difficulty_level(2);
+
+//    Engine::EngineAPI engine;
+//    engine.set_difficulty_level(3);
+//    TestEngine::EngineAPI test_engine;
+//    test_engine.set_difficulty_level(1);
 
     bool display_move_times = false;
     std::string start_position = "";
-    int number_of_games = 10000;
-    engine_vs_engine(engine, test_engine, number_of_games, display_move_times, start_position, 2);
+    int number_of_games = 100;
+    engine_vs_engine(engine, test_engine, number_of_games, display_move_times, start_position, 0);
 
 //    benchmark_position_values_no_opening_book(engine);
 

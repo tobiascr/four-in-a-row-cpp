@@ -18,7 +18,6 @@ void GameState::reset()
     number_of_moves = 0;
     player_in_turn = 0;
     next_moves = 0b0000001000000100000010000001000000100000010000001;
-    zobrist_key = 0;
 }
 
 char GameState::get_value(int column, int row) const
@@ -53,13 +52,11 @@ void GameState::make_move(int column)
     column_height[column]++;
     number_of_moves++;
     player_in_turn = 1 - player_in_turn;
-    zobrist_key ^= random_numbers[column*6 + column_height[column] + 42 * player_in_turn - 1];
     next_moves ^= nm | (nm << 1);
 }
 
 void GameState::undo_move(int column)
 {
-    zobrist_key ^= random_numbers[column*6 + column_height[column] + 42 * player_in_turn - 1];
     column_height[column]--;
     number_of_moves--;
     player_in_turn = 1 - player_in_turn;
@@ -234,44 +231,32 @@ uint64_t GameState::get_winning_positions_bitboard_non_vertical(uint64_t bitboar
     return winning_positions;
 }
 
-std::array<bool,7> GameState::get_non_losing_moves()
+uint64_t GameState::get_non_losing_moves() const
 {
     const uint64_t opponent_winning_positions =
               get_winning_positions_bitboard(bitboard[1 - player_in_turn])
               & board_mask;
-    uint64_t possible_moves;
     const uint64_t blocking_moves = opponent_winning_positions & next_moves;
 
     if(blocking_moves)
     {
         if(blocking_moves & (blocking_moves - 1)) // Test if more than 1 bit is set to 1.
         {
-            return {false, false, false, false, false, false, false};
+            return 0;
         }
         else
         {
             if((opponent_winning_positions >> 1) & blocking_moves)
             {
-                return {false, false, false, false, false, false, false};
+                return 0;
             }
             else
             {
-                possible_moves = blocking_moves;
+                return blocking_moves;
             }
         }
     }
-    else
-    {
-        possible_moves = next_moves & board_mask & (~(opponent_winning_positions >> 1));
-    }
-
-    return {possible_moves & 0b0000000000000000000000000000000000000000000111111,
-            possible_moves & 0b0000000000000000000000000000000000001111110000000,
-            possible_moves & 0b0000000000000000000000000000011111100000000000000,
-            possible_moves & 0b0000000000000000000000111111000000000000000000000,
-            possible_moves & 0b0000000000000001111110000000000000000000000000000,
-            possible_moves & 0b0000000011111100000000000000000000000000000000000,
-            possible_moves & 0b0111111000000000000000000000000000000000000000000};
+    return next_moves & board_mask & (~(opponent_winning_positions >> 1));
 }
 
 int GameState::open_four_in_a_row_count(int player) const
@@ -341,11 +326,6 @@ uint64_t GameState::get_unique_mirror_key() const
     mirrored_key |= (key & 0b1111111000000000000000000000000000000000000000000)
                     >> (bitboard_height * 6);
     return mirrored_key;
-}
-
-uint32_t GameState::get_zobrist_key() const
-{
-    return zobrist_key;
 }
 
 int GameState::possible_four_in_a_row_count(bool include_vertical)
