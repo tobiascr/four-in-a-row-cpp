@@ -222,16 +222,15 @@ game state has no four in a row and the player in turn can't make a four
 in a row.*/
 {
     uint64_t unique_key;
-    uint64_t zobrist_key;
-    int original_alpha = alpha;
-
-    bool use_transposition_table = game_state.get_number_of_moves() < depth - 4;
+    uint64_t key;
+    const int original_alpha = alpha;
+    const bool use_transposition_table = game_state.get_number_of_moves() < depth - 4;
 
     if (use_transposition_table)
     {
         unique_key = game_state.get_unique_key();
-        zobrist_key = game_state.get_zobrist_key() % transposition_table.size;
-        const uint64_t tt_entry = transposition_table.values[zobrist_key];
+        key = unique_key % transposition_table.size;
+        const uint64_t tt_entry = transposition_table.values[key];
         const uint64_t tt_key = tt_entry  >> 15;
         if(tt_key == unique_key)
         {
@@ -274,24 +273,23 @@ in a row.*/
         }
     }
 
-    std::array<bool,7> non_losing_moves = game_state.get_non_losing_moves();
-    int c = 0;
-    for (int i=0; i<=6; i++)
-    {
-        if(non_losing_moves[i])
-        {
-            c = 1;
-            break;
-        }
-    }
-    if (c == 0) {return game_state.get_number_of_moves() - 41;}
+    const uint64_t non_losing_moves_bitboard = game_state.get_non_losing_moves();
+
+    if (non_losing_moves_bitboard == 0) {return game_state.get_number_of_moves() - 41;}
 
     if (game_state.get_number_of_moves() >= depth - 2)
     {
-        {
-            return 0;
-        }
+        return 0;
     }
+
+    const std::array<bool,7> non_losing_moves = {
+        non_losing_moves_bitboard & 0b0000000000000000000000000000000000000000000111111,
+        non_losing_moves_bitboard & 0b0000000000000000000000000000000000001111110000000,
+        non_losing_moves_bitboard & 0b0000000000000000000000000000011111100000000000000,
+        non_losing_moves_bitboard & 0b0000000000000000000000111111000000000000000000000,
+        non_losing_moves_bitboard & 0b0000000000000001111110000000000000000000000000000,
+        non_losing_moves_bitboard & 0b0000000011111100000000000000000000000000000000000,
+        non_losing_moves_bitboard & 0b0111111000000000000000000000000000000000000000000};
 
     // Move order.
     std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
@@ -311,7 +309,7 @@ in a row.*/
             {
                 if (use_transposition_table) // Lower bounds
                 {
-                    transposition_table.values[zobrist_key] = (unique_key << 15)
+                    transposition_table.values[key] = (unique_key << 15)
                                     | 0b10000000000000 | (depth << 7) | (beta + 50);
                 }
                 return beta;
@@ -325,7 +323,7 @@ in a row.*/
 
     if (use_transposition_table) // Upper bounds
     {
-        transposition_table.values[zobrist_key] = (unique_key << 15) | 0b100000000000000 |
+        transposition_table.values[key] = (unique_key << 15) | 0b100000000000000 |
                          (depth << 7) | (alpha + 50);
     }
 
