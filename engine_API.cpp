@@ -149,7 +149,7 @@ std::array<int,7> EngineAPI::move_order()
 {
     std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
     int values[7] = {1, 3, 5, 6, 4, 2, 0};
-    int player = game_state.get_number_of_moves() % 2;
+    const int player = game_state.get_player_in_turn();
 
     for (int move=0; move<=6; move++)
     {
@@ -282,7 +282,7 @@ in a row.*/
         return 0;
     }
 
-    const std::array<bool,7> non_losing_moves = {
+    const std::array<uint64_t,7> non_losing_moves = {
         non_losing_moves_bitboard & 0b0000000000000000000000000000000000000000000111111,
         non_losing_moves_bitboard & 0b0000000000000000000000000000000000001111110000000,
         non_losing_moves_bitboard & 0b0000000000000000000000000000011111100000000000000,
@@ -302,9 +302,9 @@ in a row.*/
     {
         if (non_losing_moves[move])
         {
-            game_state.make_move(move);
+            game_state.make_move_fast(non_losing_moves[move]);
             int value = -negamax(depth, -beta, -alpha);
-            game_state.undo_move(move);
+            game_state.undo_move_fast(non_losing_moves[move]);
             if (value >= beta)
             {
                 if (use_transposition_table) // Lower bounds

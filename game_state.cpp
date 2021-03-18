@@ -13,8 +13,6 @@ void GameState::reset()
 {
     bitboard[0] = 0;
     bitboard[1] = 0;
-    for (int n=0; n<=6; n++)
-        column_height[n] = 0;
     number_of_moves = 0;
     player_in_turn = 0;
     next_moves = 0b0000001000000100000010000001000000100000010000001;
@@ -35,12 +33,23 @@ char GameState::get_value(int column, int row) const
 
 bool GameState::column_not_full(int column) const
 {
-    return column_height[column] < 6;
+    return get_number_of_disks_in_column(column) < 6;
 }
 
 int GameState::get_number_of_disks_in_column(int column) const
 {
-    return column_height[column];
+    const std::array<uint64_t, 7> columns = {
+        0b0000000000000000000000000000000000000000000111111,
+        0b0000000000000000000000000000000000001111110000000,
+        0b0000000000000000000000000000011111100000000000000,
+        0b0000000000000000000000111111000000000000000000000,
+        0b0000000000000001111110000000000000000000000000000,
+        0b0000000011111100000000000000000000000000000000000,
+        0b0111111000000000000000000000000000000000000000000};
+
+    const std::bitset<64> bits = (bitboard[0] | bitboard[1]) & columns[column];
+
+    return bits.count();
 }
 
 void GameState::make_move(int column)
@@ -49,7 +58,6 @@ void GameState::make_move(int column)
     history[number_of_moves] = bitboard[player_in_turn];
     next_moves_history[number_of_moves] = next_moves;
     bitboard[player_in_turn] |= nm;
-    column_height[column]++;
     number_of_moves++;
     player_in_turn = 1 - player_in_turn;
     next_moves ^= nm | (nm << 1);
@@ -57,16 +65,39 @@ void GameState::make_move(int column)
 
 void GameState::undo_move(int column)
 {
-    column_height[column]--;
     number_of_moves--;
     player_in_turn = 1 - player_in_turn;
     bitboard[player_in_turn] = history[number_of_moves];
     next_moves = next_moves_history[number_of_moves];
 }
 
+void GameState::make_move_fast(uint64_t move_bitboard)
+{
+    bitboard[player_in_turn] |= move_bitboard;
+    number_of_moves++;
+    player_in_turn = 1 - player_in_turn;
+    next_moves ^= move_bitboard | (move_bitboard << 1);
+}
+
+void GameState::undo_move_fast(uint64_t move_bitboard)
+{
+    number_of_moves--;
+    player_in_turn = 1 - player_in_turn;
+    bitboard[player_in_turn] ^= move_bitboard;
+    next_moves ^= move_bitboard | (move_bitboard << 1);
+}
+
 uint64_t GameState::next_move(int column) const
 {
-    return one << (column * 7 + column_height[column]);
+    const std::array<uint64_t, 7> columns = {
+        0b0000000000000000000000000000000000000000000111111,
+        0b0000000000000000000000000000000000001111110000000,
+        0b0000000000000000000000000000011111100000000000000,
+        0b0000000000000000000000111111000000000000000000000,
+        0b0000000000000001111110000000000000000000000000000,
+        0b0000000011111100000000000000000000000000000000000,
+        0b0111111000000000000000000000000000000000000000000};
+    return next_moves & columns[column];
 }
 
 bool GameState::four_in_a_row() const
@@ -156,13 +187,13 @@ bool GameState::can_win_this_move() const
 
 bool GameState::opponent_four_in_a_row_above(int column) const
 {
-    if (column_height[column] >= 5) {return false;}
+    if (get_number_of_disks_in_column(column) >= 5) {return false;}
     return four_in_a_row_no_vertical(bitboard[1 - player_in_turn] | (next_move(column) << 1));
 }
 
 bool GameState::own_threat_above(int column) const
 {
-    if (column_height[column] >= 5) {return false;}
+    if (get_number_of_disks_in_column(column) >= 5) {return false;}
     return four_in_a_row_no_vertical(bitboard[player_in_turn] | (next_move(column) << 1));
 }
 
@@ -300,6 +331,11 @@ bool GameState::board_full() const
 int GameState::get_number_of_moves() const
 {
     return number_of_moves;
+}
+
+int GameState::get_player_in_turn() const
+{
+    return player_in_turn;
 }
 
 uint64_t GameState::get_unique_key() const

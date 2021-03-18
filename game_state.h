@@ -30,6 +30,12 @@ public:
 
     void undo_move(int column);
 
+    void make_move_fast(uint64_t move_bitboard);
+    // The move is given in bitboard format with a one at the place where the move should be made to.
+
+    void undo_move_fast(uint64_t move_bitboard);
+    // The move is given in bitboard format with a one at the place where the move should be undone from.
+
     bool four_in_a_row() const;
     /* Return true iff a the player that made the last move has a four in a row.*/
 
@@ -79,6 +85,9 @@ public:
 
     int get_number_of_moves() const;
 
+    int get_player_in_turn() const;
+    /* Return 0 if the starting player is in turn, and else 1.*/
+
     uint64_t get_unique_key() const;
     /* Return a unique key that corresponds to the current game state.*/
 
@@ -121,7 +130,6 @@ private:
     uint64_t bitboard[2]; // bitboard[0] is for the player that makes the first move.
                           // bitboard[1] is for the player that makes the second move.
     int player_in_turn;  // 0 if it's the beginning player in turn and else 1.
-    int column_height[7];
     int number_of_moves;
     uint64_t history[42]; // Bitboards from earlier moves.
     const uint64_t one = 1;
