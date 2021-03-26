@@ -69,6 +69,8 @@ private:
 
     std::array<int,7> move_order();
 
+    std::array<int,7> move_order(uint64_t moves_bitboard);
+
     std::array<int,7> move_order_2();
 
     std::array<int,7> move_order_random_games();

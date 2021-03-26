@@ -170,6 +170,39 @@ std::array<int,7> EngineAPI::move_order()
     return moves;
 }
 
+std::array<int,7> EngineAPI::move_order(uint64_t moves_bitboard)
+{
+    std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
+    int values[7] = {1, 3, 5, 6, 4, 2, 0};
+    const int player = game_state.get_player_in_turn();
+    const std::array<uint64_t,7> column = {
+        0b0000000000000000000000000000000000000000000111111,
+        0b0000000000000000000000000000000000001111110000000,
+        0b0000000000000000000000000000011111100000000000000,
+        0b0000000000000000000000111111000000000000000000000,
+        0b0000000000000001111110000000000000000000000000000,
+        0b0000000011111100000000000000000000000000000000000,
+        0b0111111000000000000000000000000000000000000000000};
+
+    for (int move=0; move<=6; move++)
+    {
+        if(moves_bitboard & column[move])
+        {
+            game_state.make_move(move);
+            values[move] += 100 * game_state.open_four_in_a_row_count(player);
+            game_state.undo_move(move);
+            if(game_state.own_threat_above(move))
+            {
+                values[move] = -100;
+            }
+        }
+    }
+
+    std::sort(moves.begin(), moves.end(),
+                     [&values](int i, int j){return values[i] > values[j];});
+    return moves;
+}
+
 std::array<int,7> EngineAPI::move_order_2()
 {
     std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
@@ -224,7 +257,13 @@ in a row.*/
     uint64_t unique_key;
     uint64_t key;
     const int original_alpha = alpha;
-    const bool use_transposition_table = game_state.get_number_of_moves() < depth - 4;
+//    const bool use_transposition_table = game_state.get_number_of_moves() < depth - 4;
+
+    bool use_transposition_table = game_state.get_number_of_moves() < depth - 4;
+    if(beta < 1)
+    {
+        use_transposition_table = false;
+    }
 
     if (use_transposition_table)
     {
@@ -295,15 +334,16 @@ in a row.*/
     std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
     if (game_state.get_number_of_moves() < depth - 12)
     {
-            moves = move_order();
+        moves = move_order(non_losing_moves_bitboard);
     }
 
+    int value;
     for(int move : moves)
     {
         if (non_losing_moves[move])
         {
             game_state.make_move_fast(non_losing_moves[move]);
-            int value = -negamax(depth, -beta, -alpha);
+            value = -negamax(depth, -beta, -alpha);
             game_state.undo_move_fast(non_losing_moves[move]);
             if (value >= beta)
             {
