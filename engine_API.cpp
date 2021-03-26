@@ -257,7 +257,6 @@ in a row.*/
     uint64_t unique_key;
     uint64_t key;
     const int original_alpha = alpha;
-//    const bool use_transposition_table = game_state.get_number_of_moves() < depth - 4;
 
     bool use_transposition_table = game_state.get_number_of_moves() < depth - 4;
     if(beta < 1)
