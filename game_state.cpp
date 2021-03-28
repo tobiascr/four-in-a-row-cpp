@@ -76,7 +76,7 @@ void GameState::make_move_fast(uint64_t move_bitboard)
     bitboard[player_in_turn] |= move_bitboard;
     number_of_moves++;
     player_in_turn = 1 - player_in_turn;
-    next_moves ^= move_bitboard | (move_bitboard << 1);
+    next_moves += move_bitboard;
 }
 
 void GameState::undo_move_fast(uint64_t move_bitboard)
@@ -84,7 +84,7 @@ void GameState::undo_move_fast(uint64_t move_bitboard)
     number_of_moves--;
     player_in_turn = 1 - player_in_turn;
     bitboard[player_in_turn] ^= move_bitboard;
-    next_moves ^= move_bitboard | (move_bitboard << 1);
+    next_moves -= move_bitboard;
 }
 
 uint64_t GameState::next_move(int column) const
