@@ -210,10 +210,8 @@ uint64_t GameState::get_opponent_winning_positions_bitboard() const
 uint64_t GameState::get_winning_positions_bitboard(uint64_t bitboard) const
 /* Can also include already occupied positions and positions outside the board.*/
 {
-    uint64_t winning_positions = 0;
-
     // Vertical direction
-    winning_positions = (bitboard & (bitboard << 1) & (bitboard << 2)) << 1;
+    uint64_t winning_positions = (bitboard & (bitboard << 1) & (bitboard << 2)) << 1;
 
     // Horizontal direction
     winning_positions |= (bitboard & (bitboard << 7) & (bitboard << 14)) << 7; // ooox
