@@ -134,6 +134,7 @@ private:
     uint64_t history[42]; // Bitboards from earlier moves.
     const uint64_t one = 1;
     const uint64_t board_mask = 0b0111111011111101111110111111011111101111110111111;
+    const uint64_t bottom_row = 0b0000001000000100000010000001000000100000010000001;
     uint64_t next_moves;
     uint64_t next_moves_history[42];
 
@@ -145,6 +146,10 @@ private:
     /* Return true iff there is a four in a row of 1:s on the bitboard.*/
 
     bool four_in_a_row_no_vertical(uint64_t bitboard) const;
+
+    uint64_t get_next_moves() const;
+    /* Return a bitboard with all positions where a move can be made to, including positions
+    outside of the board if the board is full.*/
 
     uint64_t get_winning_positions_bitboard(uint64_t bitboard) const;
     /* Can also include already occupied positions and positions outside the board.*/

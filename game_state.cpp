@@ -76,7 +76,6 @@ void GameState::make_move_fast(uint64_t move_bitboard)
     bitboard[player_in_turn] |= move_bitboard;
     number_of_moves++;
     player_in_turn = 1 - player_in_turn;
-    next_moves += move_bitboard;
 }
 
 void GameState::undo_move_fast(uint64_t move_bitboard)
@@ -84,11 +83,11 @@ void GameState::undo_move_fast(uint64_t move_bitboard)
     number_of_moves--;
     player_in_turn = 1 - player_in_turn;
     bitboard[player_in_turn] ^= move_bitboard;
-    next_moves -= move_bitboard;
 }
 
 uint64_t GameState::next_move(int column) const
 {
+    const uint64_t next_moves_ = (bitboard[0] | bitboard[1]) + bottom_row;
     const std::array<uint64_t, 7> columns = {
         0b0000000000000000000000000000000000000000000111111,
         0b0000000000000000000000000000000000001111110000000,
@@ -97,7 +96,7 @@ uint64_t GameState::next_move(int column) const
         0b0000000000000001111110000000000000000000000000000,
         0b0000000011111100000000000000000000000000000000000,
         0b0111111000000000000000000000000000000000000000000};
-    return next_moves & columns[column];
+    return next_moves_ & columns[column];
 }
 
 bool GameState::four_in_a_row() const
@@ -150,6 +149,8 @@ bool GameState::can_win_this_move() const
 {
     const uint64_t b = bitboard[player_in_turn];
 
+    const uint64_t next_moves_ = get_next_moves();
+
     // Masks for various columns.
     const uint64_t mask_0246 = 0b0111111000000001111110000000011111100000000111111;
     const uint64_t mask_04 =   0b0000000000000001111110000000000000000000000111111;
@@ -159,27 +160,27 @@ bool GameState::can_win_this_move() const
     const uint64_t mask_3 =    0b0000000000000000000000111111000000000000000000000;
 
     // First a test of 4 moves together that might give a false positive.
-    if (four_in_a_row(b | (mask_0246 & next_moves)))
+    if (four_in_a_row(b | (mask_0246 & next_moves_)))
     {
         // To rule out false positives, more tests are done.
 
         // Test column 0 and 4.
-        if (four_in_a_row(b | (mask_04 & next_moves))) {return true;}
+        if (four_in_a_row(b | (mask_04 & next_moves_))) {return true;}
 
         // Test column 2 and 6.
-        if (four_in_a_row(b | (mask_26 & next_moves))) {return true;}
+        if (four_in_a_row(b | (mask_26 & next_moves_))) {return true;}
     }
 
     // First a test of 3 moves together that might give a false positive.
-    if (four_in_a_row(b | (mask_135 & next_moves)))
+    if (four_in_a_row(b | (mask_135 & next_moves_)))
     {
         // To rule out false positives, more tests are done.
 
         // Test column 1 and 5.
-        if (four_in_a_row(b | (mask_15 & next_moves))) {return true;}
+        if (four_in_a_row(b | (mask_15 & next_moves_))) {return true;}
 
         // Test column 3.
-        if (four_in_a_row(b | (mask_3 & next_moves))) {return true;}
+        if (four_in_a_row(b | (mask_3 & next_moves_))) {return true;}
     }
 
     return false;
@@ -260,12 +261,18 @@ uint64_t GameState::get_winning_positions_bitboard_non_vertical(uint64_t bitboar
     return winning_positions;
 }
 
+uint64_t GameState::get_next_moves() const
+{
+    return (bitboard[0] | bitboard[1]) + bottom_row;
+}
+
 uint64_t GameState::get_non_losing_moves() const
 {
+    const uint64_t next_moves_ = get_next_moves();
     const uint64_t opponent_winning_positions =
               get_winning_positions_bitboard(bitboard[1 - player_in_turn])
               & board_mask;
-    const uint64_t blocking_moves = opponent_winning_positions & next_moves;
+    const uint64_t blocking_moves = opponent_winning_positions & next_moves_;
 
     if(blocking_moves)
     {
@@ -285,7 +292,7 @@ uint64_t GameState::get_non_losing_moves() const
             }
         }
     }
-    return next_moves & board_mask & (~(opponent_winning_positions >> 1));
+    return next_moves_ & board_mask & (~(opponent_winning_positions >> 1));
 }
 
 int GameState::open_four_in_a_row_count(int player) const
@@ -338,7 +345,10 @@ int GameState::get_player_in_turn() const
 
 uint64_t GameState::get_unique_key() const
 {
-    return bitboard[0] | next_moves;
+//    return bitboard[0] | next_moves;
+    return bitboard[0] + 2 * bitboard[1];
+    // This works because the next moves bitboard can be expressed as bitboard[0] + bitboard[1] + bottom_row.
+    // Skipping bottom_row every time does not change the uniqueness.
 }
 
 uint64_t GameState::get_unique_mirror_key() const
