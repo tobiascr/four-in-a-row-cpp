@@ -15,7 +15,6 @@ void GameState::reset()
     bitboard[1] = 0;
     number_of_moves = 0;
     player_in_turn = 0;
-    next_moves = 0b0000001000000100000010000001000000100000010000001;
 }
 
 char GameState::get_value(int column, int row) const
@@ -56,11 +55,9 @@ void GameState::make_move(int column)
 {
     const uint64_t nm = next_move(column);
     history[number_of_moves] = bitboard[player_in_turn];
-    next_moves_history[number_of_moves] = next_moves;
     bitboard[player_in_turn] |= nm;
     number_of_moves++;
     player_in_turn = 1 - player_in_turn;
-    next_moves ^= nm | (nm << 1);
 }
 
 void GameState::undo_move(int column)
@@ -68,7 +65,6 @@ void GameState::undo_move(int column)
     number_of_moves--;
     player_in_turn = 1 - player_in_turn;
     bitboard[player_in_turn] = history[number_of_moves];
-    next_moves = next_moves_history[number_of_moves];
 }
 
 void GameState::make_move_fast(uint64_t move_bitboard)
@@ -299,32 +295,6 @@ int GameState::open_four_in_a_row_count(int player) const
 {
     std::bitset<64> winning_positions = get_winning_positions_bitboard_non_vertical
                          (bitboard[player]) & board_mask & (~(bitboard[0] | bitboard[1]));
-    return winning_positions.count();
-}
-
-int GameState::open_four_in_a_row_count_2(int player) const
-{
-    uint64_t row_0 = 0b1000000100000010000001000000100000010000001;
-    uint64_t row_1 = 0b10000001000000100000010000001000000100000010;
-    uint64_t row_2 = 0b100000010000001000000100000010000001000000100;
-    uint64_t row_3 = 0b1000000100000010000001000000100000010000001000;
-    uint64_t row_4 = 0b10000001000000100000010000001000000100000010000;
-    uint64_t row_5 = 0b100000010000001000000100000010000001000000100000;
-
-    std::bitset<64> winning_positions;
-    if(player == 0)
-    {
-        winning_positions = get_winning_positions_bitboard_non_vertical
-               (bitboard[player]) & board_mask & (~(bitboard[0] | bitboard[1] | next_moves))
-               & (row_0 | row_2 | row_4);
-    }
-    else
-    {
-        winning_positions = get_winning_positions_bitboard_non_vertical
-               (bitboard[player]) & board_mask & (~(bitboard[0] | bitboard[1] | next_moves))
-               & (row_1 | row_3 | row_5);
-    }
-
     return winning_positions.count();
 }
 

@@ -203,31 +203,6 @@ std::array<int,7> EngineAPI::move_order(uint64_t moves_bitboard)
     return moves;
 }
 
-std::array<int,7> EngineAPI::move_order_2()
-{
-    std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
-    int values[7] = {1, 3, 5, 6, 4, 2, 0};
-    int player = game_state.get_number_of_moves() % 2;
-
-    for (int move=0; move<=6; move++)
-    {
-        if(game_state.column_not_full(move))
-        {
-            game_state.make_move(move);
-            values[move] += 100 * game_state.open_four_in_a_row_count_2(player);
-            game_state.undo_move(move);
-            if(game_state.own_threat_above(move))
-            {
-                values[move] = -100;
-            }
-        }
-    }
-
-    std::sort(moves.begin(), moves.end(),
-                     [&values](int i, int j){return values[i] > values[j];});
-    return moves;
-}
-
 std::array<int,7> EngineAPI::move_order(int first_move)
 {
     switch (first_move)
