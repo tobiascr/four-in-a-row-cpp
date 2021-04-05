@@ -90,6 +90,12 @@ private:
 
     int random_move();
 
+    int random_move(std::vector<int> move_list);
+
+    int centermost_move(std::vector<int> move_list);
+
+    int heuristic_move_selection(std::vector<int> move_list);
+
     int engine_move_easy();
 
     int engine_move_medium();

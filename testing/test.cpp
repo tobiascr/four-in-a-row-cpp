@@ -1243,7 +1243,7 @@ int main()
 //    Engine::EngineAPI engine;
 //    engine.set_difficulty_level(3);
 //    TestEngine::EngineAPI test_engine;
-//    test_engine.set_difficulty_level(0);
+//    test_engine.set_difficulty_level(2);
 
     bool display_move_times = false;
     std::string start_position = "";

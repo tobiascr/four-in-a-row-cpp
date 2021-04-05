@@ -679,6 +679,46 @@ int EngineAPI::random_move()
     return 0;
 }
 
+int EngineAPI::random_move(std::vector<int> move_list)
+// Return a randomly chosen move from the given move list.
+{
+    std::uniform_int_distribution<> uid(0, move_list.size() - 1);
+    return move_list[uid(random_generator)];
+}
+
+int EngineAPI::centermost_move(std::vector<int> move_list)
+// Return the most central move in the given move list.
+{
+    std::array<int,7> moves = {3, 2, 4, 1, 5, 0, 6};
+    for(int m : moves)
+    {
+        for(int n : move_list)
+        {
+            if(n == m)
+            {
+                return m;
+            }
+        }
+    }
+    return 0;
+}
+
+int EngineAPI::heuristic_move_selection(std::vector<int> move_list)
+{
+    std::array<int,7> moves = move_order();
+    for(int m : moves)
+    {
+        for(int n : move_list)
+        {
+            if(n == m)
+            {
+                return m;
+            }
+        }
+    }
+    return 0;
+}
+
 int EngineAPI::engine_move_easy()
 {
     if (game_state.get_number_of_moves() < 8)
@@ -695,8 +735,7 @@ int EngineAPI::engine_move_medium()
         if(game_state.get_number_of_disks_in_column(3) == 5)
         {
             std::vector<int> moves = {0, 2, 3, 4, 6};
-            std::uniform_int_distribution<> uid(0, 4);
-            return moves[uid(random_generator)];
+            return random_move(moves);
         }
     }
 
@@ -715,8 +754,7 @@ int EngineAPI::engine_move_medium()
     std::vector<int> best_moves = opening_book.get_best_moves(game_state);
     if(not best_moves.empty())
     {
-        std::uniform_int_distribution<> uid(0, best_moves.size() - 1);
-        return best_moves[uid(random_generator)];
+        return random_move(best_moves);
     }
 
     int depth = game_state.get_number_of_moves() + 10;
@@ -733,8 +771,7 @@ int EngineAPI::engine_move_hard()
         if(game_state.get_number_of_disks_in_column(3) == 5)
         {
             std::vector<int> moves = {0, 2, 3, 4, 6};
-            std::uniform_int_distribution<> uid(0, 4);
-            return moves[uid(random_generator)];
+            return random_move(moves);
         }
     }
 
@@ -755,8 +792,7 @@ int EngineAPI::engine_move_hard()
     std::vector<int> best_moves = opening_book.get_best_moves(game_state);
     if(not best_moves.empty())
     {
-        std::uniform_int_distribution<> uid(0, best_moves.size() - 1);
-        return best_moves[uid(random_generator)];
+        return(random_move(best_moves));
     }
 
     return engine_move(42);
